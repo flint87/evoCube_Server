@@ -83,6 +83,12 @@ var server = app.listen(app.get('port'), function() {
 				
 		});
 
+		socket.on("remoteVolumeChange", function(newVolume){
+				console.log("Remote VolumeChange received: " + newVolume);
+				sockets.emit("volumeChange", newVolume);
+				
+		});
+
 		
 		socket.on("ticker", function(fn){
 			

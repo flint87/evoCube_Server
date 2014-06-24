@@ -18,8 +18,13 @@ function connect(){
 		$("#status").html("Reconnect failed");
 	});
 
+	$( "#volume" ).bind( "change", function(event, ui) {  	
+  		console.log($("#volume").val());
+  		socket.emit("remoteVolumeChange", $("#volume").val());
+	});
 
 }
+
 
 function disconnect(){
 	console.log("disconnect");

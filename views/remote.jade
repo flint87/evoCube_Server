@@ -16,11 +16,9 @@ html
         h1 #{title}
       div(data-role="content")
         div: p(id='status') Waiting for input
-        button(id='connect' onClick='connect()' class='myButton') Connect
-        br
-        button(id='disconnect' onClick='disconnect()' class='myButton') Disconnect
-        br
         button(id='play' onClick='start()' class='myButton') Play/Pause
+        br
+        label(for="slider-fill") Volume
+        input(type="range" name="volume" id="volume" value="100" min="0" max="100" data-highlight="true")
       div(data-role="footer")
         h4 #{title}  
-
