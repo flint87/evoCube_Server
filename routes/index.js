@@ -11,7 +11,6 @@ router.get('/', function(req, res) {
 });
 
 router.get('/remote', function(req, res) {
-	console.log("Request Header: " + req.headers['user-agent']);
 	visitor.pageview("/remote").send();
 	res.render('remote', {
 		title: 'Remote'
