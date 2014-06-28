@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 
 var ua = require('universal-analytics');
-var visitor = ua('UA-52374549-1').debug();
+var visitor = ua('UA-52372095-1').debug();
 /* GET home page. */
 router.get('/', function(req, res) {
 	res.render('index', {
