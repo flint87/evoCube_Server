@@ -2,8 +2,10 @@ var socket;
 
 function connect(){
 
-	socket = io("192.168.0.29:3000");
 
+
+	//socket = io("192.168.0.29:3000");
+	socket = io("172.77.68.72:3000");
 				
 	socket.on("connect", function(){
 		$("#status").html("Connected to Server");

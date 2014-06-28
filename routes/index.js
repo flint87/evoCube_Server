@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 
+var ua = require('universal-analytics');
+var visitor = ua('UA-52374549-1').debug();
 /* GET home page. */
 router.get('/', function(req, res) {
 	res.render('index', {
@@ -9,6 +11,8 @@ router.get('/', function(req, res) {
 });
 
 router.get('/remote', function(req, res) {
+	console.log("Request Header: " + req.headers['user-agent']);
+	visitor.pageview("/remote").send();
 	res.render('remote', {
 		title: 'Remote'
 	});
