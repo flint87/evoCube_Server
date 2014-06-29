@@ -10,6 +10,7 @@ var routes = require('./routes/index');
 var users = require('./routes/users');
 
 
+
 var app = express();
 
 // view engine setup
@@ -26,6 +27,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+
+
+var ua = require('universal-analytics');
+var visitor = ua('UA-52372095-1').debug();
 
 
 /// catch 404 and forward to error handler
@@ -70,6 +75,7 @@ var server = app.listen(app.get('port'), function() {
 	sockets.on("connection", function(socket){
 		
 		console.log("Connection " + socket.id + " accepted");
+		visitor.event("Connection Accepted", "Connection", "nice", 42).send();
 		
 		socket.on("vote", function(vote){
 				
@@ -80,6 +86,7 @@ var server = app.listen(app.get('port'), function() {
 		});
 
 		socket.on("remote_playPause", function(){
+				visitor.event("RemoteEvent", "Play/Pause", "nice", 42).send();
 				console.log("Remote Play/Pause received");
 				sockets.emit("playPause");
 				
