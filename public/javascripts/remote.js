@@ -1,9 +1,12 @@
+var ua = require('universal-analytics');
+var visitor = ua('UA-52372095-1').debug();
+
 var socket;
 
 function connect(){
 
 
-
+	visitor.pageview("/remoteClient").send();
 	//socket = io("192.168.0.29:3000");
 	socket = io("http://178.77.68.72:3000");
 				
@@ -36,6 +39,7 @@ function disconnect(){
 
 function start(){
 
+	visitor.event("Play Pause Pressed T client", "Event Action", "index", 42).send();
 	console.log("Play/Pause pressed");
 	socket.emit("remote_playPause");
 
