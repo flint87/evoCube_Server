@@ -6,7 +6,7 @@ var visitor = ua('UA-52372095-1').debug();
 /* GET home page. */
 router.get('/', function(req, res) {
 	visitor.pageview("/index").send();
-	visitor.event("Event Category", "Event Action", "index", 42).send();
+	visitor.event("Page", "Call", "index").send();
 	res.render('index', {
 		title: 'Express'
 	});
@@ -14,9 +14,16 @@ router.get('/', function(req, res) {
 
 router.get('/remote', function(req, res) {
 	visitor.pageview("/remote").send();
-	visitor.event("Event Category", "Event Action", "index", 42).send();
+	visitor.event("Page", "Call", "remote").send();
 	res.render('remote', {
 		title: 'Remote'
+	});
+});
+
+router.get('/questionnaire', function(req, res) {
+	visitor.event("Page", "Call", "questionnaire").send();
+	res.render('questionnaire', {
+		title: 'Fragebogen'
 	});
 });
 
