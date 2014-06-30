@@ -16,9 +16,11 @@ html
         h1 #{title}
       div(data-role="content")
         div: p(id='status') Waiting for input
-        button(id='play' onClick='start()' class='myButton') Play/Pause
+        ul(data-role="listview" id="movieList" data-inset="true")
+        button(id='play' onClick='start()' class='myButton') Play/Pause Video
+        button(id='stop' onClick='stopVideo()' class='myButton') Stop Video
         br
         label(for="slider-fill") Volume
         input(type="range" name="volume" id="volume" value="100" min="0" max="100" data-highlight="true")
       div(data-role="footer")
-        h4 #{title}  
+        h4 #{title}
