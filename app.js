@@ -81,6 +81,7 @@ var server = app.listen(app.get('port'), function() {
 	var videoClient; //holds the socket ID of the newest video client
 	var remoteClient = null; //holds the socket ID of the newest remote client
 	var playList;
+	var secretCode = "xxx";
 
 	setInterval(function() {
 		try {
@@ -114,20 +115,53 @@ var server = app.listen(app.get('port'), function() {
 		//MESSAGES FROM REMOTE CLIENT
 		//#############################
 
+		//remote client wants control over the monitor
+		//check with video client if a trailer is played at the moment
+		socket.on("giveMeControl", function(fn) {
+			videoClient.emit("isTrailerRunning", function(message) {
+				writeLog("Trailer is running: " + message);
+				if (message) {
+					fn(true);
+
+				} else {
+					fn(false);
+					secretCode = Math.floor((Math.random() * 900) + 100);
+					videoClient.emit("setSecret", secretCode);
+					writeLog("Secret Code is now: " + secretCode);
+				}
+			});
+		});
+
+		//remote client wants to check if the submited secret code is correct
+		socket.on("checkMyCode", function(submitedCode, fn) {
+			writeLog("submitted code: " + submitedCode + " - correct code: " + secretCode);
+			if (submitedCode == secretCode) {
+				fn(true);
+				if (remoteClient) {
+					remoteClient.emit("byebyeRemote");
+				}
+				remoteClient = socket;
+				writeLog("New Client is remote client with ID: " + remoteClient.id);
+			} else {
+				fn(false);
+			}
+		});
+
 
 		//the calling clients check regulary if they have control about the monitor or not
 		socket.on("inCharge", function(fn) {
 			try {
 				if (socket.id == remoteClient.id) {
-					fn("yes");
+					fn(true);
 				} else {
-					fn("no");
+					fn(false);
 				}
 			} catch (err) {
-				fn("no");
+				fn(false);
 			}
 		});
 
+		//remote Play or Pause commando received from the remote client
 		socket.on("remote_playPause", function() {
 			visitor.event("RemoteEvent", "Play/Pause", "nice", 42).send();
 			writeLog("Remote Play/Pause received");
@@ -135,18 +169,17 @@ var server = app.listen(app.get('port'), function() {
 
 		});
 
+		//remote Volume change income from remote client
 		socket.on("remoteVolumeChange", function(newVolume) {
 			writeLog("Remote VolumeChange received: " + newVolume);
 			videoClient.emit("volumeChange", newVolume);
 		});
 
-		//register the newest remote client to server
-		socket.on("remoteClientregister", function(fn) {
-			remoteClient = socket;
-			writeLog("Remote Client registered with ID: " + remoteClient.id);
+		//inform the server about the newest client
+		socket.on("clientRegister", function(fn) {
+			writeLog("Client registered to Server with ID: " + socket.id);
 			fn();
-			remoteClient.emit("sendPlayList", playList);
-
+			socket.emit("sendPlayList", playList);
 		});
 
 		//get command from remote client to play a specific trailer
@@ -199,6 +232,7 @@ var server = app.listen(app.get('port'), function() {
 //logging with timestap
 function writeLog(message) {
 	console.log(new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds() + " " + message);
+	//console.log(new Date().getDay() + "." + new Date().getMonth() + "." + new Date().getYear() + " " + new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds() + " " + message);
 }
 
 module.exports = app;

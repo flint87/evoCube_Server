@@ -36,5 +36,13 @@ router.get('/questionnaire', function(req, res) {
 	});
 });
 
+router.get('/random', function(req, res) {
+	visitor.event("Page", "Call", "random").send();
+	console.log("Cookie: " + req.cookies.test2);
+	res.render('random', {
+		title: 'Zufall'
+	});
+});
+
 
 module.exports = router;

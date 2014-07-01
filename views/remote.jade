@@ -15,12 +15,20 @@ html
       div(data-role="header")
         h1 #{title}
       div(data-role="content")
-        div: p(id='status') Waiting for input
+        div: p(id='status' style="display:none;") Waiting for input
         ul(data-role="listview" id="movieList" data-inset="true")
-        button(id='play' onClick='start()' class='myButton') Play/Pause Video
-        button(id='stop' onClick='stopVideo()' class='myButton') Stop Video
-        br
-        label(for="slider-fill") Volume
-        input(type="range" name="volume" id="volume" value="100" min="0" max="100" data-highlight="true")
+        p(id='feedback') Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.
+        div(id="movieControls" style="display:none;")
+          button(id='play' onClick='start()' class='myButton') Play/Pause Video
+          button(id='stop' onClick='stopVideo()' class='myButton') Trailer stop
+          label(for="slider-fill") Lautstärke
+          input(type="range" name="volume" id="volume" value="100" min="0" max="100" data-highlight="true")
+        div(id="connectionControls")        
+          div(id="initElements")
+            button(id='requestControl' onClick='giveMeControl()' class='myButton') Verbinden
+          div(id="codeElements" style="display:none;")
+            input(type="text" name="secret" id="secret" value="" placeholder="Fernseher Code")
+            button(id='submitCode' onClick='submitCode()' class='myButton') Bestätigen
+        br        
       div(data-role="footer")
         h4 #{title}
