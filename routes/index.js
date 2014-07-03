@@ -24,13 +24,17 @@ router.get('/remote', function(req, res) {
 	}
 	visitor.event("Page", "Call", "remote").send();
 	res.render('remote', {
-		title: 'Remote'
+		title: 'Movie Matcher'
 	});
 });
 
 router.get('/questionnaire', function(req, res) {
 	visitor.event("Page", "Call", "questionnaire").send();
 	console.log("Cookie: " + req.cookies.test2);
+	if(undefined === req.cookies.test2 ){		
+		res.cookie('test2', 'bb', { maxAge: 100000});
+		
+	}
 	res.render('questionnaire', {
 		title: 'Fragebogen'
 	});

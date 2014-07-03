@@ -5,7 +5,7 @@ html
     meta(name="viewport" content="width=device-width, initial-scale=1")
     script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
     script(src='//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.js')
-    script(src='/javascripts/remote.js')
+    script(src='/javascripts/questionnaire.js')
     link(rel='stylesheet', href='/stylesheets/mobile.css')
     link(rel='stylesheet', href='/stylesheets/jquery.mobile.icons.min.css')
     link(rel='stylesheet', href='//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.css')
@@ -14,6 +14,19 @@ html
       div(data-role="header")
         h1 #{title}
       div(data-role="content")
-        div: p(id='status') Welcome
+        div: h1(id='welcome') Welcome to the Fragebogen
+        div: p(id='progress') Frage 1 von 1
+        div(id = "questionnaire" class="ui-corner-all custom-corners")
+          div(id = "question" class="ui-bar ui-bar-a")
+            p(id='Frage') 1 + 1 = ?
+          div(id="answers" class="ui-body ui-body-a")
+            fieldset(data-role="controlgroup")
+              input(type="radio" name="radio" id="option1" value="on")
+              label(for="option1") 1
+              input(type="radio" name="radio" id="option2" value="on")
+              label(for="option2") 2
+              input(type="radio" name="radio" id="option3" value="on")
+              label(for="option3") 3
+            button(id='nextQuestion' onClick='' class='myButton') Weiter
       div(data-role="footer")
         h4 #{title}

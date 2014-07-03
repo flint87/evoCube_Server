@@ -90,7 +90,7 @@ var server = app.listen(app.get('port'), function() {
 			writeLog("No remote client at the moment");
 		}
 
-	}, 10000);
+	}, 60000);
 
 	sockets.on("connection", function(socket) {
 
@@ -103,7 +103,7 @@ var server = app.listen(app.get('port'), function() {
 			try {
 				if (socket.id == remoteClient.id) {
 					remoteClient = null;
-					writeLog("Remote CLient unregister: " + socket.id);
+					writeLog("Remote CLient unregistered: " + socket.id);
 				}
 			} catch (err) {}
 
@@ -115,8 +115,15 @@ var server = app.listen(app.get('port'), function() {
 		//MESSAGES FROM REMOTE CLIENT
 		//#############################
 
-		//remote client wants control over the monitor
+		//remote client doesnt want to be remote client anymore and unregisters
+		socket.on("dismissRemoteClient", function(fn){
+			remoteClient = null;
+			fn();
+		});
+
+		//client wants control over the monitor
 		//check with video client if a trailer is played at the moment
+		//if remote connection is ok generate a random code for authentification
 		socket.on("giveMeControl", function(fn) {
 			videoClient.emit("isTrailerRunning", function(message) {
 				writeLog("Trailer is running: " + message);
@@ -135,8 +142,10 @@ var server = app.listen(app.get('port'), function() {
 		//remote client wants to check if the submited secret code is correct
 		socket.on("checkMyCode", function(submitedCode, fn) {
 			writeLog("submitted code: " + submitedCode + " - correct code: " + secretCode);
-			if (submitedCode == secretCode) {
+			if (submitedCode == secretCode) {				
 				fn(true);
+				videoClient.emit("hideCode");
+				writeLog("HIDE CODE SENT");
 				if (remoteClient) {
 					remoteClient.emit("byebyeRemote");
 				}
@@ -183,16 +192,14 @@ var server = app.listen(app.get('port'), function() {
 		});
 
 		//get command from remote client to play a specific trailer
-		socket.on("playSpecifTrailer", function(trailerInternalName, fn) {
+		socket.on("playSpecifTrailer", function(trailerInternalName, trailerType, fn) {
 			writeLog("Remote Client wants to play: " + trailerInternalName);
 			if (socket.id == remoteClient.id) {
-				videoClient.emit("playSpecifTrailer", trailerInternalName);
+				videoClient.emit("playSpecifTrailer", trailerInternalName, trailerType);
 				fn("success");
 			} else {
 				fn("fail");
 			}
-
-
 		});
 
 		//get command from remote client to play a specific trailer
@@ -219,9 +226,9 @@ var server = app.listen(app.get('port'), function() {
 		socket.on("registerPlayList", function(newPlaylist, fn) {
 			writeLog("Playlist received");
 			playList = newPlaylist;
-			/*for (var i = 0; i < newPlaylist.length; i++) {
+			for (var i = 0; i < newPlaylist.length; i++) {
 				writeLog(newPlaylist[i].movieName);
-			}*/
+			}
 			fn();
 		});
 
