@@ -9,14 +9,16 @@ html
     script(src='/javascripts/remote.js')
     link(rel='stylesheet', href='/stylesheets/mobile.css')
     link(rel='stylesheet', href='/stylesheets/jquery.mobile.icons.min.css')
-    link(rel='stylesheet', href='//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.css')
+    link(rel='stylesheet', href='http://ajax.aspnetcdn.com/ajax/jquery.mobile/1.4.2/jquery.mobile-1.4.2.min.css')
   body(onload='connect()')
+    button(class="show-page-loading-msg" data-textonly="false" data-textvisible="true" data-msgtext="asdfasdf" data-inline="true") Laden
     div(data-role="page")
       div(data-role="header")
         h1(id="title") #{title}
         a(id="backBtn" href="#" style="display:none;" onclick="goBackToList();return false;" class="ui-btn-left" rel="external" data-mini="true" data-role="button" data-icon="back") Zurück
         a(id="infoBackBtn" href="#" style="display:none;" onclick="goBackFromInfo();return false;" class="ui-btn-left" rel="external" data-mini="true" data-role="button" data-icon="back") Zurück
-        a(id="infoBtn" href="#" onclick="showInfo();return false;" class="ui-btn-right" rel="external" data-mini="true" data-role="button" data-icon="info" data-iconpos="notext")
+        a(id="movieContainerBackBtn" href="#" style="display:none;" onclick="goBackFromMovieOverview();return false;" class="ui-btn-left" rel="external" data-mini="true" data-role="button" data-icon="back") Zurück
+        a(id="infoBtn" href="#" onclick="showInfo();return false;" class="ui-btn-right" rel="external" data-mini="true" data-role="button" data-icon="info" data-iconpos="notext")        
       div(data-role="content")
         div(id="infoContent" style="display:none;")
           table(id="movie-table" style="width:100%" data-mode="reflow" class="ui-responsive table stroke")
@@ -25,14 +27,17 @@ html
                 th
             tbody
               tr
-                td(style="text-align:left"): img(src="http://static.jobs.at/company/6578/342272/logo-evolaris-next-level-gmbh.companybig.gif" style="width:70%")
-                td(style="text-align:right"): img(src="https://dl.dropboxusercontent.com/u/21678242/rechbauer_logo.JPG" style="width:50%")
+                td(style="text-align:left"): img(src="images/evolaris_logo.gif" style="width:70%")
+                td(style="text-align:right"): img(src="images/rechbauer_logo.JPG" style="width:50%")
           p Der evoCube Movie Matcher ist ein Forschungsprojekt der Firma <a target="_blank" href="http://www.evolaris.net">evolaris next level GmbH </a>und wird in Zusammenarbeit mit dem Rechbauer Kino in einem beschränkten Zeitraum getestet. <br> lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-        div(id="content")
+        div(id="landingContent")
+          p(id="welcomeText") Willkommen beim <b>evoCube Movie Matcher</b>. Hier bekommst bekommst du dir deine persönlichen Filmempfehlungen holen und direkt die Trailer am Großbildfernseher genießen. Da es sich hierbei um ein Testprojekt handelt, sind wir dringend auf Feedback angewiesen. Wenn du also zusätzlich unseren Fragebogen ausfüllst, bekommst du einen <b>Gutschein für 1€ Ermäßigung</b> auf dein Kinoticket oder den Filmverleih. Mit dem Klick auf Start akzeptierst du außerdem unsere AGB.
+          button(id='asdf' onClick='startLoader()' class='myButton') TEST LOADER
+          button(id='start' onClick='showContent()' class='myButton') Start
           div: p(id='status' style="display:none;") Waiting for input
-          div(id='movieListContainer')
-            ul(data-role="listview" id="movieList" data-inset="true")
-          div(id="movieContainer" style="display:none;" data-transition="slidefade")
+        div(id='movieListContainer' style="display:none")
+          ul(data-role="listview" id="movieList" data-inset="true")
+        div(id="movieContainer" style="display:none;" data-transition="slidefade")
             table(id="movie-table" border="0" data-mode="reflow" class="ui-responsive table stroke")
               thead
                 tr
@@ -44,8 +49,8 @@ html
                     a(href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right"): Close
                     img(id="movieImg2" class="popphoto" style="max-height:512px;")
                   td
-                    button(id='dtTrailerBtn' name="asdf" data-mini="true" onClick="" class='myButton') Dt. Trailer 
-                    button(id='ovTrailerBtn' name="asdf" data-mini="true" onClick='playOVTrailer()' class='myButton') OV Trailer 
+                    button(id='dtTrailerBtn' name="asdf" data-mini="true" class='myButton') Dt. Trailer 
+                    button(id='ovTrailerBtn' name="asdf" data-mini="true" class='myButton') OV Trailer 
             table(id="movieTable" border="0" data-mode="reflow" class="ui-responsive table stroke")
               thead
                 tr
@@ -75,14 +80,90 @@ html
                 tr
                   td(colspan="2"): div(data-role="collapsible" data-mini="true")
                     h4 Handlung:
-                    p(id="plot") 
-          p(id='feedback') Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.
+                    p(id="plot")
+        div(id="perContent" style="display:none;")
+            button(id='resultsBtn' disabled="" onClick='showResults()' class='myButton' data-icon="carat-r" data-iconpos="right") 0 Treffer
+            p Suchbegriffe:
+            div(id="searchWords" data-role="controlgroup" data-type="horizontal" data-mini="true" data-inset="true" style="display: inline-flex; width: auto;")
+            table(border="0" data-mode="reflow" class="ui-responsive table stroke")
+              thead
+                tr
+                  th
+              tbody
+                tr
+                  td(style="vertical-align:top;")
+                    fieldset(data-role="controlgroup" data-mini="true")
+                      legend 
+                        input(type="radio" name="radio-choice-v-6" id="genreRadio" for="genreDiv" value="on" checked="checked" class="persGroupRadio")
+                        label(for="genreRadio") Genre
+                        input(type="radio" name="radio-choice-v-6" id="countryRadio" for="countryDiv" value="off" class="persGroupRadio")
+                        label(for="countryRadio") Land
+                        input(type="radio" name="radio-choice-v-6" id="ovRadio" for="ovDiv" value="other" class="persGroupRadio")
+                        label(for="ovRadio") OV Sprache
+                        input(type="radio" name="radio-choice-v-6" id="yearRadio" for="yearDiv" value="other" class="persGroupRadio")
+                        label(for="yearRadio") Jahr
+                  td(style="vertical-align:top;")
+                    div(id="genreDiv" style="width:100%; vertical-align:top; margin-left:5%; disyplay:none")                      
+                      fieldset(data-role="controlgroup" data-type="horizontal" data-mini="true")
+                        legend
+                          input(type="checkbox" name="Drama" id="genre0" class="pers genre")
+                          label(for="genre0") Drama
+                          input(type="checkbox" name="Komödie" id="genre1" class="pers genre")
+                          label(for="genre1") Komödie
+                          input(type="checkbox" name="Thriller" id="genre2" class="pers genre")
+                          label(for="genre2") Thriller
+                          input(type="checkbox" name="Romanze" id="genre3" class="pers genre")
+                          label(for="genre3") Romanze
+                          input(type="checkbox" name="Science-Fiction" id="genre4" class="pers genre")
+                          label(for="genre4") Science-Fiction
+                          input(type="checkbox" name="Action" id="genre5" class="pers genre")
+                          label(for="genre5") Action
+                          input(type="checkbox" name="Adventure" id="genre6" class="pers genre")
+                          label(for="genre6") Adventure
+                          input(type="checkbox" name="Familie" id="genre7" class="pers genre")
+                          label(for="genre7") Familie
+                          input(type="checkbox" name="Fantasy" id="genre8" class="pers genre")
+                          label(for="genre8") Fantasy                  
+                    div(id="countryDiv" style="width:100%; vertical-align:top; margin-left:5%; display:none;" )                      
+                      fieldset(data-role="controlgroup" data-type="horizontal" data-mini="true")
+                        legend
+                          input(type="checkbox" name="Deutschland" id="country0" class="pers country")
+                          label(for="country0") Deutschland
+                          input(type="checkbox" name="Großbritannien" id="country1" class="pers country")
+                          label(for="country1") Großbritannien
+                          input(type="checkbox" name="Italien" id="country2" class="pers country")
+                          label(for="country2") Italien
+                          input(type="checkbox" name="Österreich" id="country4" class="pers country")
+                          label(for="country4") Österreich
+                          input(type="checkbox" name="Schweiz" id="country5" class="pers country")
+                          label(for="country5") Schweiz
+                          input(type="checkbox" name="USA" id="country6" class="pers country")
+                          label(for="country6") USA
+                    div(id="ovDiv" style="width:100%; vertical-align:top; margin-left:5%; display:none;")
+                      fieldset(data-role="controlgroup" data-type="horizontal" data-mini="true")
+                        legend
+                          input(type="checkbox"  name="Deutsch" id="lang0" class="pers language")
+                          label(for="lang0") Deutsch
+                          input(type="checkbox"  name="Englisch" id="lang1" class="pers language")
+                          label(for="lang1") Englisch
+                          input(type="checkbox"  name="Italienisch" id="lang2" class="pers language")
+                          label(for="lang2") Italienisch
+                    div(id="yearDiv" style="width:100%; vertical-align:top; margin-left:5%; display:none;")
+                      fieldset(data-role="controlgroup" data-type="horizontal" data-mini="true")
+                        legend
+                          input(type="checkbox"  name="2012" id="lang0" class="pers year")
+                          label(for="lang0") 2012
+                          input(type="checkbox"  name="2013" id="lang1" class="pers year")
+                          label(for="lang1") 2013
+                          input(type="checkbox"  name="2014" id="lang2" class="pers year")
+                          label(for="lang2") 2014
+          p(id='feedback' style="display:none;") Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.
           div(id="movieControls" style="display:none;")
             button(id='play' onClick='start()' class='myButton') Play/Pause Video
             button(id='stop' onClick='stopVideo()' class='myButton') Stop Trailer
             label(for="slider-fill") Lautstärke
-            input(type="range" name="volume" id="volume" value="100" min="0" max="100" data-highlight="true")
-          div(id="connectionControls")        
+            input(type="range" name="volume" id="volume" value="50" min="0" max="100" data-highlight="true")
+          div(id="connectionControls" style="display:none;")        
             div(id="initElements")
               button(id='requestControl' onClick='giveMeControl()' class='myButton') Verbinden
             div(id="codeElements" style="display:none;")

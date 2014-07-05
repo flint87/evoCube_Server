@@ -10,6 +10,10 @@ var io = require('socket.io');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
+//mongo db initialization
+var dburl = "localhost/evoCube";
+var collections = ["movies"];
+var db = require("mongojs").connect(dburl, collections);
 
 
 var app = express();
@@ -116,7 +120,7 @@ var server = app.listen(app.get('port'), function() {
 		//#############################
 
 		//remote client doesnt want to be remote client anymore and unregisters
-		socket.on("dismissRemoteClient", function(fn){
+		socket.on("dismissRemoteClient", function(fn) {
 			remoteClient = null;
 			fn();
 		});
@@ -142,7 +146,7 @@ var server = app.listen(app.get('port'), function() {
 		//remote client wants to check if the submited secret code is correct
 		socket.on("checkMyCode", function(submitedCode, fn) {
 			writeLog("submitted code: " + submitedCode + " - correct code: " + secretCode);
-			if (submitedCode == secretCode) {				
+			if (submitedCode == secretCode) {
 				fn(true);
 				videoClient.emit("hideCode");
 				writeLog("HIDE CODE SENT");
@@ -209,6 +213,47 @@ var server = app.listen(app.get('port'), function() {
 
 		});
 
+		//get command from remote client for a filtering query
+		socket.on("queryDB", function(filteringQuery,fn) {
+			writeLog("Test query received: " + filteringQuery);	
+			console.dir(filteringQuery);		
+			
+			db.movies.find({
+				$and: [{
+					genre: {
+						$in: filteringQuery.genre
+					}
+				}, {
+					country: {
+						$in: filteringQuery.country
+					}
+				}, {
+					year: {
+						$in: filteringQuery.year
+					}
+				}, {
+					ov: {
+						$in: filteringQuery.ov
+					}
+				}]
+			}, function(err, queryResult) {
+				if (err || !users) {
+					writeLog("DB ERROR: ");
+				} else {
+					writeLog(queryResult.length + " Movies found in DB");
+					var shortResult = [];
+					for (i = 0; i < queryResult.length; i++) {
+						writeLog(queryResult[i].movieName);
+						shortResult.push(queryResult[i].interalName);
+						console.dir(shortResult);
+					}
+					fn(shortResult);
+				}
+
+			});
+
+		});
+
 
 
 		//##############################
@@ -226,14 +271,14 @@ var server = app.listen(app.get('port'), function() {
 		socket.on("registerPlayList", function(newPlaylist, fn) {
 			writeLog("Playlist received");
 			playList = newPlaylist;
+			db.movies.drop();
 			for (var i = 0; i < newPlaylist.length; i++) {
-				writeLog(newPlaylist[i].movieName);
+				//writeLog(newPlaylist[i].movieName);				
+				db.movies.save(newPlaylist[i]);
 			}
 			fn();
 		});
-
 	});
-
 });
 
 //logging with timestap

@@ -4,6 +4,8 @@ var trailers;
 //set the time when a remote connection should be closed automatically. 10 minutes at the moment.
 var disconnectTimeout = 600000;
 var myDisconnectTimer;
+//localStorage.setItem('debug', "*");
+localStorage.setItem('debug', "");
 
 setInterval(function() {
 	socket.emit("inCharge", function(message) {
@@ -18,7 +20,26 @@ setInterval(function() {
 		}
 	});
 
-}, 2000);
+}, 3000);
+
+function startLoader() {
+	$.mobile.loadingMessage = "calculating payment schedule...";
+
+	var $this = $(this),
+		theme = $this.jqmData("theme") || $.mobile.loader.prototype.options.theme,
+		msgText = $this.jqmData("msgtext") || $.mobile.loader.prototype.options.text,
+		textVisible = $this.jqmData("textvisible") || $.mobile.loader.prototype.options.textVisible,
+		textonly = !!$this.jqmData("textonly");
+	html = $this.jqmData("html") || "";
+	$.mobile.loading("show", {
+		text: "calculating payment schedule...",
+		textVisible: true,
+		theme: theme,
+		textonly: false,
+		html: html
+	});
+
+}
 
 function connect() {
 
@@ -70,7 +91,7 @@ function connect() {
 		$("#status").html("Reconnect failed");
 	});
 
-	$("#volume").bind("change", function(event, ui) {
+	$("#volume").bind("slidestop", function(event, ui) {
 		writeLog($("#volume").val());
 		socket.emit("remoteVolumeChange", $("#volume").val() * 2);
 	});
@@ -78,15 +99,152 @@ function connect() {
 	socket.on("sendPlayList", function(newPlaylist) {
 		writeLog("Playlist successfully received from Server");
 		trailers = newPlaylist;
-		$("#movieList").empty();
-		for (var i = 0; i < newPlaylist.length; i++) {
-			$('#movieList').append('<li id= \'' + newPlaylist[i].interalName + '\'><a>' + newPlaylist[i].movieName + '</a></li>').listview('refresh');
-		}
 
-		$('#movieList').on('click', 'li', function() {
-			showMovieDetails($(this).attr("id"));
+		//add change listeners to the radio buttons for the personalization items
+		$(".persGroupRadio").change(function() {
+			writeLog($(this).attr("for"));
+			$("#genreDiv").hide(0);
+			$("#countryDiv").hide(0);
+			$("#ovDiv").hide(0);
+			$("#yearDiv").hide(0);
+			$("#" + $(this).attr("for")).show(0);
+
+		});
+
+		//add on change function to all check boxes in personalization content
+		//update results after every change
+		$('.pers').click(function() {
+			writeLog("Change triggered on " + $(this).attr("name") + " checked: " + $(this).is(':checked'));
+			//update the searchfield
+			if ($(this).is(':checked')) {
+				$("#searchWords").controlgroup("container").append("<a id=\"" + $(this).attr("name") + "\" href=\"#\" class=\"ui-btn ui-corner-all ui-icon-delete ui-btn-icon-right \" >" + $(this).attr("name") + " </a>");
+				$("#searchWords").enhanceWithin().controlgroup("refresh");
+				$("#searchWords").controlgroup("refresh");
+				//if the search word is removed via the search field and not via the checkboxes, remove both and refresh the search
+				$("#" + $(this).attr("name")).click(function() {
+					$(this).remove();
+					$("#searchWords").enhanceWithin().controlgroup("refresh");
+					writeLog("CLICK DETECTED " + $("input[name=" + $(this).attr("id") + "]").attr("type"));
+					$("input[name=" + $(this).attr("id") + "]").prop("checked", false).checkboxradio("refresh");
+					buildQueryString();
+				});
+			} else {
+				$("#" + $(this).attr("name")).remove();
+				$("#searchWords").enhanceWithin().controlgroup("refresh");
+				$("#searchWords").controlgroup("refresh");
+			}
+			buildQueryString();
+
 		});
 	});
+
+}
+
+//get the values from the checkboxes, build the query string, send it to the server and show the result
+function buildQueryString() {
+	//check if at least one checkbox is checked. because if not show no results
+	nothingSelected = true;
+	//empty the searchQuery
+	var filterQuery = {
+		genre: [],
+		country: [],
+		year: [],
+		ov: []
+	};
+	//build genres
+	var genreAll = ["Drama", "Komödie", "Thriller", "Romanze", "Science-Fiction", "Action", "Adventure", "Familie", "Fantasy"];
+	$(".genre").each(function() {
+		if ($(this).is(':checked')) {
+			filterQuery.genre.push($(this).attr("name"));
+			nothingSelected = false;
+		}
+	});
+	//if no genres are selected, select all
+	if (filterQuery.genre.length === 0) {
+		for (var i = 0; i < genreAll.length; i++) {
+			filterQuery.genre.push(genreAll[i]);
+		}
+	}
+
+	//build countries
+	var countryAll = ["Deutschland", "Großbritannien", "Italien", "Österreich", "Schweiz", "USA"];
+	$(".country").each(function() {
+		if ($(this).is(':checked')) {
+			filterQuery.country.push($(this).attr("name"));
+			nothingSelected = false;
+		}
+	});
+	//if no countries are selected, select all
+	if (filterQuery.country.length === 0) {
+		for (var u = 0; u < countryAll.length; u++) {
+			filterQuery.country.push(countryAll[u]);
+		}
+	}
+
+	//build ov
+	var ovAll = ["Englisch", "Deutsch", "Italienisch"];
+	$(".language").each(function() {
+		if ($(this).is(':checked')) {
+			filterQuery.ov.push($(this).attr("name"));
+			nothingSelected = false;
+		}
+	});
+	//if no ov are selected, select all
+	if (filterQuery.ov.length === 0) {
+		for (var e = 0; e < ovAll.length; e++) {
+			filterQuery.ov.push(ovAll[e]);
+		}
+	}
+
+	//build year
+	var yearAll = ["2012", "2013", "2014"];
+	$(".year").each(function() {
+		if ($(this).is(':checked')) {
+			filterQuery.year.push($(this).attr("name"));
+			nothingSelected = false;
+		}
+	});
+	//if no years are selected, select all
+	if (filterQuery.year.length === 0) {
+		for (var o = 0; o < yearAll.length; o++) {
+			filterQuery.year.push(yearAll[o]);
+		}
+	}
+
+	console.dir(filterQuery);
+
+	console.log("NothingSelected: " + nothingSelected);
+	//in case no check boxes are checked you dont have to make a query at all
+	if (nothingSelected) {
+		$("#resultsBtn").html("0 Treffer");
+		$("#resultsBtn").attr("disabled", "");
+	} else {
+		socket.emit("queryDB", filterQuery, function(queryShortResult) {
+			$("#movieList").empty();
+			var indexNumber;
+			for (var v = 0; v < trailers.length; v++) {
+				indexNumber = $.inArray(trailers[v].interalName, queryShortResult);
+				if (indexNumber == -1) {
+					//do nothing because movie is not a result
+				} else {
+					$('#movieList').append('<li class="movieListEntry" id= \'' + trailers[v].interalName + '\'><a>' + trailers[v].movieName + '</a></li>').listview('refresh');
+				}
+			}
+
+			$('.movieListEntry').click(function() {
+				showMovieDetails($(this).attr("id"));
+			});
+
+			$("#resultsBtn").html(queryShortResult.length + " Treffer");
+			if (queryShortResult.length > 0) {
+				$("#resultsBtn").removeAttr("disabled");
+			} else {
+				$("#resultsBtn").attr("disabled", "");
+			}
+		});
+
+	}
+
 
 }
 
@@ -148,7 +306,7 @@ function submitCode() {
 		if (answer) {
 			$("#feedback").html("Du bist jetzt mit dem Fernseher verbunden und kannst dir beliebige Trailer anschauen.");
 			$("#codeElements").fadeOut("normal");
-			$("#movieControls").fadeIn("normal");
+			//$("#movieControls").fadeIn("normal");
 			initState = "established";
 			$("#secret").val("");
 			clearTimeout(myCodeTimer);
@@ -166,18 +324,42 @@ function submitCode() {
 	});
 }
 
+function goBackFromMovieOverview() {
+	$("#perContent").fadeIn("normal");
+	$("#movieListContainer").fadeOut("normal");
+	$("#movieContainerBackBtn").hide(0);
+}
+
+//show the overview of the movie results
+function showResults() {
+	$("#perContent").fadeOut("normal");
+	$("#movieListContainer").fadeIn("normal");
+	$("#movieContainerBackBtn").show(0);
+}
+
+//coming from landing page show the content now
+function showContent() {
+	$("#landingContent").fadeOut("normal");
+	$("#content").show(0);
+	$("#perContent").fadeIn("normal");
+	$("#infoBtn").hide(0);
+	$("#connectionControls").fadeIn("normal");
+	$("#feedback").fadeIn("normal");
+}
+
 //show info page and hide the rest
 function showInfo() {
+	$("#landingContent").fadeOut("normal");
 	$("#content").fadeOut("normal");
 	$("#infoContent").fadeIn("normal");
 	$("#infoBackBtn").show(0);
 	$("#infoBtn").hide(0);
-	$("#title").html("Info");
-
+	$("#title").html("AGB");
 }
 
 //go back from info page to main page
 function goBackFromInfo() {
+	$("#landingContent").fadeIn("normal");
 	$("#content").fadeIn("normal");
 	$("#infoContent").hide(0);
 	$("#infoBackBtn").hide(0);
@@ -188,13 +370,11 @@ function goBackFromInfo() {
 //go back from detail view to movie list
 function goBackToList() {
 	$("#backBtn").hide(0);
+	$("#movieContainerBackBtn").show(0);
 	$("#movieListContainer").fadeIn("normal");
 	$("#movieContainer").fadeOut("normal");
 	$("#title").html("MovieMatcher");
-	$("#infoBtn").show(0);
 }
-
-
 
 //try to stop the video
 function stopVideo() {
@@ -207,7 +387,6 @@ function disconnect() {
 	writeLog("disconnect");
 	socket.disconnect();
 }
-
 
 //try to start pause the video
 function start() {
@@ -225,6 +404,8 @@ function registerToServer() {
 //show movie detail page and fill the grid with data
 function showMovieDetails(movieInternalName) {
 	$("#infoBtn").hide(0);
+	$("#infoBtn").hide(0);
+	$("#movieContainerBackBtn").hide(0);
 	writeLog("I want to see details of: " + movieInternalName);
 	$("#backBtn").show(0);
 	$("#title").html("Filmdetails");
@@ -242,9 +423,11 @@ function showMovieDetails(movieInternalName) {
 				$('#ovTrailerBtn').hide(0);
 			}
 			if (trailers[i].hasOwnProperty('urlDE')) {
-				$('#deTrailerBtn').show(0);
+				$('#dtTrailerBtn').show(0);
+				writeLog("GERMAN TRAILER DETECTED");
 			} else {
-				$('#deTrailerBtn').hide(0);
+				$('#dtTrailerBtn').hide(0);
+				writeLog("NO GERMAN TRAILER DETECTED");
 			}
 			$("#ovName").html(trailers[i].ovName);
 			$("#year").html(trailers[i].year);
