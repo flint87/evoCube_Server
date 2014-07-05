@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var session = require('cookie-session');
 var bodyParser = require('body-parser');
 var io = require('socket.io');
+var fs = require('fs');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -76,6 +77,8 @@ app.use(function(err, req, res, next) {
 	});
 });
 
+var playList;
+
 var server = app.listen(app.get('port'), function() {
 	writeLog('Express server listening on port ' + server.address().port);
 
@@ -84,8 +87,17 @@ var server = app.listen(app.get('port'), function() {
 	writeLog('Socket.io server listening on port ' + server.address().port + "\n");
 	var videoClient; //holds the socket ID of the newest video client
 	var remoteClient = null; //holds the socket ID of the newest remote client
-	var playList;
+
 	var secretCode = "xxx";
+
+	//read playlist from file into memory
+	fs.readFile(__dirname + "/public/data/movies.json", "utf8", function(err, data) {
+		if (err) {
+			return console.log(err);
+		}
+		data = JSON.parse(data);
+		playList = data;
+	});
 
 	setInterval(function() {
 		try {
@@ -192,7 +204,7 @@ var server = app.listen(app.get('port'), function() {
 		socket.on("clientRegister", function(fn) {
 			writeLog("Client registered to Server with ID: " + socket.id);
 			fn();
-			socket.emit("sendPlayList", playList);
+			//socket.emit("sendPlayList");
 		});
 
 		//get command from remote client to play a specific trailer
@@ -214,10 +226,10 @@ var server = app.listen(app.get('port'), function() {
 		});
 
 		//get command from remote client for a filtering query
-		socket.on("queryDB", function(filteringQuery,fn) {
-			writeLog("Test query received: " + filteringQuery);	
-			console.dir(filteringQuery);		
-			
+		socket.on("queryDB", function(filteringQuery, fn) {
+			writeLog("Test query received: " + filteringQuery);
+			console.dir(filteringQuery);
+
 			db.movies.find({
 				$and: [{
 					genre: {
@@ -264,20 +276,12 @@ var server = app.listen(app.get('port'), function() {
 		socket.on("videoClientregister", function(fn) {
 			videoClient = socket;
 			writeLog("Video Client registered with ID: " + videoClient.id);
-			fn();
+			for (var i = 0; i < playList.length; i++) {
+				//writeLog("MovieName: " + playList[i].interalName);
+			}
+			fn(playList);
 		});
 
-		//receive the available playlist from the video client
-		socket.on("registerPlayList", function(newPlaylist, fn) {
-			writeLog("Playlist received");
-			playList = newPlaylist;
-			db.movies.drop();
-			for (var i = 0; i < newPlaylist.length; i++) {
-				//writeLog(newPlaylist[i].movieName);				
-				db.movies.save(newPlaylist[i]);
-			}
-			fn();
-		});
 	});
 });
 

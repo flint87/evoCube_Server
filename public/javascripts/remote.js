@@ -4,8 +4,8 @@ var trailers;
 //set the time when a remote connection should be closed automatically. 10 minutes at the moment.
 var disconnectTimeout = 600000;
 var myDisconnectTimer;
-//localStorage.setItem('debug', "*");
-localStorage.setItem('debug', "");
+localStorage.setItem('debug', "*");
+//localStorage.setItem('debug', "");
 
 setInterval(function() {
 	socket.emit("inCharge", function(message) {
@@ -22,26 +22,10 @@ setInterval(function() {
 
 }, 3000);
 
-function startLoader() {
-	$.mobile.loadingMessage = "calculating payment schedule...";
-
-	var $this = $(this),
-		theme = $this.jqmData("theme") || $.mobile.loader.prototype.options.theme,
-		msgText = $this.jqmData("msgtext") || $.mobile.loader.prototype.options.text,
-		textVisible = $this.jqmData("textvisible") || $.mobile.loader.prototype.options.textVisible,
-		textonly = !!$this.jqmData("textonly");
-	html = $this.jqmData("html") || "";
-	$.mobile.loading("show", {
-		text: "calculating payment schedule...",
-		textVisible: true,
-		theme: theme,
-		textonly: false,
-		html: html
-	});
-
-}
 
 function connect() {
+
+	showLoader();
 
 	var myCodeTimer;
 
@@ -96,9 +80,19 @@ function connect() {
 		socket.emit("remoteVolumeChange", $("#volume").val() * 2);
 	});
 
-	socket.on("sendPlayList", function(newPlaylist) {
-		writeLog("Playlist successfully received from Server");
-		trailers = newPlaylist;
+	socket.on("sendPlayList", function() {
+
+
+	});
+
+}
+
+//notify server that this is a new remote client
+function registerToServer() {
+	socket.emit("clientRegister", function() {
+		writeLog("Client successfully registered to Server");
+
+		trailers = trailersKIZ;
 
 		//add change listeners to the radio buttons for the personalization items
 		$(".persGroupRadio").change(function() {
@@ -114,6 +108,7 @@ function connect() {
 		//add on change function to all check boxes in personalization content
 		//update results after every change
 		$('.pers').click(function() {
+			showLoader();
 			writeLog("Change triggered on " + $(this).attr("name") + " checked: " + $(this).is(':checked'));
 			//update the searchfield
 			if ($(this).is(':checked')) {
@@ -136,8 +131,10 @@ function connect() {
 			buildQueryString();
 
 		});
-	});
 
+
+		hideLoader();
+	});
 }
 
 //get the values from the checkboxes, build the query string, send it to the server and show the result
@@ -213,21 +210,37 @@ function buildQueryString() {
 
 	console.dir(filterQuery);
 
-	console.log("NothingSelected: " + nothingSelected);
+
 	//in case no check boxes are checked you dont have to make a query at all
 	if (nothingSelected) {
 		$("#resultsBtn").html("0 Treffer");
 		$("#resultsBtn").attr("disabled", "");
+
+/*
+		//enable all checkboxes
+		$(".genre").each(function() {
+			$(this).prop("disabled", false).checkboxradio("refresh");
+			$(this).parent().removeClass("ui-state-disabled");
+		});
+
+		$(".year").each(function() {
+			$(this).prop("disabled", false).checkboxradio("refresh");
+			$(this).parent().removeClass("ui-state-disabled");
+		});
+*/
+
 	} else {
 		socket.emit("queryDB", filterQuery, function(queryShortResult) {
 			$("#movieList").empty();
-			var indexNumber;
+			var myArrayIndexNumber;
+			var resultTrailerList = [];
 			for (var v = 0; v < trailers.length; v++) {
-				indexNumber = $.inArray(trailers[v].interalName, queryShortResult);
-				if (indexNumber == -1) {
+				myArrayIndexNumber = $.inArray(trailers[v].interalName, queryShortResult);
+				if (myArrayIndexNumber == -1) {
 					//do nothing because movie is not a result
 				} else {
 					$('#movieList').append('<li class="movieListEntry" id= \'' + trailers[v].interalName + '\'><a>' + trailers[v].movieName + '</a></li>').listview('refresh');
+					resultTrailerList.push(trailers[v]);
 				}
 			}
 
@@ -241,9 +254,50 @@ function buildQueryString() {
 			} else {
 				$("#resultsBtn").attr("disabled", "");
 			}
+
+/*
+			//check which checkboxes should be disabled because no limitation is possible with them
+			$(".genre").each(function() {
+				var genreFound = false;
+				for (var r = 0; r < resultTrailerList.length; r++) {
+					for (var q = 0; q < resultTrailerList[r].genre.length; q++) {
+						if(resultTrailerList[r].genre[q] == $(this).attr("name")){
+							genreFound = true;
+						}
+					}
+				}
+				if (!genreFound) {
+					$(this).prop("disabled", "disabled").checkboxradio("refresh");
+					$(this).parent().addClass("ui-state-disabled");
+				} else {
+					$(this).prop("disabled", false).checkboxradio("refresh");
+					$(this).parent().removeClass("ui-state-disabled");
+				}
+			});
+
+
+			$(".year").each(function() {
+				var yearFound = false;
+				for (var r = 0; r < resultTrailerList.length; r++) {
+					if (resultTrailerList[r].year == $(this).attr("name")) {
+						yearFound = true;
+					}
+				}
+				if (!yearFound) {
+					$(this).prop("disabled", "disabled").checkboxradio("refresh");
+					$(this).parent().addClass("ui-state-disabled");
+				} else {
+					$(this).prop("disabled", false).checkboxradio("refresh");
+					$(this).parent().removeClass("ui-state-disabled");
+				}
+			});
+*/
+
+			hideLoader();
 		});
 
 	}
+
 
 
 }
@@ -376,6 +430,23 @@ function goBackToList() {
 	$("#title").html("MovieMatcher");
 }
 
+//show the loading spinner
+function showLoader() {
+	$.mobile.loading("show", {
+		text: "Laden",
+		textVisible: true,
+		theme: $.mobile.loader.prototype.options.theme,
+		textonly: false,
+		html: ""
+	});
+	hideLoader();
+}
+
+//hide the loading spinner
+function hideLoader() {
+	$.mobile.loading("hide");
+}
+
 //try to stop the video
 function stopVideo() {
 	writeLog("Stop pressed");
@@ -394,16 +465,9 @@ function start() {
 	socket.emit("remote_playPause");
 }
 
-//notify server that this is a new remote client
-function registerToServer() {
-	socket.emit("clientRegister", function() {
-		writeLog("Client successfully registered to Server");
-	});
-}
 
 //show movie detail page and fill the grid with data
 function showMovieDetails(movieInternalName) {
-	$("#infoBtn").hide(0);
 	$("#infoBtn").hide(0);
 	$("#movieContainerBackBtn").hide(0);
 	writeLog("I want to see details of: " + movieInternalName);

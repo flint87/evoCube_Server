@@ -6,6 +6,7 @@ html
     script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
     script(src='//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.js')
     script(src='/socket.io/socket.io.js')
+    script(src='/data/movies.js')
     script(src='/javascripts/remote.js')
     link(rel='stylesheet', href='/stylesheets/mobile.css')
     link(rel='stylesheet', href='/stylesheets/jquery.mobile.icons.min.css')
@@ -32,7 +33,6 @@ html
           p Der evoCube Movie Matcher ist ein Forschungsprojekt der Firma <a target="_blank" href="http://www.evolaris.net">evolaris next level GmbH </a>und wird in Zusammenarbeit mit dem Rechbauer Kino in einem beschränkten Zeitraum getestet. <br> lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
         div(id="landingContent")
           p(id="welcomeText") Willkommen beim <b>evoCube Movie Matcher</b>. Hier bekommst bekommst du dir deine persönlichen Filmempfehlungen holen und direkt die Trailer am Großbildfernseher genießen. Da es sich hierbei um ein Testprojekt handelt, sind wir dringend auf Feedback angewiesen. Wenn du also zusätzlich unseren Fragebogen ausfüllst, bekommst du einen <b>Gutschein für 1€ Ermäßigung</b> auf dein Kinoticket oder den Filmverleih. Mit dem Klick auf Start akzeptierst du außerdem unsere AGB.
-          button(id='asdf' onClick='startLoader()' class='myButton') TEST LOADER
           button(id='start' onClick='showContent()' class='myButton') Start
           div: p(id='status' style="display:none;") Waiting for input
         div(id='movieListContainer' style="display:none")
@@ -149,7 +149,7 @@ html
                           input(type="checkbox"  name="Italienisch" id="lang2" class="pers language")
                           label(for="lang2") Italienisch
                     div(id="yearDiv" style="width:100%; vertical-align:top; margin-left:5%; display:none;")
-                      fieldset(data-role="controlgroup" data-type="horizontal" data-mini="true")
+                      fieldset(id="yearControlGroup" data-role="controlgroup" data-type="horizontal" data-mini="true")
                         legend
                           input(type="checkbox"  name="2012" id="lang0" class="pers year")
                           label(for="lang0") 2012
