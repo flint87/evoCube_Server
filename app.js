@@ -40,12 +40,6 @@ app.use('/', routes);
 app.use('/users', users);
 
 
-var ua = require('universal-analytics');
-var visitor = ua('UA-52372095-1');
-//var visitor = ua('UA-52372095-1').debug();
-
-
-
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
 	var err = new Error('Not Found');
@@ -78,6 +72,7 @@ app.use(function(err, req, res, next) {
 });
 
 var playList;
+var adminClient;
 
 var server = app.listen(app.get('port'), function() {
 	writeLog('Express server listening on port ' + server.address().port);
@@ -97,6 +92,13 @@ var server = app.listen(app.get('port'), function() {
 		}
 		data = JSON.parse(data);
 		playList = data;
+
+		db.movies.drop();
+		for (var v = 0; v < playList.length; v++) {
+			db.movies.save(playList[v]);
+
+		}
+
 	});
 
 	setInterval(function() {
@@ -111,8 +113,6 @@ var server = app.listen(app.get('port'), function() {
 	sockets.on("connection", function(socket) {
 
 		writeLog("Connection " + socket.id + " accepted");
-		visitor.event("Connection Accepted", "Connection", "nice", 42).send();
-
 
 		socket.on("disconnect", function() {
 			writeLog("Connection " + socket.id + " terminated");
@@ -188,7 +188,6 @@ var server = app.listen(app.get('port'), function() {
 
 		//remote Play or Pause commando received from the remote client
 		socket.on("remote_playPause", function() {
-			visitor.event("RemoteEvent", "Play/Pause", "nice", 42).send();
 			writeLog("Remote Play/Pause received");
 			videoClient.emit("playPause");
 
@@ -266,7 +265,41 @@ var server = app.listen(app.get('port'), function() {
 
 		});
 
+		//##############################
+		//MESSAGES FROM ADMIN CLIENT
+		//#############################
 
+		//admin changed the playlist and wants to update the local file and the video client 
+		socket.on("forcePlaylistUpdate", function(newPlaylist, fn) {
+
+			fs.writeFile(__dirname + "/public/data/movies.json", newPlaylist, function(err) {
+				if (err) {
+					fn(false);
+					console.log(err);
+				} else {
+					data = JSON.stringify(newPlaylist);
+					playList = data;
+					db.movies.drop();
+					for (var v = 0; v < playList.length; v++) {
+						db.movies.save(playList[v]);
+
+					}
+					videoClient.emit("updatePlaylist", function() {
+						writeLog("Playlist successfully updated at video client");
+
+					});
+					fn(true);
+				}
+			});
+		});
+
+		//admin page wants to connect to the server
+		socket.on("registerAdmin", function(fn) {
+			writeLog("Admin connected with ID: " + socket.id);
+			adminClient = socket;
+			fn(true);
+
+		});
 
 		//##############################
 		//MESSAGES FROM VIDEO CLIENT

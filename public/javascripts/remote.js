@@ -4,9 +4,10 @@ var trailers;
 //set the time when a remote connection should be closed automatically. 10 minutes at the moment.
 var disconnectTimeout = 600000;
 var myDisconnectTimer;
-localStorage.setItem('debug', "*");
-//localStorage.setItem('debug', "");
+//localStorage.setItem('debug', "*");
+localStorage.setItem('debug', "");
 
+//check periodically if there is still a connection
 setInterval(function() {
 	socket.emit("inCharge", function(message) {
 		//writeLog("Main client: " + message);				
@@ -92,7 +93,14 @@ function registerToServer() {
 	socket.emit("clientRegister", function() {
 		writeLog("Client successfully registered to Server");
 
-		trailers = trailersKIZ;
+		$.get("/data/movies.json", function(data) {
+		writeLog("File loaded successfully");
+		trailers = data;
+		console.dir(data);
+
+	}).fail(function() {
+		writeLog("Error loading file!!!");
+	});
 
 		//add change listeners to the radio buttons for the personalization items
 		$(".persGroupRadio").change(function() {

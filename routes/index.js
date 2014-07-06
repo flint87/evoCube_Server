@@ -1,39 +1,50 @@
 var express = require('express');
 var router = express.Router();
-var ua = require('universal-analytics');
-//var visitor = ua('UA-52372095-1').debug();
-var visitor = ua('UA-52372095-1');
-
-/* GET home page. */
-router.get('/', function(req, res) {
-	visitor.pageview("/index").send();
-	visitor.event("Page", "Call", "index").send();
-	console.log("Cookie: " + req.cookies.test2);
-	res.render('index', {
-		title: 'Express'
-	});
-});
 
 router.get('/remote', function(req, res) {
-	visitor.pageview("/remote").send();
-	console.log("Cookie: " + req.cookies.test2);
-	if(undefined === req.cookies.test2 ){
-		console.log("HERE");
-		res.cookie('test2', 'bb', { maxAge: 100000});
-
+	console.log("loc: " + req.param("loc"));
+	console.log("type: " + req.param("type"));
+	if (req.param("type") == "nfc" || req.param("type") == "qr") {
+		console.log("Cookie: " + req.cookies.test2);
+		if (undefined === req.cookies.test2) {
+			console.log("HERE");
+			res.cookie('test2', 'bb', {
+				maxAge: 60000
+			});
+		}
+		res.render('remote', {
+			title: 'Movie Matcher'
+		});
+	} else {
+		res.render('falseURLError', {
+			title: "Fehler",
+			message: "Du musst die Seite über den evoCube aufrufen"
+		});
 	}
-	visitor.event("Page", "Call", "remote").send();
-	res.render('remote', {
-		title: 'Movie Matcher'
+});
+
+router.get('/evoAdmin', function(req, res) {
+
+	console.log("Cookie: " + req.cookies.test2);
+	if (undefined === req.cookies.test2) {
+		console.log("HERE");
+		res.cookie('test2', 'bb', {
+			maxAge: 60000
+		});
+	}
+
+	res.render('evoAdmin', {
+		title: "evoAdmin"
 	});
+
 });
 
 router.get('/questionnaire', function(req, res) {
-	visitor.event("Page", "Call", "questionnaire").send();
 	console.log("Cookie: " + req.cookies.test2);
-	if(undefined === req.cookies.test2 ){		
-		res.cookie('test2', 'bb', { maxAge: 100000});
-		
+	if (undefined === req.cookies.test2) {
+		res.cookie('test2', 'bb', {
+			maxAge: 100000
+		});
 	}
 	res.render('questionnaire', {
 		title: 'Fragebogen'
@@ -41,7 +52,6 @@ router.get('/questionnaire', function(req, res) {
 });
 
 router.get('/random', function(req, res) {
-	visitor.event("Page", "Call", "random").send();
 	console.log("Cookie: " + req.cookies.test2);
 	res.render('random', {
 		title: 'Zufall'

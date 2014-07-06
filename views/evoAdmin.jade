@@ -1,0 +1,97 @@
+doctype html
+html(lang="en")
+  head
+    meta(charset="utf-8")
+    meta(http-equiv="X-UA-Compatible" content="IE=edge")
+    meta(name="viewport" content="width=device-width, initial-scale=1")
+    title= title
+    script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
+    script(src='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js')      
+    script(src='/socket.io/socket.io.js')
+    script(src='/javascripts/evoAdmin.js')
+    link(rel='stylesheet', href='//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css')
+    body(onload='connect()')
+      div(id="content" class="container-fluid")
+        p(id="status") HELLO
+        h1 Admin Interface 
+          small   ACHTUNG! - sehr rudimentär - mit Vorsicht verwenden
+        button(type="button" id="loadFileBtn" class="btn btn-primary" onClick="loadFile()") Lade Trailer Datei vom Server
+        button(type="button" id="sendFileBtn" style="display:none" class="btn btn-danger" onClick="sendFileToServer()") Schicke aktualisierte Trailer Datei zum Server
+        br
+        br
+        div(id="changeForm" style="display:none" class="container-fluid")
+          div(class="form-group")
+            label(for="inputTitel" class="col-sm-2 control-label") Deutscher Titel
+            div(class="col-sm-10")
+              input(type="Text" class="form-control" id="inputTitel" placeholder="Deutscher Titel")
+          div(class="form-group")
+            label(for="inputOVTitel" class="col-sm-2 control-label") OV Titel
+            div(class="col-sm-10")
+              input(type="Text" class="form-control" id="inputOVTitel" placeholder="OV Titel")
+          div(class="form-group")
+            label(for="inputYear" class="col-sm-2 control-label") Jahr
+            div(class="col-sm-10")
+              input(type="Text" class="form-control" id="inputYear" placeholder="Jahr")
+          div(class="form-group")
+            label(for="inputCountry" class="col-sm-2 control-label") Land (mehrere mit "," trennen!!)
+            div(class="col-sm-10")
+              input(type="Text" class="form-control" id="inputCountry" placeholder="Land")
+          div(class="form-group" style="display:none" )
+            label(for="countrySelect" class="col-sm-2 control-label ") Land automatisch
+            select(class="form-control" id="countrySelect")
+          div(class="form-group")
+            label(for="inputOVSprache" class="col-sm-2 control-label") OV Sprache
+            div(class="col-sm-10")
+              input(type="Text" class="form-control" id="inputOVSprache" placeholder="OV Sprache")
+          div(class="form-group")
+            label(for="inputGenre" class="col-sm-2 control-label") Genre (mehrere mit "," trennen!!)
+            div(class="col-sm-10")
+              input(type="Text" class="form-control" id="inputGenre" placeholder="Genre")
+          div(class="form-group")
+            label(for="inputDirector" class="col-sm-2 control-label") Regisseur
+            div(class="col-sm-10")
+              input(type="Text" class="form-control" id="inputDirector" placeholder="Regisseur")
+          div(class="form-group")
+            label(for="inputActors" class="col-sm-2 control-label") Schauspieler (mit "," trennen!!)
+            div(class="col-sm-10")
+              input(type="Text" class="form-control" id="inputActors" placeholder="Schauspieler")
+          div(class="form-group")
+            label(for="inputURLDE" class="col-sm-2 control-label") Deutsche Video URL
+            div(class="col-sm-10")
+              input(type="Text" class="form-control" id="inputURLDE" placeholder="Deutsche Video URL")
+          div(class="form-group")
+            label(for="inputURLOV" class="col-sm-2 control-label") OV Video URL (leer erlaubt)
+            div(class="col-sm-10")
+              input(type="Text" class="form-control" id="inputURLOV" placeholder="OV Video URL")
+          div(class="form-group")
+            label(for="inputImageURL" class="col-sm-2 control-label") Poster URL
+            div(class="col-sm-10")
+              input(type="Text" class="form-control" id="inputImageURL" placeholder="Poster URL")        
+          div(class="form-group")
+            label(for="testAreaPlot" class="col-sm-2 control-label") Handlung
+            div(class="col-sm-10")
+              textarea(id="testAreaPlot" class="form-control" rows="3" placeholder="Handlung") 
+          br
+          button(type="button" class="btn btn-primary" onClick="addMovie()") Film hinzufügen
+        div(id="movieList" style="display:none" class="container-fluid")
+          h2 Filmeliste
+          table(id="movieListTable" class="table table-striped table-hover table-condensed table-responsive")
+            thead
+              tr
+                th #
+                th Tools
+                th Deutscher Titel
+                th OV Titel
+                th Jahr
+                th Land
+                th OV Sprache
+                th Genre
+                th Regisseur
+                th Schauspieler
+                th Handlung
+                th Deutsche Video URL
+                th OV Video URL
+                th Poster URL
+
+
+
