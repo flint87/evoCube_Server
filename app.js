@@ -93,13 +93,11 @@ var server = app.listen(app.get('port'), function() {
 		data = JSON.parse(data);
 		playList = data;
 
-		db.movies.drop();
-		for (var v = 0; v < playList.length; v++) {
-			db.movies.save(playList[v]);
-
-		}
+		saveNewPlayListToDB();
 
 	});
+
+
 
 	setInterval(function() {
 		try {
@@ -277,17 +275,18 @@ var server = app.listen(app.get('port'), function() {
 					fn(false);
 					console.log(err);
 				} else {
-					data = JSON.stringify(newPlaylist);
-					playList = data;
-					db.movies.drop();
-					for (var v = 0; v < playList.length; v++) {
-						db.movies.save(playList[v]);
+					//data = JSON.stringify(newPlaylist);
+					//console.dir(newPlaylist);
+					playList = JSON.parse(newPlaylist);
 
-					}
+					saveNewPlayListToDB();
+					//console.dir(playlist);
+
 					videoClient.emit("updatePlaylist", function() {
 						writeLog("Playlist successfully updated at video client");
 
 					});
+
 					fn(true);
 				}
 			});
@@ -317,6 +316,16 @@ var server = app.listen(app.get('port'), function() {
 
 	});
 });
+
+function saveNewPlayListToDB(){
+	db.movies.drop();
+	for (var v = 0; v < playList.length; v++) {
+		db.movies.save(playList[v]);
+		//console.dir(playList[v]);
+	}
+}
+
+
 
 //logging with timestap
 function writeLog(message) {
