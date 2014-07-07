@@ -4,6 +4,8 @@ var trailers;
 //set the time when a remote connection should be closed automatically. 10 minutes at the moment.
 var disconnectTimeout = 600000;
 var myDisconnectTimer;
+
+//enable or disable socket.io debug messages on the client
 //localStorage.setItem('debug', "*");
 localStorage.setItem('debug', "");
 
@@ -12,22 +14,8 @@ var allGenres = [];
 var allYears = [];
 var allOV = [];
 var allCountries = [];
+var cubeLocation;
 
-//check periodically if there is still a connection
-setInterval(function() {
-	socket.emit("inCharge", function(message) {
-		//writeLog("Main client: " + message);				
-		if (message) {
-			$("#feedback").html("Du bist jetzt mit dem Fernseher verbunden und kannst dir beliebige Trailer anschauen.");
-		} else {
-			if (initState == "noRemoteConnection") {
-				$("#feedback").html("Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.");
-				clearTimeout(myDisconnectTimer);
-			}
-		}
-	});
-
-}, 3000);
 
 
 function connect() {
@@ -38,9 +26,7 @@ function connect() {
 
 	$("#infoBtn").html("&nbsp;");
 
-	socket = io("192.168.0.29:3000", {
-		"reconnect": false
-	});
+	socket = io();
 	//socket = io("http://178.77.68.72:3000", {"reconnect": false});
 
 	//hide the movie control items at startup
@@ -96,16 +82,35 @@ function connect() {
 
 //notify server that this is a new remote client
 function registerToServer() {
-	socket.emit("clientRegister", function() {
-		writeLog("Client successfully registered to Server");
 
+	//get the query parameters to determine to which cubeLocation this page call belongs to
+	var query_string = {};
+	var query = window.location.search.substring(1);
+	var vars = query.split("&");
+	for (var i = 0; i < vars.length; i++) {
+		var pair = vars[i].split("=");
+		// If first entry with this name
+		if (typeof query_string[pair[0]] === "undefined") {
+			query_string[pair[0]] = pair[1];
+			// If second entry with this name
+		} else if (typeof query_string[pair[0]] === "string") {
+			var arr = [query_string[pair[0]], pair[1]];
+			query_string[pair[0]] = arr;
+			// If third or later entry with this name
+		} else {
+			query_string[pair[0]].push(pair[1]);
+		}
+	}
+	cubeLocation = query_string.location;
+
+	socket.emit("clientRegister", cubeLocation, function() {
+		writeLog("Client successfully registered to Server at location " + cubeLocation);
 
 		//load the movie list from the server
 		//$.ajaxSetup({ scriptCharset: "utf-8" , contentType: "application/json; charset=utf-8"});
-		$.get("/data/movies.json", function(data) {
+		$.get("/data/" + cubeLocation + ".json", function(data) {
 			writeLog("File loaded successfully");
 			trailers = data;
-
 
 
 			//get all possible values which are needed for the personalization
@@ -195,6 +200,22 @@ function registerToServer() {
 			});
 
 			hideLoader();
+
+			//check periodically if there is still a connection
+			setInterval(function() {
+				socket.emit("inCharge", cubeLocation, function(message) {
+					//writeLog("Main client: " + message);				
+					if (message) {
+						$("#feedback").html("Du bist jetzt mit dem Fernseher verbunden und kannst dir beliebige Trailer anschauen.");
+					} else {
+						if (initState == "noRemoteConnection") {
+							$("#feedback").html("Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.");
+							clearTimeout(myDisconnectTimer);
+						}
+					}
+				});
+
+			}, 3000);
 
 		}).fail(function() {
 			writeLog("Error loading file!!!");
@@ -294,7 +315,8 @@ function buildQueryString() {
 */
 
 	} else {
-		socket.emit("queryDB", filterQuery, function(queryShortResult) {
+		//send query to server and display results
+		socket.emit("queryDB", cubeLocation, filterQuery, function(queryShortResult) {
 			$("#movieList").empty();
 			var myArrayIndexNumber;
 			var resultTrailerList = [];
@@ -369,9 +391,9 @@ function buildQueryString() {
 //play a specific Trailer if you are connected to the monitor
 function playTrailer(trailerType) {
 	writeLog("I want to see: " + trailerType + " " + $("#movieName").attr("name"));
-	socket.emit("inCharge", function(message) {
+	socket.emit("inCharge", cubeLocation, function(message) {
 		if (message) {
-			socket.emit("playSpecifTrailer", $("#movieName").attr("name"), trailerType, function(message) {
+			socket.emit("playSpecifTrailer", cubeLocation, $("#movieName").attr("name"), trailerType, function(message) {
 				writeLog("Feedback: " + message);
 			});
 		} else {
@@ -384,9 +406,10 @@ function playTrailer(trailerType) {
 
 //notify the server that you don't want to be remote client anymore
 function revokeRemote() {
-	socket.emit("dismissRemoteClient", function() {
+	socket.emit("dismissRemoteClient", cubeLocation, function() {
 		writeLog("Successfully unregistered. You are not remote client anymore");
 		initState = "noRemoteConnection";
+		clearTimeout(myDisconnectTimer);
 		$("#initElements").show(0);
 		$("#movieControls").fadeOut("normal");
 		$("#feedback").html("Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.");
@@ -395,7 +418,7 @@ function revokeRemote() {
 
 //notify the server that remote client wants to take control of the video client's monitor
 function giveMeControl() {
-	socket.emit("giveMeControl", function(answer) {
+	socket.emit("giveMeControl", cubeLocation, function(answer) {
 		//only allow a connection if no trailer is running at the moment
 		if (answer) {
 			$("#feedback").html("Zurzeit läuft gerade ein Trailer auf dem Fernseher.");
@@ -420,7 +443,7 @@ function giveMeControl() {
 //check with the server if the code is correct. if yes grant access to monitor
 function submitCode() {
 	writeLog("Secret Value: " + $("#secret").val());
-	socket.emit("checkMyCode", $("#secret").val(), function(answer) {
+	socket.emit("checkMyCode", cubeLocation, $("#secret").val(), function(answer) {
 		if (answer) {
 			$("#feedback").html("Du bist jetzt mit dem Fernseher verbunden und kannst dir beliebige Trailer anschauen.");
 			$("#codeElements").fadeOut("normal");
@@ -600,6 +623,29 @@ function showMovieDetails(movieInternalName) {
 //##############################
 //Utility Functions
 //#############################
+
+
+//get the request parameter
+function getQueryParameter() {
+	var query_string = {};
+	var query = window.location.search.substring(1);
+	var vars = query.split("&");
+	for (var i = 0; i < vars.length; i++) {
+		var pair = vars[i].split("=");
+		// If first entry with this name
+		if (typeof query_string[pair[0]] === "undefined") {
+			query_string[pair[0]] = pair[1];
+			// If second entry with this name
+		} else if (typeof query_string[pair[0]] === "string") {
+			var arr = [query_string[pair[0]], pair[1]];
+			query_string[pair[0]] = arr;
+			// If third or later entry with this name
+		} else {
+			query_string[pair[0]].push(pair[1]);
+		}
+	}
+	return query_string;
+}
 
 //get a list of all unique values of the array
 function getUniques(myArray) {
