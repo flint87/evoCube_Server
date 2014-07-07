@@ -103,59 +103,17 @@ html
                         label(for="yearRadio") Jahr
                   td(style="vertical-align:top;")
                     div(id="genreDiv" style="width:100%; vertical-align:top; margin-left:5%; disyplay:none")                      
-                      fieldset(data-role="controlgroup" data-type="horizontal" data-mini="true")
-                        legend
-                          input(type="checkbox" name="Drama" id="genre0" class="pers genre")
-                          label(for="genre0") Drama
-                          input(type="checkbox" name="Komödie" id="genre1" class="pers genre")
-                          label(for="genre1") Komödie
-                          input(type="checkbox" name="Thriller" id="genre2" class="pers genre")
-                          label(for="genre2") Thriller
-                          input(type="checkbox" name="Romanze" id="genre3" class="pers genre")
-                          label(for="genre3") Romanze
-                          input(type="checkbox" name="Science-Fiction" id="genre4" class="pers genre")
-                          label(for="genre4") Science-Fiction
-                          input(type="checkbox" name="Action" id="genre5" class="pers genre")
-                          label(for="genre5") Action
-                          input(type="checkbox" name="Adventure" id="genre6" class="pers genre")
-                          label(for="genre6") Adventure
-                          input(type="checkbox" name="Familie" id="genre7" class="pers genre")
-                          label(for="genre7") Familie
-                          input(type="checkbox" name="Fantasy" id="genre8" class="pers genre")
-                          label(for="genre8") Fantasy                  
+                      fieldset(id="genreControlGroup" data-role="controlgroup" data-type="horizontal" data-mini="true")
+                        legend(id="genreLegend")
                     div(id="countryDiv" style="width:100%; vertical-align:top; margin-left:5%; display:none;" )                      
-                      fieldset(data-role="controlgroup" data-type="horizontal" data-mini="true")
-                        legend
-                          input(type="checkbox" name="Deutschland" id="country0" class="pers country")
-                          label(for="country0") Deutschland
-                          input(type="checkbox" name="Großbritannien" id="country1" class="pers country")
-                          label(for="country1") Großbritannien
-                          input(type="checkbox" name="Italien" id="country2" class="pers country")
-                          label(for="country2") Italien
-                          input(type="checkbox" name="Österreich" id="country4" class="pers country")
-                          label(for="country4") Österreich
-                          input(type="checkbox" name="Schweiz" id="country5" class="pers country")
-                          label(for="country5") Schweiz
-                          input(type="checkbox" name="USA" id="country6" class="pers country")
-                          label(for="country6") USA
+                      fieldset(id="countryControlGroup" data-role="controlgroup" data-type="horizontal" data-mini="true")
+                        legend(id="countryLegend")
                     div(id="ovDiv" style="width:100%; vertical-align:top; margin-left:5%; display:none;")
-                      fieldset(data-role="controlgroup" data-type="horizontal" data-mini="true")
-                        legend
-                          input(type="checkbox"  name="Deutsch" id="lang0" class="pers language")
-                          label(for="lang0") Deutsch
-                          input(type="checkbox"  name="Englisch" id="lang1" class="pers language")
-                          label(for="lang1") Englisch
-                          input(type="checkbox"  name="Italienisch" id="lang2" class="pers language")
-                          label(for="lang2") Italienisch
+                      fieldset(id="ovControlGroup" data-role="controlgroup" data-type="horizontal" data-mini="true")
+                        legend(id="ovLegend")
                     div(id="yearDiv" style="width:100%; vertical-align:top; margin-left:5%; display:none;")
                       fieldset(id="yearControlGroup" data-role="controlgroup" data-type="horizontal" data-mini="true")
-                        legend
-                          input(type="checkbox"  name="2012" id="lang0" class="pers year")
-                          label(for="lang0") 2012
-                          input(type="checkbox"  name="2013" id="lang1" class="pers year")
-                          label(for="lang1") 2013
-                          input(type="checkbox"  name="2014" id="lang2" class="pers year")
-                          label(for="lang2") 2014
+                        legend(id="yearLegend")                         
           p(id='feedback' style="display:none;") Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.
           div(id="movieControls" style="display:none;")
             button(id='play' onClick='start()' class='myButton') Play/Pause Video

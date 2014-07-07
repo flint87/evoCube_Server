@@ -280,10 +280,9 @@ var server = app.listen(app.get('port'), function() {
 					playList = JSON.parse(newPlaylist);
 
 					saveNewPlayListToDB();
-					//console.dir(playlist);
-
+					
 					videoClient.emit("updatePlaylist", function() {
-						writeLog("Playlist successfully updated at video client");
+						writeLog("Playlist successfully updated at Server and video client");
 
 					});
 

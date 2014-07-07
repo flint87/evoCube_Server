@@ -7,6 +7,12 @@ var myDisconnectTimer;
 //localStorage.setItem('debug', "*");
 localStorage.setItem('debug', "");
 
+
+var allGenres = [];
+var allYears = [];
+var allOV = [];
+var allCountries = [];
+
 //check periodically if there is still a connection
 setInterval(function() {
 	socket.emit("inCharge", function(message) {
@@ -93,55 +99,108 @@ function registerToServer() {
 	socket.emit("clientRegister", function() {
 		writeLog("Client successfully registered to Server");
 
+
+		//load the movie list from the server
+		//$.ajaxSetup({ scriptCharset: "utf-8" , contentType: "application/json; charset=utf-8"});
 		$.get("/data/movies.json", function(data) {
-		writeLog("File loaded successfully");
-		trailers = data;
-		console.dir(data);
+			writeLog("File loaded successfully");
+			trailers = data;
 
-	}).fail(function() {
-		writeLog("Error loading file!!!");
-	});
 
-		//add change listeners to the radio buttons for the personalization items
-		$(".persGroupRadio").change(function() {
-			writeLog($(this).attr("for"));
-			$("#genreDiv").hide(0);
-			$("#countryDiv").hide(0);
-			$("#ovDiv").hide(0);
-			$("#yearDiv").hide(0);
-			$("#" + $(this).attr("for")).show(0);
 
-		});
+			//get all possible values which are needed for the personalization
+			for (var v = 0; v < trailers.length; v++) {
+				for (var x = 0; x < trailers[v].genre.length; x++) {
+					allGenres.push(trailers[v].genre[x]);
+				}
+				allYears.push(trailers[v].year);
+				allOV.push(trailers[v].ov);
 
-		//add on change function to all check boxes in personalization content
-		//update results after every change
-		$('.pers').click(function() {
-			showLoader();
-			writeLog("Change triggered on " + $(this).attr("name") + " checked: " + $(this).is(':checked'));
-			//update the searchfield
-			if ($(this).is(':checked')) {
-				$("#searchWords").controlgroup("container").append("<a id=\"" + $(this).attr("name") + "\" href=\"#\" class=\"ui-btn ui-corner-all ui-icon-delete ui-btn-icon-right \" >" + $(this).attr("name") + " </a>");
-				$("#searchWords").enhanceWithin().controlgroup("refresh");
-				$("#searchWords").controlgroup("refresh");
-				//if the search word is removed via the search field and not via the checkboxes, remove both and refresh the search
-				$("#" + $(this).attr("name")).click(function() {
-					$(this).remove();
-					$("#searchWords").enhanceWithin().controlgroup("refresh");
-					writeLog("CLICK DETECTED " + $("input[name=" + $(this).attr("id") + "]").attr("type"));
-					$("input[name=" + $(this).attr("id") + "]").prop("checked", false).checkboxradio("refresh");
-					buildQueryString();
-				});
-			} else {
-				$("#" + $(this).attr("name")).remove();
-				$("#searchWords").enhanceWithin().controlgroup("refresh");
-				$("#searchWords").controlgroup("refresh");
+				for (var p = 0; p < trailers[v].country.length; p++) {
+					allCountries.push(trailers[v].country[p]);
+				}
 			}
-			buildQueryString();
 
+			allGenres = getUniques(allGenres);
+			allYears = getUniques(allYears);
+			allOV = getUniques(allOV);
+			allCountries = getUniques(allCountries);
+
+			allGenres.sort();
+			allYears.sort();
+			allOV.sort();
+			allCountries.sort();
+
+			//create dynamically all personalization content based on movie list			
+			for (v = 0; v < allYears.length; v++) {
+				$("#yearLegend").append("<input type=\"checkbox\"  name=\"" + allYears[v] + "\" id=\"years" + v + "\" class=\"pers year\"></input> <label for=\"years" + v + "\">  " + allYears[v] + "</label>");
+			}
+			$("#yearControlGroup").trigger('create');
+			for (v = 0; v < allGenres.length; v++) {
+				$("#genreLegend").append("<input type=\"checkbox\"  name=\"" + allGenres[v] + "\" id=\"genres" + v + "\" class=\"pers genre\"></input> <label for=\"genres" + v + "\">  " + allGenres[v] + "</label>");
+			}
+			$("#genreControlGroup").trigger('create');
+			for (v = 0; v < allCountries.length; v++) {
+				$("#countryLegend").append("<input type=\"checkbox\"  name=\"" + allCountries[v] + "\" id=\"country" + v + "\" class=\"pers country\"></input> <label for=\"country" + v + "\">  " + allCountries[v] + "</label>");
+			}
+			$("#countryControlGroup").trigger('create');
+			for (v = 0; v < allOV.length; v++) {
+				$("#ovLegend").append("<input type=\"checkbox\"  name=\"" + allOV[v] + "\" id=\"ov" + v + "\" class=\"pers ov\"></input> <label for=\"ov" + v + "\">  " + allOV[v] + "</label>");
+			}
+			$("#ovControlGroup").trigger('create');
+
+			/*
+			$("#yearLegend").append("<input type=\"checkbox\"  name=\"" + allYears[0] + "\" id=\"" + allYears[0] + "\" class=\"pers year\"></input> <label for=\"" + allYears[0] + "\">  " + allYears[0] + "</label>");
+			$("#yearLegend").append("<input type=\"checkbox\"  name=\"" + allYears[1] + "\" id=\"" + allYears[1] + "\" class=\"pers year\"></input> <label for=\"" + allYears[1] + "\">  " + allYears[1] + "</label>");
+			$("#yearControlGroup").trigger('create');
+*/
+			//add change listeners to the radio buttons for the personalization items
+			$(".persGroupRadio").change(function() {
+				writeLog($(this).attr("for"));
+				$("#genreDiv").hide(0);
+				$("#countryDiv").hide(0);
+				$("#ovDiv").hide(0);
+				$("#yearDiv").hide(0);
+				$("#" + $(this).attr("for")).show(0);
+
+			});
+
+
+
+			//add on change function to all check boxes in personalization content
+			//update results after every change
+			$('.pers').click(function() {
+				showLoader();
+				writeLog("Change triggered on " + $(this).attr("name") + " checked: " + $(this).is(':checked'));
+				//update the searchfield
+				if ($(this).is(':checked')) {
+					$("#searchWords").controlgroup("container").append("<a id=\"" + $(this).attr("name") + "\" href=\"#\" class=\"ui-btn ui-corner-all ui-icon-delete ui-btn-icon-right \" >" + $(this).attr("name") + " </a>");
+					$("#searchWords").enhanceWithin().controlgroup("refresh");
+					$("#searchWords").controlgroup("refresh");
+					//if the search word is removed via the search field and not via the checkboxes, remove both and refresh the search
+					$("#" + $(this).attr("name")).click(function() {
+						$(this).remove();
+						$("#searchWords").enhanceWithin().controlgroup("refresh");
+						writeLog("CLICK DETECTED " + $("input[name=" + $(this).attr("id") + "]").attr("type"));
+						$("input[name=" + $(this).attr("id") + "]").prop("checked", false).checkboxradio("refresh");
+						buildQueryString();
+					});
+				} else {
+					$("#" + $(this).attr("name")).remove();
+					$("#searchWords").enhanceWithin().controlgroup("refresh");
+					$("#searchWords").controlgroup("refresh");
+				}
+				buildQueryString();
+
+			});
+
+			hideLoader();
+
+		}).fail(function() {
+			writeLog("Error loading file!!!");
 		});
 
 
-		hideLoader();
 	});
 }
 
@@ -156,8 +215,8 @@ function buildQueryString() {
 		year: [],
 		ov: []
 	};
+
 	//build genres
-	var genreAll = ["Drama", "Komödie", "Thriller", "Romanze", "Science-Fiction", "Action", "Adventure", "Familie", "Fantasy"];
 	$(".genre").each(function() {
 		if ($(this).is(':checked')) {
 			filterQuery.genre.push($(this).attr("name"));
@@ -166,13 +225,12 @@ function buildQueryString() {
 	});
 	//if no genres are selected, select all
 	if (filterQuery.genre.length === 0) {
-		for (var i = 0; i < genreAll.length; i++) {
-			filterQuery.genre.push(genreAll[i]);
+		for (var i = 0; i < allGenres.length; i++) {
+			filterQuery.genre.push(allGenres[i]);
 		}
 	}
 
 	//build countries
-	var countryAll = ["Deutschland", "Großbritannien", "Italien", "Österreich", "Schweiz", "USA"];
 	$(".country").each(function() {
 		if ($(this).is(':checked')) {
 			filterQuery.country.push($(this).attr("name"));
@@ -181,14 +239,13 @@ function buildQueryString() {
 	});
 	//if no countries are selected, select all
 	if (filterQuery.country.length === 0) {
-		for (var u = 0; u < countryAll.length; u++) {
-			filterQuery.country.push(countryAll[u]);
+		for (var u = 0; u < allCountries.length; u++) {
+			filterQuery.country.push(allCountries[u]);
 		}
 	}
 
 	//build ov
-	var ovAll = ["Englisch", "Deutsch", "Italienisch"];
-	$(".language").each(function() {
+	$(".ov").each(function() {
 		if ($(this).is(':checked')) {
 			filterQuery.ov.push($(this).attr("name"));
 			nothingSelected = false;
@@ -196,13 +253,12 @@ function buildQueryString() {
 	});
 	//if no ov are selected, select all
 	if (filterQuery.ov.length === 0) {
-		for (var e = 0; e < ovAll.length; e++) {
-			filterQuery.ov.push(ovAll[e]);
+		for (var e = 0; e < allOV.length; e++) {
+			filterQuery.ov.push(allOV[e]);
 		}
 	}
 
 	//build year
-	var yearAll = ["2012", "2013", "2014"];
 	$(".year").each(function() {
 		if ($(this).is(':checked')) {
 			filterQuery.year.push($(this).attr("name"));
@@ -211,8 +267,8 @@ function buildQueryString() {
 	});
 	//if no years are selected, select all
 	if (filterQuery.year.length === 0) {
-		for (var o = 0; o < yearAll.length; o++) {
-			filterQuery.year.push(yearAll[o]);
+		for (var o = 0; o < allYears.length; o++) {
+			filterQuery.year.push(allYears[o]);
 		}
 	}
 
@@ -224,7 +280,7 @@ function buildQueryString() {
 		$("#resultsBtn").html("0 Treffer");
 		$("#resultsBtn").attr("disabled", "");
 
-/*
+		/*
 		//enable all checkboxes
 		$(".genre").each(function() {
 			$(this).prop("disabled", false).checkboxradio("refresh");
@@ -263,7 +319,7 @@ function buildQueryString() {
 				$("#resultsBtn").attr("disabled", "");
 			}
 
-/*
+			/*
 			//check which checkboxes should be disabled because no limitation is possible with them
 			$(".genre").each(function() {
 				var genreFound = false;
@@ -538,6 +594,36 @@ function showMovieDetails(movieInternalName) {
 		$("#movieContainer").fadeIn("normal");
 		$('body').scrollTop(0);
 	}
+}
+
+
+//##############################
+//Utility Functions
+//#############################
+
+//get a list of all unique values of the array
+function getUniques(myArray) {
+	var cleaned = [];
+	myArray.forEach(function(itm) {
+		var unique = true;
+		cleaned.forEach(function(itm2) {
+			if (itm == itm2) unique = false;
+		});
+		if (unique) cleaned.push(itm);
+	});
+	return cleaned;
+}
+
+//sorts every JSON object
+function sort_by(field, reverse, primer) {
+	var key = function(x) {
+		return primer ? primer(x[field]) : x[field];
+	};
+	return function(a, b) {
+		var A = key(a),
+			B = key(b);
+		return ((A < B) ? -1 : (A > B) ? +1 : 0) * [-1, 1][+!!reverse];
+	};
 }
 
 //logging with timestap

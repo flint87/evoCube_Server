@@ -133,6 +133,7 @@ function printTrailerList(movieList) {
 
 	//allGenres = getUniques(allGenres);
 	//allCountries = getUniques(allCountries);
+	//allYears = getUniques(allYears);
 
 
 	/*
