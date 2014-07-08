@@ -14,8 +14,23 @@ html(lang="en")
       div(id="content" class="container-fluid")
         p(id="status") HELLO
         h1 Admin Interface 
-          small   ACHTUNG! - sehr rudimentär - mit Vorsicht verwenden
-        button(type="button" id="loadFileBtn" class="btn btn-primary" onClick="loadFile()") Lade Trailer Datei vom Server
+          small   ACHTUNG! - sehr rudimentär - mit Vorsicht verwenden - Nur zur vereinfachten Verwaltung der Filme
+        div(id="configForm")
+          p(id="info") Wähle aus, welche evoCube Location du verändert möchtest. Für eine neue Location muss in die die Konfigurationsdatei am Server eine neue Location eingetragen werden
+          div(id="locationRadios")
+          div(id="addNewLocationDiv" class="container-fluid")
+            div(class="form-group")
+              label(for="inputTitel" class="col-sm-2 control-label") Neue Location erstellen
+              div(class="col-sm-10")
+                input(type="Text" class="form-control" id="inputTitel" placeholder="Name der Location")
+            button(type="button" id="addNewLocation"  class="btn btn-danger" onClick="addNewLocation()") Neue Location erstellen und am Server speichern
+        div(id="urlInfo")
+          p(id="remoteUrlNFC")
+          p(id="remoteUrlQR")
+          p(id="questionnaireUrlNFC")
+          p(id="questionnaireUrlQR")
+          p(id="randomUrlNFC")
+          p(id="randomUrlQR")
         button(type="button" id="sendFileBtn" style="display:none" class="btn btn-danger" onClick="sendFileToServer()") Schicke aktualisierte Trailer Datei zum Server
         br
         br
@@ -54,7 +69,7 @@ html(lang="en")
           div(class="form-group")
             label(for="inputActors" class="col-sm-2 control-label") Schauspieler (mit "," trennen!!)
             div(class="col-sm-10")
-              input(type="Text" class="form-control" id="inputActors" placeholder="Schauspieler")
+              input(type="Text" class="form-control" id="inputActors" placeholder="Schauspieler")          
           div(class="form-group")
             label(for="inputURLDE" class="col-sm-2 control-label") Deutsche Video URL
             div(class="col-sm-10")
@@ -66,7 +81,7 @@ html(lang="en")
           div(class="form-group")
             label(for="inputImageURL" class="col-sm-2 control-label") Poster URL
             div(class="col-sm-10")
-              input(type="Text" class="form-control" id="inputImageURL" placeholder="Poster URL")        
+              input(type="Text" class="form-control" id="inputImageURL" placeholder="Poster URL")
           div(class="form-group")
             label(for="testAreaPlot" class="col-sm-2 control-label") Handlung
             div(class="col-sm-10")

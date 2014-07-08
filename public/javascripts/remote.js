@@ -34,34 +34,34 @@ function connect() {
 
 	socket.on("connect", function() {
 		//$("#status").html("Verbindung hergestellt");
-		$("#status").fadeOut("normal");
+		$("#status").hide(0);
 		registerToServer();
 		writeLog("connected");
 	});
 	socket.on("disconnect", function() {
 		$("#status").html("Internetverbindung unterbrochen");
-		$("#status").fadeIn("normal");
+		$("#status").show(0);
 		//$("#status").html("Disconnected from Server");
 		writeLog("Disconnect detected");
-		$("#movieControls").fadeOut("normal");
-		$("#initElements").fadeIn("normal");
+		$("#movieControls").hide(0);
+		$("#initElements").show(0);
 		initState = "noRemoteConnection";
 	});
 	socket.on("reconnecting", function(nextRetry) {
 		$("#status").html("Internetverbindung unterbrochen");
-		$("#status").fadeIn("normal");
+		$("#status").show(0);
 		//$("#status").html("Reconnecting in " + nextRetry + " milliseconds");
 		writeLog("Reconnect detected");
-		$("#movieControls").fadeOut("normal");
-		$("#initElements").fadeIn("normal");
+		$("#movieControls").hide(0);
+		$("#initElements").show(0);
 		initState = "noRemoteConnection";
 	});
 
 	//server revokes remote client rights
 	socket.on("byebyeRemote", function() {
 		$("#feedback").html("Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.");
-		$("#initElements").fadeIn("normal");
-		$("#movieControls").fadeOut("normal");
+		$("#initElements").show(0);
+		$("#movieControls").hide(0);
 	});
 
 	socket.on("reconnect_failed", function() {
@@ -82,7 +82,7 @@ function connect() {
 
 //notify server that this is a new remote client
 function registerToServer() {
-
+	
 	//get the query parameters to determine to which cubeLocation this page call belongs to
 	var query_string = {};
 	var query = window.location.search.substring(1);
@@ -411,7 +411,7 @@ function revokeRemote() {
 		initState = "noRemoteConnection";
 		clearTimeout(myDisconnectTimer);
 		$("#initElements").show(0);
-		$("#movieControls").fadeOut("normal");
+		$("#movieControls").hide(0);
 		$("#feedback").html("Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.");
 	});
 }
@@ -425,7 +425,7 @@ function giveMeControl() {
 		} else {
 			$("#feedback").html("Gib die Nummer ein, die du am Fenseher siehst und tippe auf Bestätigen");
 			$("#initElements").hide(0);
-			$("#codeElements").fadeIn("normal");
+			$("#codeElements").show(0);
 			initState = "waitingForCode";
 			$("html, body").animate({
 				scrollTop: $('#codeElements').offset().top
@@ -433,8 +433,8 @@ function giveMeControl() {
 			//after 20 seconds reset the state
 			myCodeTimer = setTimeout(function() {
 				$("#feedback").html("Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.");
-				$("#initElements").fadeIn("normal");
-				$("#codeElements").fadeOut("normal");
+				$("#initElements").show(0);
+				$("#codeElements").hide(0);
 			}, 20000);
 		}
 	});
@@ -446,8 +446,7 @@ function submitCode() {
 	socket.emit("checkMyCode", cubeLocation, $("#secret").val(), function(answer) {
 		if (answer) {
 			$("#feedback").html("Du bist jetzt mit dem Fernseher verbunden und kannst dir beliebige Trailer anschauen.");
-			$("#codeElements").fadeOut("normal");
-			//$("#movieControls").fadeIn("normal");
+			$("#codeElements").hide(0);
 			initState = "established";
 			$("#secret").val("");
 			clearTimeout(myCodeTimer);
@@ -466,33 +465,33 @@ function submitCode() {
 }
 
 function goBackFromMovieOverview() {
-	$("#perContent").fadeIn("normal");
-	$("#movieListContainer").fadeOut("normal");
+	$("#perContent").show(0);
+	$("#movieListContainer").hide(0);
 	$("#movieContainerBackBtn").hide(0);
 }
 
 //show the overview of the movie results
 function showResults() {
-	$("#perContent").fadeOut("normal");
-	$("#movieListContainer").fadeIn("normal");
+	$("#perContent").hide(0);
+	$("#movieListContainer").show(0);
 	$("#movieContainerBackBtn").show(0);
 }
 
 //coming from landing page show the content now
 function showContent() {
-	$("#landingContent").fadeOut("normal");
+	$("#landingContent").hide(0);
 	$("#content").show(0);
-	$("#perContent").fadeIn("normal");
+	$("#perContent").show(0);
 	$("#infoBtn").hide(0);
-	$("#connectionControls").fadeIn("normal");
-	$("#feedback").fadeIn("normal");
+	$("#connectionControls").show(0);
+	$("#feedback").show(0);
 }
 
 //show info page and hide the rest
 function showInfo() {
-	$("#landingContent").fadeOut("normal");
-	$("#content").fadeOut("normal");
-	$("#infoContent").fadeIn("normal");
+	$("#landingContent").hide(0);
+	$("#content").hide(0);
+	$("#infoContent").show(0);
 	$("#infoBackBtn").show(0);
 	$("#infoBtn").hide(0);
 	$("#title").html("AGB");
@@ -500,8 +499,8 @@ function showInfo() {
 
 //go back from info page to main page
 function goBackFromInfo() {
-	$("#landingContent").fadeIn("normal");
-	$("#content").fadeIn("normal");
+	$("#landingContent").show(0);
+	$("#content").show(0);
 	$("#infoContent").hide(0);
 	$("#infoBackBtn").hide(0);
 	$("#infoBtn").show(0);
@@ -512,8 +511,8 @@ function goBackFromInfo() {
 function goBackToList() {
 	$("#backBtn").hide(0);
 	$("#movieContainerBackBtn").show(0);
-	$("#movieListContainer").fadeIn("normal");
-	$("#movieContainer").fadeOut("normal");
+	$("#movieListContainer").show(0);
+	$("#movieContainer").hide(0);
 	$("#title").html("MovieMatcher");
 }
 
@@ -555,6 +554,7 @@ function start() {
 
 //show movie detail page and fill the grid with data
 function showMovieDetails(movieInternalName) {
+	$("#infoBtn").hide(0);
 	$("#infoBtn").hide(0);
 	$("#movieContainerBackBtn").hide(0);
 	writeLog("I want to see details of: " + movieInternalName);
@@ -613,8 +613,8 @@ function showMovieDetails(movieInternalName) {
 			$("#actors").html(actors);
 			$("#plot").html(trailers[i].plot);
 		}
-		$("#movieListContainer").fadeOut("normal");
-		$("#movieContainer").fadeIn("normal");
+		$("#movieListContainer").hide(0);
+		$("#movieContainer").show(0);
 		$('body').scrollTop(0);
 	}
 }

@@ -13,8 +13,8 @@ var users = require('./routes/users');
 
 //mongo db initialization
 var dburl = "localhost/evoCube";
-var collections = ["movies"];
-var db = require("mongojs").connect(dburl, collections);
+var collections = ["movies", "log"];
+mydbConnection = require("mongojs").connect(dburl, collections);
 
 
 var app = express();
@@ -75,7 +75,7 @@ app.use(function(err, req, res, next) {
 var adminClient;
 var locationsData = {};
 //clear and initiate the movie table
-db.movies.drop();
+mydbConnection.movies.drop();
 
 //read config file into memory
 fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) {
@@ -128,6 +128,21 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 
 			sockets.on("connection", function(socket) {
 
+				function getCookie(cname) {
+					var name = cname + "=";
+					var ca = socket.handshake.headers.cookie.split(';');
+					for (var i = 0; i < ca.length; i++) {
+						var c = ca[i];
+						while (c.charAt(0) == ' ') c = c.substring(1);
+						if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
+					}
+					return "";
+				}
+
+				writeLog("######################Cookie from app.js " + socket.handshake.headers.cookie);
+
+				writeLog("######################Cookie User ID: " + getCookie("userID"));
+
 				writeLog("Connection " + socket.id + " accepted");
 
 				socket.on("disconnect", function() {
@@ -140,20 +155,20 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 					} catch (err) {}
 
 				});
-				
+
 
 				//##############################
 				//MESSAGES FROM REMOTE CLIENT
 				//#############################
 
 				//remote client doesnt want to be remote client anymore and unregisters
-				socket.on("dismissRemoteClient",  function(cubeLocation, fn) {
+				socket.on("dismissRemoteClient", function(cubeLocation, fn) {
 					writeLog("Remote Client at " + cubeLocation + " with ID " + socket.id + " not longer remote client");
 					for (v = 0; v < locationsData.locations.length; v++) {
 						if (locationsData.locations[v].locationName == cubeLocation) {
 							locationsData.locations[v].remoteClient = null;
 						}
-					}					
+					}
 					fn();
 				});
 
@@ -170,16 +185,21 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 							locationsData.locations[v].secretCode = mySecretCode;
 						}
 					}
-					videoSocket.emit("isTrailerRunning", function(message) {
-						writeLog("Trailer is running: " + message);
-						if (message) {
-							fn(true);
-						} else {
-							fn(false);
-							videoSocket.emit("setSecret", mySecretCode);
-							writeLog("Secret Code for " + cubeLocation + " is now: " + mySecretCode);
-						}
-					});
+					if (undefined === videoSocket) {
+						writeLog("No Video Client at the moment");
+					} else {
+						videoSocket.emit("isTrailerRunning", function(message) {
+							writeLog("Trailer is running: " + message);
+							if (message) {
+								fn(true);
+							} else {
+								fn(false);
+								videoSocket.emit("setSecret", mySecretCode);
+								writeLog("Secret Code for " + cubeLocation + " is now: " + mySecretCode);
+							}
+						});
+					}
+
 				});
 
 				//remote client wants to check if the submited secret code is correct
@@ -268,7 +288,7 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 				//get command from remote client for a filtering query
 				socket.on("queryDB", function(myCubeLocation, filteringQuery, fn) {
 
-					db.movies.find({
+					mydbConnection.movies.find({
 						$and: [{
 							genre: {
 								$in: filteringQuery.genre
@@ -311,26 +331,52 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 				//#############################
 
 				//admin changed the playlist and wants to update the local file and the video client 
-				socket.on("forcePlaylistUpdate", function(newPlaylist, fn) {
+				socket.on("forcePlaylistUpdate", function(cubeLocation, newPlaylist, fn) {
 
-					fs.writeFile(__dirname + "/public/data/movies.json", newPlaylist, function(err) {
+					fs.writeFile(__dirname + "/public/data/" + cubeLocation + ".json", newPlaylist, function(err) {
 						if (err) {
 							fn(false);
 							console.log(err);
 						} else {
-							//data = JSON.stringify(newPlaylist);
-							//console.dir(newPlaylist);
 							playList = JSON.parse(newPlaylist);
+							for (v = 0; v < locationsData.locations.length; v++) {
+								if (locationsData.locations[v].locationName == cubeLocation) {
+									locationsData.locations[v].movieList = JSON.parse(newPlaylist);
 
-							saveNewPlayListToDB();
+									myVideoClient = locationsData.locations[v].videoClient;
+									//console.dir(locationsData.locations[v].movieList);
+									writeLog("New playlist for " + cubeLocation + " successfully updated at Server");
+								}
+							}
+							saveNewPlayListToDB(cubeLocation);
 
-							videoClient.emit("updatePlaylist", function() {
-								writeLog("Playlist successfully updated at Server and video client");
-
-							});
-
+							if (undefined === myVideoClient || null === myVideoClient) {} else {
+								videoClient.emit("updatePlaylist", function() {
+									writeLog("New playlist " + cubeLocation + "successfully sent to video client");
+								});
+							}
 							fn(true);
 						}
+					});
+				});
+
+				//admin changed the playlist and wants to update the local file and the video client 
+				socket.on("addLocation", function(cubeLocation, fn) {
+					fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) {
+						data = JSON.parse(data);
+						data.cubeLocations.push(cubeLocation);
+						//update the config file
+						fs.writeFile(__dirname + "/public/data/config.json", JSON.stringify(data), function(err) {
+							//load the template file for the new movie
+							fs.readFile(__dirname + "/public/data/template.json", "utf8", function(err, data) {
+								//make a new JSON file to store the movies
+								fs.writeFile(__dirname + "/public/data/" + cubeLocation + ".json", data, function(err) {
+									if (err) console.log(err);
+									writeLog("Config File successfully updated");
+									fn("success");
+								});
+							});
+						});
 					});
 				});
 
@@ -373,12 +419,14 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 
 
 function saveNewPlayListToDB(locationName) {
+	mydbConnection.movies.remove({
+		"cubeLocation": locationName
+	});
 	for (var v = 0; v < locationsData.locations.length; v++) {
 		if (locationsData.locations[v].locationName == locationName) {
 			for (var x = 0; x < locationsData.locations[v].movieList.length; x++) {
-				//writeLog(locationsData.locations[v].movieList[x].movieName);
 				locationsData.locations[v].movieList[x].cubeLocation = locationName;
-				db.movies.save(locationsData.locations[v].movieList[x]);
+				mydbConnection.movies.save(locationsData.locations[v].movieList[x]);
 			}
 		}
 	}
@@ -402,8 +450,18 @@ function getAndSavePlaylists(locationName) {
 
 //logging with timestap
 function writeLog(message) {
-	console.log(new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds() + " " + message);
-	//console.log(new Date().getDay() + "." + new Date().getMonth() + "." + new Date().getYear() + " " + new Date().getHours() + ":" + new Date().getMinutes() + ":" + new Date().getSeconds() + " " + message);
+	var hours = new Date().getHours();
+	var minutes = new Date().getMinutes();
+	var seconds = new Date().getSeconds();
+	var year = new Date().getFullYear();
+	var month = new Date().getMonth() + 1;
+	month = (month < 10 ? "0" : "") + month;
+	var day = new Date().getDate();
+	day = (day < 10 ? "0" : "") + day;
+	if (hours < 10) hours = "0" + hours;
+	if (minutes < 10) minutes = "0" + minutes;
+	if (seconds < 10) seconds = "0" + seconds;
+	console.log(day + "." + month + "." + year + " - " + hours + ":" + minutes + ":" + seconds + ": " + message);
 }
 
 module.exports = app;

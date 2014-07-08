@@ -4,6 +4,8 @@ var currentTrailerList;
 var allGenres = [];
 var allCountries = [];
 var connectionEstablished = false;
+var config;
+var cubeLocation;
 
 function connect() {
 
@@ -17,6 +19,53 @@ function connect() {
 			$("#status").html("Verbindung zum Server hergestellt");
 			if (message) writeLog("Successfully registered as admin");
 			connectionEstablished = true;
+
+			$.get("/data/config.json", function(data) {
+				writeLog("Config File loaded successfully");
+				//console.dir(data);
+				config = data;
+				console.dir(config);
+
+				for (var v = 0; v < config.cubeLocations.length; v++) {
+					//console.log()
+					$("#locationRadios").append("<div class=\"radio\"><label><input type=\"radio\" class=\"locationRadio\" name=\"location\" id=\"" + v + "\" value=\"" + config.cubeLocations[v] + "\"/>" + config.cubeLocations[v] + "</label></div>");
+				
+				}
+				$("#locationRadios").trigger("create");
+
+				$(".locationRadio").change(function() {
+					cubeLocation = $(this).attr("value");
+					loadFile($(this).attr("value"));
+					$("#sendFileBtn").show(0);
+					$("#changeForm").show(0);
+
+					$('#inputTitel').val("");
+					$('#inputOVTitel').val("");
+					$('#inputYear').val("");
+					$('#inputCountry').val("");
+					$('#inputOVSprache').val("");
+					$('#inputGenre').val("");
+					$('#inputDirector').val("");
+					$('#inputActors').val("");
+					$('#inputURLDE').val("");
+					$('#inputURLOV').val("");
+					$('#inputImageURL').val("");
+					$('#testAreaPlot').val("");
+
+					$("#remoteUrlNFC").html("CubeURL für die Remoteverbindung (NFC): http://" + config.server.ip + ":" + config.server.port + "/remote?location=" + cubeLocation + "&type=nfc");
+					$("#remoteUrlQR").html("CubeURL für die Remoteverbindung (QR): http://" + config.server.ip + ":" + config.server.port + "/remote?location=" + cubeLocation + "&type=qr");
+					$("#questionnaireUrlNFC").html("CubeURL für den Fragebogen (NFC): http://" + config.server.ip + ":" + config.server.port + "/questionnaire?location=" + cubeLocation + "&type=nfc");
+					$("#questionnaireUrlQR").html("CubeURL für den Fragebogen (QR): http://" + config.server.ip + ":" + config.server.port + "/questionnaire?location=" + cubeLocation + "&type=qr");
+					$("#randomUrlNFC").html("CubeURL für den Zufallstrailer (NFC): http://" + config.server.ip + ":" + config.server.port + "/random?location=" + cubeLocation + "&type=nfc");
+					$("#randomUrlQR").html("CubeURL für den Zufallstrailer (QR): http://" + config.server.ip + ":" + config.server.port + "/random?location=" + cubeLocation + "&type=qr");
+
+				});
+
+			}).fail(function() {
+				writeLog("Error loading file!");
+			});
+
+
 		});
 	});
 
@@ -38,16 +87,29 @@ function connect() {
 
 }
 
-//load the file with all movies from the server
-function loadFile() {
+//add a new location edit config file and send it back to the server
+function addNewLocation() {
+	writeLog("New location added: " + $('#inputTitel').val());	
+	$('#addNewLocationDiv').hide(0);
+	$('#locationRadios').hide(0);	
+	$('#info').html("Neue Location hinzugefügt. Lade die Seite neu, um mit der neuen Liste zu arbeiten. <b> UM DIE FILME ONLINE VERFÜGBAR ZU MACHEN MUSS DER SERVER NEU GESTARTET WERDEN!");
+	socket.emit("addLocation", $('#inputTitel').val(), function(message){
+		writeLog("Config update " + message);
 
-	$.get("/data/movies.json", function(data) {
+	});		
+}
+
+//load the file with all movies from the server
+function loadFile(fileName) {
+
+
+	$.get("/data/" + fileName + ".json", function(data) {
 		writeLog("File loaded successfully");
 		currentTrailerList = data;
 		printTrailerList(currentTrailerList);
 		$("#loadFileBtn").hide(0);
 		$("#sendFileBtn").show(0);
-		
+		$("#addNewLocationDiv").hide(0);
 
 	}).fail(function() {
 		writeLog("Error loading file!");
@@ -72,7 +134,7 @@ function getUniques(myArray) {
 //fill the table with data from the file
 function printTrailerList(movieList) {
 	$("#movieList").show(0);
-	$("#changeForm").show(0);
+	//$("#changeForm").show(0);
 	$(".movielistEntry").each(function() {
 		$(this).remove();
 	});
@@ -166,14 +228,15 @@ function printTrailerList(movieList) {
 }
 
 //send updated trailer file to server
-function sendFileToServer(){
+function sendFileToServer() {
 
 	$("#movieList").hide(0);
 	$("#changeForm").hide(0);
 	$("#loadFileBtn").show(0);
 	$("#sendFileBtn").hide(0);
-	if(connectionEstablished){
-		socket.emit("forcePlaylistUpdate", JSON.stringify(currentTrailerList), function(message){
+
+	if (connectionEstablished) {
+		socket.emit("forcePlaylistUpdate", cubeLocation, JSON.stringify(currentTrailerList), function(message) {
 			writeLog("playlistupdate: " + message);
 		});
 	}
