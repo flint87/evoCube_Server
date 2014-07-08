@@ -28,6 +28,7 @@ function connect() {
 
 				for (var v = 0; v < config.cubeLocations.length; v++) {
 					//console.log()
+					writeLog("config item added");
 					$("#locationRadios").append("<div class=\"radio\"><label><input type=\"radio\" class=\"locationRadio\" name=\"location\" id=\"" + v + "\" value=\"" + config.cubeLocations[v] + "\"/>" + config.cubeLocations[v] + "</label></div>");
 				
 				}

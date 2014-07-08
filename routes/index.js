@@ -36,7 +36,7 @@ router.get('/remote', function(req, res) {
 		if (req.param("type") == "nfc" || req.param("type") == "qr") {
 			if (undefined === req.cookies.userID) {				
 				res.cookie('userID', newID, {
-					maxAge: 999999999
+					maxAge: 999999999999
 				});
 			}
 			console.log("User with ID " + newID + " connected");

@@ -1,8 +1,1 @@
-{
-	"comment": "Eintragen von IP und Port von dem Webserver auf dem die Applikation läuft. Wichtig für das Admin Interface! Cube Connections können außerdem hier wieder gelöscht werden.",
-	"server": {
-		"ip": "192.168.0.29",
-		"port": "3000"
-	},
-	"cubeLocations": ["rechbauer", "kiz"]
-}
+{"comment":"Eintragen von IP und Port von dem Webserver auf dem die Applikation läuft. Wichtig für das Admin Interface! Cube Connections können außerdem hier wieder gelöscht werden.","server":{"ip":"192.168.0.29","port":"3000"},"cubeLocations":["rechbauer","kiz","asdf"]}
