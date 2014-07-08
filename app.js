@@ -351,7 +351,7 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 							saveNewPlayListToDB(cubeLocation);
 
 							if (undefined === myVideoClient || null === myVideoClient) {} else {
-								videoClient.emit("updatePlaylist", function() {
+								myVideoClient.emit("updatePlaylist", function() {
 									writeLog("New playlist " + cubeLocation + "successfully sent to video client");
 								});
 							}
@@ -427,7 +427,9 @@ function saveNewPlayListToDB(locationName) {
 			for (var x = 0; x < locationsData.locations[v].movieList.length; x++) {
 				locationsData.locations[v].movieList[x].cubeLocation = locationName;
 				saveMovieEntry(locationsData.locations[v].movieList[x]);
+				
 			}
+
 		}
 	}
 
@@ -436,7 +438,7 @@ function saveNewPlayListToDB(locationName) {
 			if (error) {
 				console.log(error);
 			} else {
-				console.log(savedEntry.movieName);
+				console.log(savedEntry.movieName + " " + savedEntry.cube);
 			}
 
 		});
