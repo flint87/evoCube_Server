@@ -333,7 +333,7 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 				//admin changed the playlist and wants to update the local file and the video client 
 				socket.on("forcePlaylistUpdate", function(cubeLocation, newPlaylist, fn) {
 
-					fs.writeFile(__dirname + "/public/data/" + cubeLocation + ".json", newPlaylist,  "utf8", function(err) {
+					fs.writeFile(__dirname + "/public/data/" + cubeLocation + ".json", newPlaylist, "utf8", function(err) {
 						if (err) {
 							fn(false);
 							console.log(err);
@@ -366,11 +366,11 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 						data = JSON.parse(data);
 						data.cubeLocations.push(cubeLocation);
 						//update the config file
-						fs.writeFile(__dirname + "/public/data/config.json", JSON.stringify(data),  "utf8",function(err) {
+						fs.writeFile(__dirname + "/public/data/config.json", JSON.stringify(data), "utf8", function(err) {
 							//load the template file for the new movie
 							fs.readFile(__dirname + "/public/data/template.json", "utf8", function(err, data) {
 								//make a new JSON file to store the movies
-								fs.writeFile(__dirname + "/public/data/" + cubeLocation + ".json", data,  "utf8", function(err) {
+								fs.writeFile(__dirname + "/public/data/" + cubeLocation + ".json", data, "utf8", function(err) {
 									if (err) console.log(err);
 									writeLog("Config File successfully updated");
 									fn("success");
@@ -426,9 +426,21 @@ function saveNewPlayListToDB(locationName) {
 		if (locationsData.locations[v].locationName == locationName) {
 			for (var x = 0; x < locationsData.locations[v].movieList.length; x++) {
 				locationsData.locations[v].movieList[x].cubeLocation = locationName;
-				mydbConnection.movies.save(locationsData.locations[v].movieList[x]);
+				saveMovieEntry(locationsData.locations[v].movieList[x]);
 			}
 		}
+	}
+
+	function saveMovieEntry(newEntry) {
+		mydbConnection.movies.save(newEntry, function(error, savedEntry) {
+			if (error) {
+				console.log(error);
+			} else {
+				console.log(savedEntry.movieName);
+			}
+
+		});
+
 	}
 }
 
