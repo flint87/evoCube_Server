@@ -115,6 +115,7 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 
 
 			//give periodically feedback if there is a remote client at the moment
+			/*
 			setInterval(function() {
 				for (v = 0; v < locationsData.locations.length; v++) {
 					try {
@@ -124,7 +125,7 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 					}
 				}
 			}, 60000);
-
+*/
 
 			sockets.on("connection", function(socket) {
 
@@ -138,10 +139,21 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 					}
 					return "";
 				}
+				if (getCookie("remoteVisited") == "true") {
+					console.log("####################: Remote visited " + getCookie("remoteVisited"));
+				}else{
+					console.log("####################: Remote visited false");
+				}
+				if (getCookie("randomVisited") == "true") {
+					console.log("####################: Random visited " + getCookie("randomVisited"));
+				}else{
+					console.log("####################: Random visited FALSE");
+				}
 
-				writeLog("######################Cookie from app.js " + socket.handshake.headers.cookie);
 
-				writeLog("######################Cookie User ID: " + getCookie("userID"));
+				//writeLog("######################Cookie from app.js " + socket.handshake.headers.cookie);
+
+				//writeLog("######################Cookie User ID: " + getCookie("userID"));
 
 				writeLog("Connection " + socket.id + " accepted");
 
@@ -427,7 +439,7 @@ function saveNewPlayListToDB(locationName) {
 			for (var x = 0; x < locationsData.locations[v].movieList.length; x++) {
 				locationsData.locations[v].movieList[x].cubeLocation = locationName;
 				saveMovieEntry(locationsData.locations[v].movieList[x]);
-				
+
 			}
 
 		}
@@ -438,7 +450,7 @@ function saveNewPlayListToDB(locationName) {
 			if (error) {
 				console.log(error);
 			} else {
-				console.log(savedEntry.movieName + " " + savedEntry.cube);
+				//console.log(savedEntry.movieName + " " + savedEntry.cube);
 			}
 
 		});
@@ -462,6 +474,17 @@ function getAndSavePlaylists(locationName) {
 	});
 }
 
+//save new tracking message to file
+function saveTrackingMessage(userID, locationName, eventType, message) {
+	fs.readFile(__dirname + "/public/data/log.csv", "utf8", function(err, data) {
+		data = data + userID + ";" + locationName + ";" + eventType + ";" + message;
+		fs.writeFile(__dirname + "/public/data/log.csv", data, "utf8", function(err) {
+			console.log("Tracking messages written");
+
+		});
+	});
+}
+
 //logging with timestap
 function writeLog(message) {
 	var hours = new Date().getHours();
@@ -475,7 +498,24 @@ function writeLog(message) {
 	if (hours < 10) hours = "0" + hours;
 	if (minutes < 10) minutes = "0" + minutes;
 	if (seconds < 10) seconds = "0" + seconds;
-	console.log(day + "." + month + "." + year + " - " + hours + ":" + minutes + ":" + seconds + ": " + message);
+	console.log(day + "." + month + "." + year + " " + hours + ":" + minutes + ":" + seconds + ": " + message);
+
+}
+
+//get timestamp for the log file
+function getTimeStamp() {
+	var hours = new Date().getHours();
+	var minutes = new Date().getMinutes();
+	var seconds = new Date().getSeconds();
+	var year = new Date().getFullYear();
+	var month = new Date().getMonth() + 1;
+	month = (month < 10 ? "0" : "") + month;
+	var day = new Date().getDate();
+	day = (day < 10 ? "0" : "") + day;
+	if (hours < 10) hours = "0" + hours;
+	if (minutes < 10) minutes = "0" + minutes;
+	if (seconds < 10) seconds = "0" + seconds;
+	return day + "." + month + "." + year + " " + hours + ":" + minutes + ":" + seconds;
 }
 
 module.exports = app;

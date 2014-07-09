@@ -15,6 +15,7 @@ var allYears = [];
 var allOV = [];
 var allCountries = [];
 var cubeLocation;
+var firstConnect = true;
 
 
 
@@ -82,7 +83,7 @@ function connect() {
 
 //notify server that this is a new remote client
 function registerToServer() {
-	
+
 	//get the query parameters to determine to which cubeLocation this page call belongs to
 	var query_string = {};
 	var query = window.location.search.substring(1);
@@ -106,120 +107,127 @@ function registerToServer() {
 	socket.emit("clientRegister", cubeLocation, function() {
 		writeLog("Client successfully registered to Server at location " + cubeLocation);
 
-		//load the movie list from the server
-		//$.ajaxSetup({ scriptCharset: "utf-8" , contentType: "application/json; charset=utf-8"});
-		$.get("/data/" + cubeLocation + ".json", function(data) {
-			writeLog("File loaded successfully");
-			trailers = data;
+		if (firstConnect) {
+
+			//load the movie list from the server
+			//$.ajaxSetup({ scriptCharset: "utf-8" , contentType: "application/json; charset=utf-8"});
+			$.get("/data/" + cubeLocation + ".json", function(data) {
+				writeLog("File loaded successfully");
+				trailers = data;
 
 
-			//get all possible values which are needed for the personalization
-			for (var v = 0; v < trailers.length; v++) {
-				for (var x = 0; x < trailers[v].genre.length; x++) {
-					allGenres.push(trailers[v].genre[x]);
+				//get all possible values which are needed for the personalization
+				for (var v = 0; v < trailers.length; v++) {
+					for (var x = 0; x < trailers[v].genre.length; x++) {
+						allGenres.push(trailers[v].genre[x]);
+					}
+					allYears.push(trailers[v].year);
+					allOV.push(trailers[v].ov);
+
+					for (var p = 0; p < trailers[v].country.length; p++) {
+						allCountries.push(trailers[v].country[p]);
+					}
 				}
-				allYears.push(trailers[v].year);
-				allOV.push(trailers[v].ov);
 
-				for (var p = 0; p < trailers[v].country.length; p++) {
-					allCountries.push(trailers[v].country[p]);
+				allGenres = getUniques(allGenres);
+				allYears = getUniques(allYears);
+				allOV = getUniques(allOV);
+				allCountries = getUniques(allCountries);
+
+				allGenres.sort();
+				allYears.sort();
+				allOV.sort();
+				allCountries.sort();
+
+				//create dynamically all personalization content based on movie list			
+				for (v = 0; v < allYears.length; v++) {
+					$("#yearLegend").append("<input type=\"checkbox\"  name=\"" + allYears[v] + "\" id=\"years" + v + "\" class=\"pers year\"></input> <label for=\"years" + v + "\">  " + allYears[v] + "</label>");
 				}
-			}
+				$("#yearControlGroup").trigger('create');
+				for (v = 0; v < allGenres.length; v++) {
+					$("#genreLegend").append("<input type=\"checkbox\"  name=\"" + allGenres[v] + "\" id=\"genres" + v + "\" class=\"pers genre\"></input> <label for=\"genres" + v + "\">  " + allGenres[v] + "</label>");
+				}
+				$("#genreControlGroup").trigger('create');
+				for (v = 0; v < allCountries.length; v++) {
+					$("#countryLegend").append("<input type=\"checkbox\"  name=\"" + allCountries[v] + "\" id=\"country" + v + "\" class=\"pers country\"></input> <label for=\"country" + v + "\">  " + allCountries[v] + "</label>");
+				}
+				$("#countryControlGroup").trigger('create');
+				for (v = 0; v < allOV.length; v++) {
+					$("#ovLegend").append("<input type=\"checkbox\"  name=\"" + allOV[v] + "\" id=\"ov" + v + "\" class=\"pers ov\"></input> <label for=\"ov" + v + "\">  " + allOV[v] + "</label>");
+				}
+				$("#ovControlGroup").trigger('create');
 
-			allGenres = getUniques(allGenres);
-			allYears = getUniques(allYears);
-			allOV = getUniques(allOV);
-			allCountries = getUniques(allCountries);
-
-			allGenres.sort();
-			allYears.sort();
-			allOV.sort();
-			allCountries.sort();
-
-			//create dynamically all personalization content based on movie list			
-			for (v = 0; v < allYears.length; v++) {
-				$("#yearLegend").append("<input type=\"checkbox\"  name=\"" + allYears[v] + "\" id=\"years" + v + "\" class=\"pers year\"></input> <label for=\"years" + v + "\">  " + allYears[v] + "</label>");
-			}
-			$("#yearControlGroup").trigger('create');
-			for (v = 0; v < allGenres.length; v++) {
-				$("#genreLegend").append("<input type=\"checkbox\"  name=\"" + allGenres[v] + "\" id=\"genres" + v + "\" class=\"pers genre\"></input> <label for=\"genres" + v + "\">  " + allGenres[v] + "</label>");
-			}
-			$("#genreControlGroup").trigger('create');
-			for (v = 0; v < allCountries.length; v++) {
-				$("#countryLegend").append("<input type=\"checkbox\"  name=\"" + allCountries[v] + "\" id=\"country" + v + "\" class=\"pers country\"></input> <label for=\"country" + v + "\">  " + allCountries[v] + "</label>");
-			}
-			$("#countryControlGroup").trigger('create');
-			for (v = 0; v < allOV.length; v++) {
-				$("#ovLegend").append("<input type=\"checkbox\"  name=\"" + allOV[v] + "\" id=\"ov" + v + "\" class=\"pers ov\"></input> <label for=\"ov" + v + "\">  " + allOV[v] + "</label>");
-			}
-			$("#ovControlGroup").trigger('create');
-
-			/*
+				/*
 			$("#yearLegend").append("<input type=\"checkbox\"  name=\"" + allYears[0] + "\" id=\"" + allYears[0] + "\" class=\"pers year\"></input> <label for=\"" + allYears[0] + "\">  " + allYears[0] + "</label>");
 			$("#yearLegend").append("<input type=\"checkbox\"  name=\"" + allYears[1] + "\" id=\"" + allYears[1] + "\" class=\"pers year\"></input> <label for=\"" + allYears[1] + "\">  " + allYears[1] + "</label>");
 			$("#yearControlGroup").trigger('create');
 */
-			//add change listeners to the radio buttons for the personalization items
-			$(".persGroupRadio").change(function() {
-				writeLog($(this).attr("for"));
-				$("#genreDiv").hide(0);
-				$("#countryDiv").hide(0);
-				$("#ovDiv").hide(0);
-				$("#yearDiv").hide(0);
-				$("#" + $(this).attr("for")).show(0);
+				//add change listeners to the radio buttons for the personalization items
+				$(".persGroupRadio").change(function() {
+					writeLog($(this).attr("for"));
+					$("#genreDiv").hide(0);
+					$("#countryDiv").hide(0);
+					$("#ovDiv").hide(0);
+					$("#yearDiv").hide(0);
+					$("#" + $(this).attr("for")).show(0);
 
-			});
-
-
-
-			//add on change function to all check boxes in personalization content
-			//update results after every change
-			$('.pers').click(function() {
-				showLoader();
-				writeLog("Change triggered on " + $(this).attr("name") + " checked: " + $(this).is(':checked'));
-				//update the searchfield
-				if ($(this).is(':checked')) {
-					$("#searchWords").controlgroup("container").append("<a id=\"" + $(this).attr("name") + "\" href=\"#\" class=\"ui-btn ui-corner-all ui-icon-delete ui-btn-icon-right \" >" + $(this).attr("name") + " </a>");
-					$("#searchWords").enhanceWithin().controlgroup("refresh");
-					$("#searchWords").controlgroup("refresh");
-					//if the search word is removed via the search field and not via the checkboxes, remove both and refresh the search
-					$("#" + $(this).attr("name")).click(function() {
-						$(this).remove();
-						$("#searchWords").enhanceWithin().controlgroup("refresh");
-						writeLog("CLICK DETECTED " + $("input[name=" + $(this).attr("id") + "]").attr("type"));
-						$("input[name=" + $(this).attr("id") + "]").prop("checked", false).checkboxradio("refresh");
-						buildQueryString();
-					});
-				} else {
-					$("#" + $(this).attr("name")).remove();
-					$("#searchWords").enhanceWithin().controlgroup("refresh");
-					$("#searchWords").controlgroup("refresh");
-				}
-				buildQueryString();
-
-			});
-
-			hideLoader();
-
-			//check periodically if there is still a connection
-			setInterval(function() {
-				socket.emit("inCharge", cubeLocation, function(message) {
-					//writeLog("Main client: " + message);				
-					if (message) {
-						$("#feedback").html("Du bist jetzt mit dem Fernseher verbunden und kannst dir beliebige Trailer anschauen.");
-					} else {
-						if (initState == "noRemoteConnection") {
-							$("#feedback").html("Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.");
-							clearTimeout(myDisconnectTimer);
-						}
-					}
 				});
 
-			}, 3000);
 
-		}).fail(function() {
-			writeLog("Error loading file!!!");
-		});
+
+				//add on change function to all check boxes in personalization content
+				//update results after every change
+				$('.pers').click(function() {
+					showLoader();
+					writeLog("Change triggered on " + $(this).attr("name") + " checked: " + $(this).is(':checked'));
+					//update the searchfield
+					if ($(this).is(':checked')) {
+						$("#searchWords").controlgroup("container").append("<a id=\"" + $(this).attr("name") + "\" href=\"#\" class=\"ui-btn ui-corner-all ui-icon-delete ui-btn-icon-right \" >" + $(this).attr("name") + " </a>");
+						$("#searchWords").enhanceWithin().controlgroup("refresh");
+						$("#searchWords").controlgroup("refresh");
+						//if the search word is removed via the search field and not via the checkboxes, remove both and refresh the search
+						$("#" + $(this).attr("name")).click(function() {
+							$(this).remove();
+							$("#searchWords").enhanceWithin().controlgroup("refresh");
+							writeLog("CLICK DETECTED " + $("input[name=" + $(this).attr("id") + "]").attr("type"));
+							$("input[name=" + $(this).attr("id") + "]").prop("checked", false).checkboxradio("refresh");
+							buildQueryString();
+						});
+					} else {
+						$("#" + $(this).attr("name")).remove();
+						$("#searchWords").enhanceWithin().controlgroup("refresh");
+						$("#searchWords").controlgroup("refresh");
+					}
+					buildQueryString();
+
+				});
+
+				hideLoader();
+
+				//check periodically if there is still a connection
+				setInterval(function() {
+					socket.emit("inCharge", cubeLocation, function(message) {
+						//writeLog("Main client: " + message);				
+						if (message) {
+							$("#feedback").html("Du bist jetzt mit dem Fernseher verbunden und kannst dir beliebige Trailer anschauen.");
+						} else {
+							if (initState == "noRemoteConnection") {
+								$("#feedback").html("Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.");
+								clearTimeout(myDisconnectTimer);
+							}
+						}
+					});
+
+				}, 3000);
+
+
+
+			}).fail(function() {
+				writeLog("Error loading file!!!");
+			});
+
+			firstConnect = false;
+		}
 
 
 	});
