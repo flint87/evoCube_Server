@@ -129,26 +129,6 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 
 			sockets.on("connection", function(socket) {
 
-				function getCookie(cname) {
-					var name = cname + "=";
-					var ca = socket.handshake.headers.cookie.split(';');
-					for (var i = 0; i < ca.length; i++) {
-						var c = ca[i];
-						while (c.charAt(0) == ' ') c = c.substring(1);
-						if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
-					}
-					return "";
-				}
-				if (getCookie("remoteVisited") == "true") {
-					console.log("####################: Remote visited " + getCookie("remoteVisited"));
-				}else{
-					console.log("####################: Remote visited false");
-				}
-				if (getCookie("randomVisited") == "true") {
-					console.log("####################: Random visited " + getCookie("randomVisited"));
-				}else{
-					console.log("####################: Random visited FALSE");
-				}
 
 
 				//writeLog("######################Cookie from app.js " + socket.handshake.headers.cookie);
@@ -271,6 +251,27 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 
 				//inform the server about the newest client
 				socket.on("clientRegister", function(cubeLocation, fn) {
+					function getCookie(cname) {
+						var name = cname + "=";
+						var ca = socket.handshake.headers.cookie.split(';');
+						for (var i = 0; i < ca.length; i++) {
+							var c = ca[i];
+							while (c.charAt(0) == ' ') c = c.substring(1);
+							if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
+						}
+						return "";
+					}
+					if (getCookie("remoteVisited") == "true") {
+						console.log("####################: Remote visited " + getCookie("remoteVisited"));
+					} else {
+						console.log("####################: Remote visited false");
+					}
+					if (getCookie("randomVisited") == "true") {
+						console.log("####################: Random visited " + getCookie("randomVisited"));
+					} else {
+						console.log("####################: Random visited FALSE");
+					}
+
 					writeLog("Client from " + cubeLocation + " registered to Server with ID: " + socket.id);
 					fn();
 				});
