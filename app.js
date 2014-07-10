@@ -486,16 +486,7 @@ function getAndSavePlaylists(locationName) {
 	});
 }
 
-//save new tracking message to file
-function saveTrackingMessage(userID, locationName, eventType, message) {
-	fs.readFile(__dirname + "/public/data/log.csv", "utf8", function(err, data) {
-		data = data + userID + ";" + locationName + ";" + eventType + ";" + message;
-		fs.writeFile(__dirname + "/public/data/log.csv", data, "utf8", function(err) {
-			console.log("Tracking messages written");
 
-		});
-	});
-}
 
 //logging with timestap
 function writeLog(message) {
