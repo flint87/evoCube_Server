@@ -36,9 +36,9 @@ html(lang="en")
         br
         div(id="changeForm" style="display:none" class="container-fluid")
           div(class="form-group")
-            label(for="inputTitel" class="col-sm-2 control-label") Deutscher Titel
+            label(for="inputDtTitel" class="col-sm-2 control-label") Deutscher Titel
             div(class="col-sm-10")
-              input(type="Text" class="form-control" id="inputTitel" placeholder="Deutscher Titel")
+              input(type="Text" class="form-control" id="inputDtTitel" placeholder="Deutscher Titel")
           div(class="form-group")
             label(for="inputOVTitel" class="col-sm-2 control-label") OV Titel
             div(class="col-sm-10")
@@ -62,6 +62,18 @@ html(lang="en")
             label(for="inputGenre" class="col-sm-2 control-label") Genre (mehrere mit "," trennen!!)
             div(class="col-sm-10")
               input(type="Text" class="form-control" id="inputGenre" placeholder="Genre")
+          div(class="form-group")
+            label(for="inputMood" class="col-sm-2 control-label") Stimmung (mit "," trennen!!)
+            div(class="col-sm-10")
+              input(type="Text" class="form-control" id="inputMood" placeholder="Stimmung")
+          div(class="form-group")
+            label(for="inputAudience" class="col-sm-2 control-label") Publikum (mit "," trennen!!)
+            div(class="col-sm-10")
+              input(type="Text" class="form-control" id="inputAudience" placeholder="Publikum")
+          div(class="form-group")
+            label(for="inputAvailable" class="col-sm-2 control-label") Verfügbarkeit
+            div(class="col-sm-10")
+              input(type="Text" class="form-control" id="inputAvailable" placeholder="Verfügbarkeit")
           div(class="form-group")
             label(for="inputDirector" class="col-sm-2 control-label") Regisseur
             div(class="col-sm-10")
@@ -102,6 +114,9 @@ html(lang="en")
                 th OV Sprache
                 th Genre
                 th Regisseur
+                th Stimmung
+                th Publikum
+                th Verfügbarkeit
                 th Schauspieler
                 th Handlung
                 th Deutsche Video URL

@@ -40,7 +40,7 @@ function connect() {
 					$("#sendFileBtn").show(0);
 					$("#changeForm").show(0);
 
-					$('#inputTitel').val("");
+					$('#inputDtTitel').val("");
 					$('#inputOVTitel').val("");
 					$('#inputYear').val("");
 					$('#inputCountry').val("");
@@ -148,31 +148,21 @@ function printTrailerList(movieList) {
 
 	for (var v = 0; v < movieList.length; v++) {
 
-		/*
-		//get all possible values for genre
-		for (var y = 0; y < movieList[v].genre.length; y++) {
-			allGenres.push(movieList[v].genre[y]);
-		}
-		//get all possible values for country
-		for (var w = 0; w < movieList[w].country.length; w++) {
-			allCountries.push(movieList[w].country[w]);
-		}
-*/
-
 
 		var actorsShort = movieList[v].actors[0] + ", ...";
 		var urlDEShort;
 		var urlOVShort;
 		if (undefined === movieList[v].urlDE) {
-			urlDEShort = "KEIN";
+			urlDEShort = "";
 		} else {
 			urlDEShort = movieList[v].urlDE.substring(0, 20) + "...";
 		}
 		if (undefined === movieList[v].urlOV) {
-			urlOVShort = "KEIN";
+			urlOVShort = "";
 		} else {
 			urlOVShort = movieList[v].urlOV.substring(0, 20) + "...";
 		}
+
 
 		$('#movieListTable').append("<tr class=\"movielistEntry\" id=\"" +
 			movieList[v].interalName + "\"><td>" +
@@ -186,6 +176,9 @@ function printTrailerList(movieList) {
 			movieList[v].ov + "</td><td>" +
 			movieList[v].genre + "</td><td>" +
 			movieList[v].director + "</td><td>" +
+			movieList[v].mood + "</td><td>" +
+			movieList[v].audience + "</td><td>" +
+			movieList[v].available + "</td><td>" +
 			actorsShort + "</td><td>" +
 			movieList[v].plot.substring(0, 40) + "... " + "</td><td>" +
 			urlDEShort + "</td><td>" +
@@ -193,30 +186,6 @@ function printTrailerList(movieList) {
 			movieList[v].imageURL.substring(0, 20) + "</td><td>" + "</td></tr>");
 	}
 
-
-	//allGenres = getUniques(allGenres);
-	//allCountries = getUniques(allCountries);
-	//allYears = getUniques(allYears);
-
-
-	/*
-	for (var z = 0; z < allCountries.length; z++) {
-		$('#countrySelect').append("<option (value=\"" + allCountries[z] + "\" class=\"countryListEntry\")>" + allCountries[z] + "</option>");
-	}
-
-	$('#countrySelect').change(function() {
-		var optionSelected = $("option:selected", this);
-		var valueSelected = this.value;
-		writeLog(this.value);
-		if (undefined === $("#inputCountry").attr("value") || $("#inputCountry").attr("value")  === "") {
-			$("#inputCountry").attr("value", this.value);
-		} else {
-			$("#inputCountry").attr("value", $("#inputCountry").attr("value") + ";" + this.value);
-			writeLog($("#inputCountry").attr("value"));
-		}
-
-	});
-*/
 
 	$(".deleteBtn").click(function() {
 		deleteMovie($(this).attr("id"));
@@ -247,10 +216,10 @@ function sendFileToServer() {
 function addMovie() {
 
 	var newEntry = {};
-	newEntry.movieName = $('#inputTitel').val();
+	newEntry.movieName = $('#inputDtTitel').val();
 	newEntry.ovName = $('#inputOVTitel').val();
 
-	var sub = $('#inputTitel').val();
+	var sub = $('#inputDtTitel').val();
 	var charPosition = -1;
 	sub = sub.charAt(0).toLowerCase() + sub.slice(1);
 
@@ -292,6 +261,32 @@ function addMovie() {
 	newEntry.year = $('#inputYear').val();
 	newEntry.director = $('#inputDirector').val();
 
+	var moods = [];
+	charPosition = -1;
+	sub = $('#inputMood').val();
+	charPosition = sub.indexOf(",");
+	while (charPosition > 0) {
+		moods.push(sub.substring(0, charPosition));
+		sub = sub.substring(charPosition + 1);
+		charPosition = sub.indexOf(",");
+	}
+	moods.push(sub);
+	newEntry.mood = moods;
+
+	var audiences = [];
+	charPosition = -1;
+	sub = $('#inputAudience').val();
+	charPosition = sub.indexOf(",");
+	while (charPosition > 0) {
+		audiences.push(sub.substring(0, charPosition));
+		sub = sub.substring(charPosition + 1);
+		charPosition = sub.indexOf(",");
+	}
+	audiences.push(sub);
+	newEntry.audience = audiences;
+
+	newEntry.available = $('#inputAvailable').val();
+
 	var countries = [];
 	charPosition = -1;
 	sub = $('#inputCountry').val();
@@ -320,18 +315,22 @@ function addMovie() {
 
 	console.dir(newEntry);
 
-	$('#inputTitel').val("");
+	$('#inputDtTitel').val("");
 	$('#inputOVTitel').val("");
 	$('#inputYear').val("");
 	$('#inputCountry').val("");
 	$('#inputOVSprache').val("");
 	$('#inputGenre').val("");
 	$('#inputDirector').val("");
+	$('#inputAudience').val("");
+	$('#inputMood').val("");
+	$('#inputAvailable').val("");
 	$('#inputActors').val("");
 	$('#inputURLDE').val("");
 	$('#inputURLOV').val("");
 	$('#inputImageURL').val("");
 	$('#testAreaPlot').val("");
+	
 
 	currentTrailerList.push(newEntry);
 	printTrailerList(currentTrailerList);
@@ -357,13 +356,16 @@ function editMovie(movieInternalName) {
 			break;
 		}
 	}
-	$('#inputTitel').val(currentTrailerList[w].movieName);
+	$('#inputDtTitel').val(currentTrailerList[w].movieName);
 	$('#inputOVTitel').val(currentTrailerList[w].ovName);
 	$('#inputYear').val(currentTrailerList[w].year);
 	$('#inputCountry').val(currentTrailerList[w].country);
 	$('#inputOVSprache').val(currentTrailerList[w].ov);
 	$('#inputGenre').val(currentTrailerList[w].genre);
 	$('#inputDirector').val(currentTrailerList[w].director);
+	$('#inputMood').val(currentTrailerList[w].mood);
+	$('#inputAudience').val(currentTrailerList[w].audience);
+	$('#inputAvailable').val(currentTrailerList[w].available);
 	$('#inputActors').val(currentTrailerList[w].actors);
 	$('#inputURLDE').val(currentTrailerList[w].urlDE);
 	$('#inputURLOV').val(currentTrailerList[w].urlOV);

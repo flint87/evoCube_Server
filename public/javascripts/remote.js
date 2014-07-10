@@ -609,6 +609,29 @@ function showMovieDetails(movieInternalName) {
 				}
 			}
 			$("#genre").html(genres);
+
+			var moods = "";
+			for (u = 0; u < trailers[i].mood.length; u++) {
+				if (u !== trailers[i].mood.length - 1) {
+					moods = moods + trailers[i].mood[u] + ", ";
+				} else {
+					moods = moods + trailers[i].mood[u];
+				}
+			}
+			$("#mood").html(moods);
+
+			var audiences = "";
+			for (u = 0; u < trailers[i].audience.length; u++) {
+				if (u !== trailers[i].audience.length - 1) {
+					audiences = audiences + trailers[i].audience[u] + ", ";
+				} else {
+					audiences = audiences + trailers[i].audience[u];
+				}
+			}
+			$("#audience").html(audiences);
+
+			$("#available").html(trailers[i].available);
+
 			$("#director").html(trailers[i].director);
 			var actors = "";
 			for (u = 0; u < trailers[i].actors.length; u++) {
@@ -668,17 +691,6 @@ function getUniques(myArray) {
 	return cleaned;
 }
 
-//sorts every JSON object
-function sort_by(field, reverse, primer) {
-	var key = function(x) {
-		return primer ? primer(x[field]) : x[field];
-	};
-	return function(a, b) {
-		var A = key(a),
-			B = key(b);
-		return ((A < B) ? -1 : (A > B) ? +1 : 0) * [-1, 1][+!!reverse];
-	};
-}
 
 //logging with timestap
 function writeLog(message) {
