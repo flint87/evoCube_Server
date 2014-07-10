@@ -102,6 +102,8 @@ html
                         label(for="ovRadio") OV Sprache
                         input(type="radio" name="radio-choice-v-6" id="yearRadio" for="yearDiv" value="other" class="persGroupRadio")
                         label(for="yearRadio") Jahr
+                        input(type="radio" name="radio-choice-v-6" id="moodRadio" for="moodDiv" value="other" class="persGroupRadio")
+                        label(for="moodRadio") Stimmung
                   td(style="vertical-align:top;")
                     div(id="genreDiv" style="width:100%; vertical-align:top; margin-left:5%; disyplay:none")                      
                       fieldset(id="genreControlGroup" data-role="controlgroup" data-type="horizontal" data-mini="true")
@@ -114,7 +116,10 @@ html
                         legend(id="ovLegend")
                     div(id="yearDiv" style="width:100%; vertical-align:top; margin-left:5%; display:none;")
                       fieldset(id="yearControlGroup" data-role="controlgroup" data-type="horizontal" data-mini="true")
-                        legend(id="yearLegend")                         
+                        legend(id="yearLegend")
+                    div(id="moodDiv" style="width:100%; vertical-align:top; margin-left:5%; display:none;")
+                      fieldset(id="moodControlGroup" data-role="controlgroup" data-type="horizontal" data-mini="true")
+                        legend(id="moodLegend") 
           p(id='feedback' style="display:none;") Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.
           div(id="movieControls" style="display:none;")
             button(id='play' onClick='start()' class='myButton') Play/Pause Video

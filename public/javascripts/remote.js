@@ -14,6 +14,7 @@ var allGenres = [];
 var allYears = [];
 var allOV = [];
 var allCountries = [];
+var allMoods =[];
 var cubeLocation;
 var firstConnect = true;
 
@@ -127,17 +128,24 @@ function registerToServer() {
 					for (var p = 0; p < trailers[v].country.length; p++) {
 						allCountries.push(trailers[v].country[p]);
 					}
+					
+					for (var w = 0; w < trailers[v].country.length; w++) {
+						allMoods.push(trailers[v].mood[w]);
+					}
+
 				}
 
 				allGenres = getUniques(allGenres);
 				allYears = getUniques(allYears);
 				allOV = getUniques(allOV);
 				allCountries = getUniques(allCountries);
+				allMoods = getUniques(allMoods);
 
 				allGenres.sort();
 				allYears.sort();
 				allOV.sort();
 				allCountries.sort();
+				allMoods.sort();
 
 				//create dynamically all personalization content based on movie list			
 				for (v = 0; v < allYears.length; v++) {
@@ -156,6 +164,12 @@ function registerToServer() {
 					$("#ovLegend").append("<input type=\"checkbox\"  name=\"" + allOV[v] + "\" id=\"ov" + v + "\" class=\"pers ov\"></input> <label for=\"ov" + v + "\">  " + allOV[v] + "</label>");
 				}
 				$("#ovControlGroup").trigger('create');
+				for (v = 0; v < allMoods.length; v++) {
+					$("#moodLegend").append("<input type=\"checkbox\"  name=\"" + allMoods[v] + "\" id=\"mood" + v + "\" class=\"pers mood\"></input> <label for=\"mood" + v + "\">  " + allMoods[v] + "</label>");
+				}
+				$("#moodControlGroup").trigger('create');
+
+
 
 				/*
 			$("#yearLegend").append("<input type=\"checkbox\"  name=\"" + allYears[0] + "\" id=\"" + allYears[0] + "\" class=\"pers year\"></input> <label for=\"" + allYears[0] + "\">  " + allYears[0] + "</label>");
@@ -164,13 +178,13 @@ function registerToServer() {
 */
 				//add change listeners to the radio buttons for the personalization items
 				$(".persGroupRadio").change(function() {
-					writeLog($(this).attr("for"));
+					//writeLog($(this).attr("for"));
 					$("#genreDiv").hide(0);
 					$("#countryDiv").hide(0);
 					$("#ovDiv").hide(0);
 					$("#yearDiv").hide(0);
+					$("#moodDiv").hide(0);					
 					$("#" + $(this).attr("for")).show(0);
-
 				});
 
 
@@ -242,7 +256,8 @@ function buildQueryString() {
 		genre: [],
 		country: [],
 		year: [],
-		ov: []
+		ov: [],
+		mood:[]
 	};
 
 	//build genres
@@ -298,6 +313,20 @@ function buildQueryString() {
 	if (filterQuery.year.length === 0) {
 		for (var o = 0; o < allYears.length; o++) {
 			filterQuery.year.push(allYears[o]);
+		}
+	}
+
+	//build mood
+	$(".mood").each(function() {
+		if ($(this).is(':checked')) {
+			filterQuery.mood.push($(this).attr("name"));
+			nothingSelected = false;
+		}
+	});
+	//if no years are selected, select all
+	if (filterQuery.mood.length === 0) {
+		for (var h = 0; h < allMoods.length; h++) {
+			filterQuery.mood.push(allMoods[h]);
 		}
 	}
 

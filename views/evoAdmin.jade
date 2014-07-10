@@ -31,7 +31,7 @@ html(lang="en")
           p(id="questionnaireUrlQR")
           p(id="randomUrlNFC")
           p(id="randomUrlQR")
-        button(type="button" id="sendFileBtn" style="display:none" class="btn btn-danger" onClick="sendFileToServer()") Schicke aktualisierte Trailer Datei zum Server
+        button(type="button" id="sendFileBtn" style="display:none" class="btn btn-danger" onClick="sendFileToServer()") Speichern und am Server freischalten
         br
         br
         div(id="changeForm" style="display:none" class="container-fluid")
@@ -66,10 +66,6 @@ html(lang="en")
             label(for="inputMood" class="col-sm-2 control-label") Stimmung (mit "," trennen!!)
             div(class="col-sm-10")
               input(type="Text" class="form-control" id="inputMood" placeholder="Stimmung")
-          div(class="form-group")
-            label(for="inputAudience" class="col-sm-2 control-label") Publikum (mit "," trennen!!)
-            div(class="col-sm-10")
-              input(type="Text" class="form-control" id="inputAudience" placeholder="Publikum")
           div(class="form-group")
             label(for="inputAvailable" class="col-sm-2 control-label") Verfügbarkeit
             div(class="col-sm-10")
@@ -115,7 +111,6 @@ html(lang="en")
                 th Genre
                 th Regisseur
                 th Stimmung
-                th Publikum
                 th Verfügbarkeit
                 th Schauspieler
                 th Handlung

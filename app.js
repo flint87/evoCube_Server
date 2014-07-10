@@ -298,6 +298,10 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 								$in: filteringQuery.ov
 							}
 						}, {
+							mood: {
+								$in: filteringQuery.mood
+							}
+						}, {
 							cubeLocation: myCubeLocation
 						}]
 					}, function(err, queryResult) {

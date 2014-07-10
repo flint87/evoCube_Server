@@ -6,6 +6,7 @@ var allCountries = [];
 var connectionEstablished = false;
 var config;
 var cubeLocation;
+var firstConnect = true;
 
 function connect() {
 
@@ -20,51 +21,57 @@ function connect() {
 			if (message) writeLog("Successfully registered as admin");
 			connectionEstablished = true;
 
-			$.get("/data/config.json", function(data) {
-				writeLog("Config File loaded successfully");
-				//console.dir(data);
-				config = data;
-				console.dir(config);
+			if (firstConnect) {
+				$.get("/data/config.json", function(data) {
+					writeLog("Config File loaded successfully");
+					//console.dir(data);
+					config = data;
+					console.dir(config);
 
-				for (var v = 0; v < config.cubeLocations.length; v++) {
-					//console.log()
-					writeLog("config item added");
-					$("#locationRadios").append("<div class=\"radio\"><label><input type=\"radio\" class=\"locationRadio\" name=\"location\" id=\"" + v + "\" value=\"" + config.cubeLocations[v] + "\"/>" + config.cubeLocations[v] + "</label></div>");
-				
-				}
-				$("#locationRadios").trigger("create");
+					for (var v = 0; v < config.cubeLocations.length; v++) {
+						//console.log()
+						writeLog("config item added");
+						$("#locationRadios").append("<div class=\"radio\"><label><input type=\"radio\" class=\"locationRadio\" name=\"location\" id=\"" + v + "\" value=\"" + config.cubeLocations[v] + "\"/>" + config.cubeLocations[v] + "</label></div>");
 
-				$(".locationRadio").change(function() {
-					cubeLocation = $(this).attr("value");
-					loadFile($(this).attr("value"));
-					$("#sendFileBtn").show(0);
-					$("#changeForm").show(0);
+					}
+					$("#locationRadios").trigger("create");
 
-					$('#inputDtTitel').val("");
-					$('#inputOVTitel').val("");
-					$('#inputYear').val("");
-					$('#inputCountry').val("");
-					$('#inputOVSprache').val("");
-					$('#inputGenre').val("");
-					$('#inputDirector').val("");
-					$('#inputActors').val("");
-					$('#inputURLDE').val("");
-					$('#inputURLOV').val("");
-					$('#inputImageURL').val("");
-					$('#testAreaPlot').val("");
+					$(".locationRadio").change(function() {
+						cubeLocation = $(this).attr("value");
+						loadFile($(this).attr("value"));
+						$("#sendFileBtn").show(0);
+						$("#changeForm").show(0);
 
-					$("#remoteUrlNFC").html("CubeURL für die Remoteverbindung (NFC): http://" + config.server.ip + ":" + config.server.port + "/remote?location=" + cubeLocation + "&type=nfc");
-					$("#remoteUrlQR").html("CubeURL für die Remoteverbindung (QR): http://" + config.server.ip + ":" + config.server.port + "/remote?location=" + cubeLocation + "&type=qr");
-					$("#questionnaireUrlNFC").html("CubeURL für den Fragebogen (NFC): http://" + config.server.ip + ":" + config.server.port + "/questionnaire?location=" + cubeLocation + "&type=nfc");
-					$("#questionnaireUrlQR").html("CubeURL für den Fragebogen (QR): http://" + config.server.ip + ":" + config.server.port + "/questionnaire?location=" + cubeLocation + "&type=qr");
-					$("#randomUrlNFC").html("CubeURL für den Zufallstrailer (NFC): http://" + config.server.ip + ":" + config.server.port + "/random?location=" + cubeLocation + "&type=nfc");
-					$("#randomUrlQR").html("CubeURL für den Zufallstrailer (QR): http://" + config.server.ip + ":" + config.server.port + "/random?location=" + cubeLocation + "&type=qr");
+						$('#inputDtTitel').val("");
+						$('#inputOVTitel').val("");
+						$('#inputYear').val("");
+						$('#inputCountry').val("");
+						$('#inputOVSprache').val("");
+						$('#inputGenre').val("");
+						$('#inputMood').val("");
+						$('#inputAvailable').val("");
+						$('#inputDirector').val("");
+						$('#inputActors').val("");
+						$('#inputURLDE').val("");
+						$('#inputURLOV').val("");
+						$('#inputImageURL').val("");
+						$('#testAreaPlot').val("");
 
+						$("#remoteUrlNFC").html("CubeURL für die Remoteverbindung (NFC): http://" + config.server.ip + ":" + config.server.port + "/remote?location=" + cubeLocation + "&type=nfc");
+						$("#remoteUrlQR").html("CubeURL für die Remoteverbindung (QR): http://" + config.server.ip + ":" + config.server.port + "/remote?location=" + cubeLocation + "&type=qr");
+						$("#questionnaireUrlNFC").html("CubeURL für den Fragebogen (NFC): http://" + config.server.ip + ":" + config.server.port + "/questionnaire?location=" + cubeLocation + "&type=nfc");
+						$("#questionnaireUrlQR").html("CubeURL für den Fragebogen (QR): http://" + config.server.ip + ":" + config.server.port + "/questionnaire?location=" + cubeLocation + "&type=qr");
+						$("#randomUrlNFC").html("CubeURL für den Zufallstrailer (NFC): http://" + config.server.ip + ":" + config.server.port + "/random?location=" + cubeLocation + "&type=nfc");
+						$("#randomUrlQR").html("CubeURL für den Zufallstrailer (QR): http://" + config.server.ip + ":" + config.server.port + "/random?location=" + cubeLocation + "&type=qr");
+
+					});
+
+				}).fail(function() {
+					writeLog("Error loading file!");
 				});
+				firstConnect = false;
+			}
 
-			}).fail(function() {
-				writeLog("Error loading file!");
-			});
 
 
 		});
@@ -90,14 +97,14 @@ function connect() {
 
 //add a new location edit config file and send it back to the server
 function addNewLocation() {
-	writeLog("New location added: " + $('#inputTitel').val());	
+	writeLog("New location added: " + $('#inputTitel').val());
 	$('#addNewLocationDiv').hide(0);
-	$('#locationRadios').hide(0);	
+	$('#locationRadios').hide(0);
 	$('#info').html("Neue Location hinzugefügt. Lade die Seite neu, um mit der neuen Liste zu arbeiten. <b> UM DIE FILME ONLINE VERFÜGBAR ZU MACHEN MUSS DER SERVER NEU GESTARTET WERDEN!");
-	socket.emit("addLocation", $('#inputTitel').val(), function(message){
+	socket.emit("addLocation", $('#inputTitel').val(), function(message) {
 		writeLog("Config update " + message);
 
-	});		
+	});
 }
 
 //load the file with all movies from the server
@@ -177,7 +184,6 @@ function printTrailerList(movieList) {
 			movieList[v].genre + "</td><td>" +
 			movieList[v].director + "</td><td>" +
 			movieList[v].mood + "</td><td>" +
-			movieList[v].audience + "</td><td>" +
 			movieList[v].available + "</td><td>" +
 			actorsShort + "</td><td>" +
 			movieList[v].plot.substring(0, 40) + "... " + "</td><td>" +
@@ -273,18 +279,6 @@ function addMovie() {
 	moods.push(sub);
 	newEntry.mood = moods;
 
-	var audiences = [];
-	charPosition = -1;
-	sub = $('#inputAudience').val();
-	charPosition = sub.indexOf(",");
-	while (charPosition > 0) {
-		audiences.push(sub.substring(0, charPosition));
-		sub = sub.substring(charPosition + 1);
-		charPosition = sub.indexOf(",");
-	}
-	audiences.push(sub);
-	newEntry.audience = audiences;
-
 	newEntry.available = $('#inputAvailable').val();
 
 	var countries = [];
@@ -322,7 +316,6 @@ function addMovie() {
 	$('#inputOVSprache').val("");
 	$('#inputGenre').val("");
 	$('#inputDirector').val("");
-	$('#inputAudience').val("");
 	$('#inputMood').val("");
 	$('#inputAvailable').val("");
 	$('#inputActors').val("");
@@ -330,7 +323,7 @@ function addMovie() {
 	$('#inputURLOV').val("");
 	$('#inputImageURL').val("");
 	$('#testAreaPlot').val("");
-	
+
 
 	currentTrailerList.push(newEntry);
 	printTrailerList(currentTrailerList);
@@ -364,7 +357,6 @@ function editMovie(movieInternalName) {
 	$('#inputGenre').val(currentTrailerList[w].genre);
 	$('#inputDirector').val(currentTrailerList[w].director);
 	$('#inputMood').val(currentTrailerList[w].mood);
-	$('#inputAudience').val(currentTrailerList[w].audience);
 	$('#inputAvailable').val(currentTrailerList[w].available);
 	$('#inputActors').val(currentTrailerList[w].actors);
 	$('#inputURLDE').val(currentTrailerList[w].urlDE);
