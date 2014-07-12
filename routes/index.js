@@ -144,7 +144,6 @@ router.get('/random', function(req, res) {
 
 //save new tracking message to file
 function saveTrackingMessage(userID, locationName, eventType, message, parameter) {
-	console.log("I WANT TO SAVE A TRACKING MESSAGE");
 	fs.readFile("C:/evoCubeLog.csv", "utf8", function(err, data) {
 		if (err) {
 			console.log("Reading error");
@@ -155,7 +154,7 @@ function saveTrackingMessage(userID, locationName, eventType, message, parameter
 				if (err) {
 					console.log(err);
 				} else {
-					console.log("Tracking messages written");
+					//console.log("Tracking messages written");
 				}
 			});
 		}

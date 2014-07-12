@@ -61,7 +61,7 @@ function connect() {
 
 	//server revokes remote client rights
 	socket.on("byebyeRemote", function() {
-		$("#feedback").html("Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.");
+		$("#feedback").html("Tippe hier um dich mit dem Fernseher zu verbinden.");
 		$("#initElements").show(0);
 		$("#movieControls").hide(0);
 	});
@@ -226,7 +226,7 @@ function registerToServer() {
 							$("#feedback").html("Du bist jetzt mit dem Fernseher verbunden und kannst dir beliebige Trailer anschauen.");
 						} else {
 							if (initState == "noRemoteConnection") {
-								$("#feedback").html("Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.");
+								$("#feedback").html("Tippe hier um dich mit dem Fernseher zu verbinden.");
 								clearTimeout(myDisconnectTimer);
 							}
 						}
@@ -449,7 +449,7 @@ function revokeRemote() {
 		clearTimeout(myDisconnectTimer);
 		$("#initElements").show(0);
 		$("#movieControls").hide(0);
-		$("#feedback").html("Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.");
+		$("#feedback").html("Tippe hier um dich mit dem Fernseher zu verbinden.");
 	});
 }
 
@@ -460,7 +460,7 @@ function giveMeControl() {
 		if (answer) {
 			$("#feedback").html("Zurzeit läuft gerade ein Trailer auf dem Fernseher.");
 		} else {
-			$("#feedback").html("Gib die Nummer ein, die du am Fenseher siehst und tippe auf Bestätigen");
+			$("#feedback").html("Bestätigungsnummer eingeben");
 			$("#initElements").hide(0);
 			$("#codeElements").show(0);
 			initState = "waitingForCode";
@@ -469,7 +469,7 @@ function giveMeControl() {
 			}, "slow");
 			//after 20 seconds reset the state
 			myCodeTimer = setTimeout(function() {
-				$("#feedback").html("Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.");
+				$("#feedback").html("Tippe hier um dich mit dem Fernseher zu verbinden.");
 				$("#initElements").show(0);
 				$("#codeElements").hide(0);
 			}, 20000);
@@ -496,7 +496,7 @@ function submitCode() {
 			}, disconnectTimeout);
 		} else {
 			//Code was incorrect. Waiting for correct code until the timeout mechanism strokes
-			$("#feedback").html("Der Code war leider nicht richtig. Probiere es noch einmal.");
+			$("#feedback").html("Die Nummer war leider nicht richtig.");
 		}
 	});
 }
@@ -647,17 +647,7 @@ function showMovieDetails(movieInternalName) {
 					moods = moods + trailers[i].mood[u];
 				}
 			}
-			$("#mood").html(moods);
-
-			var audiences = "";
-			for (u = 0; u < trailers[i].audience.length; u++) {
-				if (u !== trailers[i].audience.length - 1) {
-					audiences = audiences + trailers[i].audience[u] + ", ";
-				} else {
-					audiences = audiences + trailers[i].audience[u];
-				}
-			}
-			$("#audience").html(audiences);
+			$("#mood").html(moods);			
 
 			$("#available").html(trailers[i].available);
 

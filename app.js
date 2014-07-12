@@ -11,6 +11,9 @@ var fs = require('fs');
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
+//enable logging with different colors
+var colors = require('colors');
+
 //mongo db initialization
 var dburl = "localhost/evoCube";
 var collections = ["movies", "log"];
