@@ -101,51 +101,27 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 	}
 	//wait until all movie data is read from disc and stored in DB
 	//needed because all functions are async
-	writeLog("Starting Server - wait a few seconds");
+	writeLog("Starting Server - wait a few seconds", "standard");
 	setTimeout(function() {
-		writeLog("Initialization finished - Connections can be served now");
+		writeLog("Initialization finished - Connections can be served now", "green");
 
 		var server = app.listen(app.get('port'), function() {
-			writeLog('Express server listening on port ' + server.address().port);
-
-
+			writeLog('Express server listening on port ' + server.address().port, "standard");
 			var sockets = io.listen(server);
-			writeLog('Socket.io server listening on port ' + server.address().port + "\n");
-			//var videoClient; //holds the socket ID of the newest video client
-			//var remoteClient = null; //holds the socket ID of the newest remote client
+			writeLog('Socket.io server listening on port ' + server.address().port + "\n", "standard");
 
 			var secretCode = "xxx";
 
-
-			//give periodically feedback if there is a remote client at the moment
-			/*
-			setInterval(function() {
-				for (v = 0; v < locationsData.locations.length; v++) {
-					try {
-						writeLog("Remote Client at at location :" + locationsData.locations[v].locationName + " the moment: " + locationsData.locations[v].remoteClient.id);
-					} catch (err) {
-						writeLog("No remote client at the moment at location : " + locationsData.locations[v].locationName);
-					}
-				}
-			}, 60000);
-*/
-
 			sockets.on("connection", function(socket) {
 
-
-
-				//writeLog("######################Cookie from app.js " + socket.handshake.headers.cookie);
-
-				//writeLog("######################Cookie User ID: " + getCookie("userID"));
-
-				writeLog("Connection " + socket.id + " accepted");
+				writeLog("Connection " + socket.id + " accepted", "standard");
 
 				socket.on("disconnect", function() {
-					writeLog("Connection " + socket.id + " terminated");
+					writeLog("Connection " + socket.id + " terminated", "standard");
 					try {
 						if (socket.id == remoteClient.id) {
 							remoteClient = null;
-							writeLog("Remote CLient unregistered: " + socket.id);
+							writeLog("Remote CLient unregistered: " + socket.id, "standard");
 						}
 					} catch (err) {}
 
@@ -153,12 +129,12 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 
 
 				//##############################
-				//MESSAGES FROM REMOTE CLIENT
+				//MESSAGES FROM CLIENT
 				//#############################
 
 				//remote client doesnt want to be remote client anymore and unregisters
 				socket.on("dismissRemoteClient", function(cubeLocation, fn) {
-					writeLog("Remote Client at " + cubeLocation + " with ID " + socket.id + " not longer remote client");
+					writeLog("Remote Client at " + cubeLocation + " with ID " + socket.id + " not longer remote client", "standard");
 					for (v = 0; v < locationsData.locations.length; v++) {
 						if (locationsData.locations[v].locationName == cubeLocation) {
 							locationsData.locations[v].remoteClient = null;
@@ -181,16 +157,18 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 						}
 					}
 					if (undefined === videoSocket) {
-						writeLog("No Video Client at the moment");
+						writeLog("No Video Client at the moment at location: " + cubeLocation, "warn");
 					} else {
 						videoSocket.emit("isTrailerRunning", function(message) {
-							writeLog("Trailer is running: " + message);
+							writeLog("Trailer is running: " + message, "standard");
+							saveTrackingMessage(getCookie(socket,"userID"), cubeLocation, "normalClient", "playTrailer", "trailerRunning");
 							if (message) {
 								fn(true);
 							} else {
 								fn(false);
 								videoSocket.emit("setSecret", mySecretCode);
-								writeLog("Secret Code for " + cubeLocation + " is now: " + mySecretCode);
+								saveTrackingMessage(getCookie(socket,"userID"), cubeLocation, "normalClient", "playTrailer", "noTrailerRunning");
+								writeLog("Secret Code for " + cubeLocation + " is now: " + mySecretCode, "standard");
 							}
 						});
 					}
@@ -203,18 +181,20 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 					var myLocation;
 					for (v = 0; v < locationsData.locations.length; v++) {
 						if (locationsData.locations[v].locationName == cubeLocation) {
-							writeLog("submitted code: " + submitedCode + " - correct code: " + locationsData.locations[v].secretCode);
+							writeLog("submitted code: " + submitedCode + " - correct code: " + locationsData.locations[v].secretCode, "standard");
 							if (submitedCode == locationsData.locations[v].secretCode) {
 								fn(true);
-								locationsData.locations[v].videoClient.emit("hideCode");
+								locationsData.locations[v].videoClient.emit("hideCode", "standard");
 								writeLog("HIDE CODE SENT");
+								saveTrackingMessage(getCookie(socket,"userID"), cubeLocation, "normalClient", "checkMyCode", "corret");								
 								if (locationsData.locations[v].remoteClient) {
-									locationsData.locations[v].remoteClient.emit("byebyeRemote");
+									locationsData.locations[v].remoteClient.emit("byebyeRemote", "standard");
 								}
 								locationsData.locations[v].remoteClient = socket;
-								writeLog("New remote client at " + locationsData.locations[v].locationName + " is client with ID: " + locationsData.locations[v].remoteClient.id);
+								writeLog("New remote client at " + locationsData.locations[v].locationName + " is client with ID: " + locationsData.locations[v].remoteClient.id, "standard");
 							} else {
 								fn(false);
+								saveTrackingMessage(getCookie(socket,"userID"), cubeLocation, "normalClient", "checkMyCode", "inCorrect");
 							}
 						}
 					}
@@ -239,32 +219,38 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 					}
 				});
 
+				//accept a tracking message from the client and save it
+				socket.on("writeTracking", function(cubeLocation, eventType, message, parameter){
+					saveTrackingMessage(getCookie(socket,"userID"), cubeLocation, eventType, message, parameter);
+				});
+
 				//remote Play or Pause commando received from the remote client
 				socket.on("remote_playPause", function() {
-					writeLog("Remote Play/Pause received");
+					writeLog("Remote Play/Pause received", "standard");
 					videoClient.emit("playPause");
 
 				});
 
 				//remote Volume change income from remote client
 				socket.on("remoteVolumeChange", function(newVolume) {
-					writeLog("Remote VolumeChange received: " + newVolume);
+					writeLog("Remote VolumeChange received: " + newVolume, "standard");
 					videoClient.emit("volumeChange", newVolume);
 				});
 
 				//inform the server about the newest client
 				socket.on("clientRegister", function(cubeLocation, fn) {
-					writeLog("Client from " + cubeLocation + " registered to Server with ID: " + socket.id);
+					writeLog("Client from " + cubeLocation + " registered to Server with ID: " + socket.id, "standard");
 					fn();
 				});
 
 				//get command from remote client to play a specific trailer
 				socket.on("playSpecifTrailer", function(cubeLocation, trailerInternalName, trailerType, fn) {
-					writeLog("Remote Client from " + cubeLocation + "wants to play: " + trailerInternalName);
+					writeLog("Remote Client from " + cubeLocation + "wants to play: " + trailerInternalName, "standard");
 					for (v = 0; v < locationsData.locations.length; v++) {
 						if (locationsData.locations[v].locationName == cubeLocation) {
 							if (socket.id == locationsData.locations[v].remoteClient.id) {
 								locationsData.locations[v].videoClient.emit("playSpecifTrailer", trailerInternalName, trailerType);
+								saveTrackingMessage(getCookie(socket,"userID"), cubeLocation, "remoteClient", "playSpecificTrailer", trailerInternalName);
 								fn("success");
 							} else {
 								fn("fail");
@@ -275,13 +261,14 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 
 				//get command from remote client to play a specific trailer
 				socket.on("remoteStop", function() {
-					writeLog("Remote Client wants to stop");
+					writeLog("Remote Client wants to stop", "standard");
 					videoClient.emit("stopTrailer");
 
 				});
 
 				//get command from remote client for a filtering query
 				socket.on("queryDB", function(myCubeLocation, filteringQuery, fn) {
+					saveTrackingMessage(getCookie(socket,"userID"), myCubeLocation, "normalClient", "queryDB", "");
 
 					mydbConnection.movies.find({
 						$and: [{
@@ -309,9 +296,9 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 						}]
 					}, function(err, queryResult) {
 						if (err || !users) {
-							writeLog("DB ERROR: ");
+							writeLog("DB ERROR at database query: ", "error");
 						} else {
-							writeLog(queryResult.length + " Movies found in DB");
+							writeLog(queryResult.length + " Movies found in DB", "standard");
 							var shortResult = [];
 							for (i = 0; i < queryResult.length; i++) {
 								writeLog(queryResult[i].movieName);
@@ -334,22 +321,14 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 				socket.on("questionRegister", function(cubeLocation, fn) {
 					var questionnaireAllowed = false;
 
-					function getCookie(cname) {
-						var name = cname + "=";
-						var ca = socket.handshake.headers.cookie.split(';');
-						for (var i = 0; i < ca.length; i++) {
-							var c = ca[i];
-							while (c.charAt(0) == ' ') c = c.substring(1);
-							if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
+					if (getCookie(socket, "remoteVisited") == "true") {
+						if (getCookie(socket,"randomVisited") == "true") {
+							questionnaireAllowed = true;
+
 						}
-						return "";
 					}
-					if (getCookie("remoteVisited") == "true") {
-						if (getCookie("randomVisited") == "true") {
-							notAllowedYet = true;
-						}
-					} 
-					writeLog("Question Client from " + cubeLocation + " registered to Server with ID: " + socket.id + "Allowed to fill out the questionnaire: " + questionnaireAllowed);
+					writeLog("Question Client from " + cubeLocation + " registered to Server with ID: " + socket.id + "Allowed to fill out the questionnaire: " + questionnaireAllowed, "standard");
+					saveTrackingMessage(getCookie(socket,"userID"), cubeLocation, "normalClient", "registerAtQuestionnaire", questionnaireAllowed);
 					fn(questionnaireAllowed);
 				});
 
@@ -372,14 +351,14 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 
 									myVideoClient = locationsData.locations[v].videoClient;
 									//console.dir(locationsData.locations[v].movieList);
-									writeLog("New playlist for " + cubeLocation + " successfully updated at Server");
+									writeLog("New playlist for " + cubeLocation + " successfully updated at Server", "warn");
 								}
 							}
 							saveNewPlayListToDB(cubeLocation);
 
 							if (undefined === myVideoClient || null === myVideoClient) {} else {
 								myVideoClient.emit("updatePlaylist", function() {
-									writeLog("New playlist " + cubeLocation + "successfully sent to video client");
+									writeLog("New playlist " + cubeLocation + "successfully sent to video client", "warn");
 								});
 							}
 							fn(true);
@@ -390,26 +369,41 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 				//admin changed the playlist and wants to update the local file and the video client 
 				socket.on("addLocation", function(cubeLocation, fn) {
 					fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) {
-						data = JSON.parse(data);
-						data.cubeLocations.push(cubeLocation);
-						//update the config file
-						fs.writeFile(__dirname + "/public/data/config.json", JSON.stringify(data), "utf8", function(err) {
-							//load the template file for the new movie
-							fs.readFile(__dirname + "/public/data/template.json", "utf8", function(err, data) {
-								//make a new JSON file to store the movies
-								fs.writeFile(__dirname + "/public/data/" + cubeLocation + ".json", data, "utf8", function(err) {
-									if (err) console.log(err);
-									writeLog("Config File successfully updated");
-									fn("success");
-								});
+						if (err) {
+							writeLog("Error reading config File for location adding", "error");
+						} else {
+							data = JSON.parse(data);
+							data.cubeLocations.push(cubeLocation);
+							//update the config file
+							fs.writeFile(__dirname + "/public/data/config.json", JSON.stringify(data), "utf8", function(err) {
+								if (err) {
+									writeLog("Error writing config File for location adding", "error");
+								} else {
+									//load the template file for the new movie
+									fs.readFile(__dirname + "/public/data/template.json", "utf8", function(err, data) {
+										if (err) {
+											writeLog("Error reading template File for location adding", "error");
+										} else {
+											//make a new JSON file to store the movies
+											fs.writeFile(__dirname + "/public/data/" + cubeLocation + ".json", data, "utf8", function(err) {
+												if (err) {
+													writeLog("Error writing new json file for location adding", "error");
+												} else {
+													writeLog("Config File successfully updated", "warn");
+													fn("success");
+												}
+											});
+										}
+									});
+								}
 							});
-						});
+						}
 					});
 				});
 
 				//admin page wants to connect to the server
 				socket.on("registerAdmin", function(fn) {
-					writeLog("ADMIN connected with ID: " + socket.id);
+					writeLog("ADMIN connected with ID: " + socket.id, "green");
 					adminClient = socket;
 					fn(true);
 
@@ -427,7 +421,7 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 							locationsData.locations[v].videoClient = socket;
 						}
 					}
-					writeLog("VIDEO Client from location " + locationOfCubeToRegister + " registered with ID: " + socket.id);
+					writeLog("VIDEO Client from location " + locationOfCubeToRegister + " registered with ID: " + socket.id, "green");
 
 					fn(true);
 				});
@@ -492,7 +486,7 @@ function getAndSavePlaylists(locationName) {
 
 
 //logging with timestap
-function writeLog(message) {
+function writeLog(message, type) {
 	var hours = new Date().getHours();
 	var minutes = new Date().getMinutes();
 	var seconds = new Date().getSeconds();
@@ -504,8 +498,21 @@ function writeLog(message) {
 	if (hours < 10) hours = "0" + hours;
 	if (minutes < 10) minutes = "0" + minutes;
 	if (seconds < 10) seconds = "0" + seconds;
-	console.log(day + "." + month + "." + year + " " + hours + ":" + minutes + ":" + seconds + ": " + message);
 
+	switch (type) {
+		case "standard":
+			console.log((day + "." + month + "." + year + " " + hours + ":" + minutes + ":" + seconds + ": " + message));
+			break;
+		case "green":
+			console.log((day + "." + month + "." + year + " " + hours + ":" + minutes + ":" + seconds + ": " + message).green);
+			break;
+		case "warn":
+			console.log((day + "." + month + "." + year + " " + hours + ":" + minutes + ":" + seconds + ": " + message).yellow);
+			break;
+		case "error":
+			console.log((day + "." + month + "." + year + " " + hours + ":" + minutes + ":" + seconds + ": " + message).red);
+			break;
+	}
 }
 
 //get timestamp for the log file
@@ -522,6 +529,53 @@ function getTimeStamp() {
 	if (minutes < 10) minutes = "0" + minutes;
 	if (seconds < 10) seconds = "0" + seconds;
 	return day + "." + month + "." + year + " " + hours + ":" + minutes + ":" + seconds;
+}
+
+//save new tracking message to file
+function saveTrackingMessage(userID, locationName, eventType, message, parameter) {
+	var myTimeStamp = getTimeStamp();
+	fs.readFile("C:/evoCubeLog.csv", "utf8", function(err, data) {
+
+		if (err) {
+			console.log("Reading error");
+			console.log(err);
+		} else {
+			data = data + myTimeStamp + ";" + userID + ";" + locationName + ";" + eventType + ";" + message + ";" + parameter + "\n";
+			fs.writeFile("C:/evoCubeLog.csv", data, "utf8", function(err) {
+				if (err) {
+					writeLog("File writting error at saving Log Entry to file", "error");
+				} else {}
+			});
+		}
+	});
+
+	var newEntry = {};
+	newEntry.timeStamp = myTimeStamp;
+	newEntry.userID = userID;
+	newEntry.locationName = locationName;
+	newEntry.eventType = eventType;
+	newEntry.message = message;
+	newEntry.parameter = parameter;
+
+	mydbConnection.log.save(newEntry, function(error, savedEntry) {
+		if (error) {
+			writeLog("DB Error at saving Log Entry", "error");
+		}
+
+	});
+
+}
+
+//extracts the cookie content from the given cookie name
+function getCookie(mySocket,cname) {
+	var name = cname + "=";
+	var ca = mySocket.handshake.headers.cookie.split(';');
+	for (var i = 0; i < ca.length; i++) {
+		var c = ca[i];
+		while (c.charAt(0) == ' ') c = c.substring(1);
+		if (c.indexOf(name) != -1) return c.substring(name.length, c.length);
+	}
+	return "";
 }
 
 module.exports = app;

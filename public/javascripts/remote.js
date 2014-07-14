@@ -338,19 +338,6 @@ function buildQueryString() {
 		$("#resultsBtn").html("0 Treffer");
 		$("#resultsBtn").attr("disabled", "");
 
-		/*
-		//enable all checkboxes
-		$(".genre").each(function() {
-			$(this).prop("disabled", false).checkboxradio("refresh");
-			$(this).parent().removeClass("ui-state-disabled");
-		});
-
-		$(".year").each(function() {
-			$(this).prop("disabled", false).checkboxradio("refresh");
-			$(this).parent().removeClass("ui-state-disabled");
-		});
-*/
-
 	} else {
 		//send query to server and display results
 		socket.emit("queryDB", cubeLocation, filterQuery, function(queryShortResult) {
@@ -377,52 +364,9 @@ function buildQueryString() {
 			} else {
 				$("#resultsBtn").attr("disabled", "");
 			}
-
-			/*
-			//check which checkboxes should be disabled because no limitation is possible with them
-			$(".genre").each(function() {
-				var genreFound = false;
-				for (var r = 0; r < resultTrailerList.length; r++) {
-					for (var q = 0; q < resultTrailerList[r].genre.length; q++) {
-						if(resultTrailerList[r].genre[q] == $(this).attr("name")){
-							genreFound = true;
-						}
-					}
-				}
-				if (!genreFound) {
-					$(this).prop("disabled", "disabled").checkboxradio("refresh");
-					$(this).parent().addClass("ui-state-disabled");
-				} else {
-					$(this).prop("disabled", false).checkboxradio("refresh");
-					$(this).parent().removeClass("ui-state-disabled");
-				}
-			});
-
-
-			$(".year").each(function() {
-				var yearFound = false;
-				for (var r = 0; r < resultTrailerList.length; r++) {
-					if (resultTrailerList[r].year == $(this).attr("name")) {
-						yearFound = true;
-					}
-				}
-				if (!yearFound) {
-					$(this).prop("disabled", "disabled").checkboxradio("refresh");
-					$(this).parent().addClass("ui-state-disabled");
-				} else {
-					$(this).prop("disabled", false).checkboxradio("refresh");
-					$(this).parent().removeClass("ui-state-disabled");
-				}
-			});
-*/
-
 			hideLoader();
 		});
-
 	}
-
-
-
 }
 
 //play a specific Trailer if you are connected to the monitor
@@ -526,6 +470,7 @@ function showContent() {
 
 //show info page and hide the rest
 function showInfo() {
+	socket.emit("writeTracking", cubeLocation, "clientEvent", "showInfo", "true", function() {});
 	$("#landingContent").hide(0);
 	$("#content").hide(0);
 	$("#infoContent").show(0);
@@ -591,6 +536,7 @@ function start() {
 
 //show movie detail page and fill the grid with data
 function showMovieDetails(movieInternalName) {
+	socket.emit("writeTracking", cubeLocation, "clientEvent", "showMovieDetails", "movieInternalName", function() {});
 	$("#infoBtn").hide(0);
 	$("#infoBtn").hide(0);
 	$("#movieContainerBackBtn").hide(0);
