@@ -1,5 +1,5 @@
 var socket;
-var initState = 0;
+var initState = "noRemoteConnection";
 var trailers;
 //set the time when a remote connection should be closed automatically. 10 minutes at the moment.
 var disconnectTimeout = 600000;
@@ -14,7 +14,7 @@ var allGenres = [];
 var allYears = [];
 var allOV = [];
 var allCountries = [];
-var allMoods =[];
+var allMoods = [];
 var cubeLocation;
 var firstConnect = true;
 
@@ -128,7 +128,7 @@ function registerToServer() {
 					for (var p = 0; p < trailers[v].country.length; p++) {
 						allCountries.push(trailers[v].country[p]);
 					}
-					
+
 					for (var w = 0; w < trailers[v].country.length; w++) {
 						allMoods.push(trailers[v].mood[w]);
 					}
@@ -169,13 +169,6 @@ function registerToServer() {
 				}
 				$("#moodControlGroup").trigger('create');
 
-
-
-				/*
-			$("#yearLegend").append("<input type=\"checkbox\"  name=\"" + allYears[0] + "\" id=\"" + allYears[0] + "\" class=\"pers year\"></input> <label for=\"" + allYears[0] + "\">  " + allYears[0] + "</label>");
-			$("#yearLegend").append("<input type=\"checkbox\"  name=\"" + allYears[1] + "\" id=\"" + allYears[1] + "\" class=\"pers year\"></input> <label for=\"" + allYears[1] + "\">  " + allYears[1] + "</label>");
-			$("#yearControlGroup").trigger('create');
-*/
 				//add change listeners to the radio buttons for the personalization items
 				$(".persGroupRadio").change(function() {
 					//writeLog($(this).attr("for"));
@@ -183,11 +176,9 @@ function registerToServer() {
 					$("#countryDiv").hide(0);
 					$("#ovDiv").hide(0);
 					$("#yearDiv").hide(0);
-					$("#moodDiv").hide(0);					
+					$("#moodDiv").hide(0);
 					$("#" + $(this).attr("for")).show(0);
 				});
-
-
 
 				//add on change function to all check boxes in personalization content
 				//update results after every change
@@ -218,6 +209,7 @@ function registerToServer() {
 
 				hideLoader();
 
+				/*
 				//check periodically if there is still a connection
 				setInterval(function() {
 					socket.emit("inCharge", cubeLocation, function(message) {
@@ -233,7 +225,7 @@ function registerToServer() {
 					});
 
 				}, 3000);
-
+	*/
 
 
 			}).fail(function() {
@@ -257,7 +249,7 @@ function buildQueryString() {
 		country: [],
 		year: [],
 		ov: [],
-		mood:[]
+		mood: []
 	};
 
 	//build genres
@@ -335,8 +327,10 @@ function buildQueryString() {
 
 	//in case no check boxes are checked you dont have to make a query at all
 	if (nothingSelected) {
-		$("#resultsBtn").html("0 Treffer");
-		$("#resultsBtn").attr("disabled", "");
+		$("#resultsBtn1").html("0 Treffer");
+		$("#resultsBtn1").attr("disabled", "");
+		$("#resultsBtn2").html("0 Treffer");
+		$("#resultsBtn2").attr("disabled", "");
 
 	} else {
 		//send query to server and display results
@@ -358,11 +352,14 @@ function buildQueryString() {
 				showMovieDetails($(this).attr("id"));
 			});
 
-			$("#resultsBtn").html(queryShortResult.length + " Treffer");
+			$("#resultsBtn1").html(queryShortResult.length + " Treffer");
+			$("#resultsBtn2").html(queryShortResult.length + " Treffer");
 			if (queryShortResult.length > 0) {
-				$("#resultsBtn").removeAttr("disabled");
+				$("#resultsBtn1").removeAttr("disabled");
+				$("#resultsBtn2").removeAttr("disabled");
 			} else {
-				$("#resultsBtn").attr("disabled", "");
+				$("#resultsBtn1").attr("disabled", "");
+				$("#resultsBtn2").removeAttr("disabled");
 			}
 			hideLoader();
 		});
@@ -371,18 +368,38 @@ function buildQueryString() {
 
 //play a specific Trailer if you are connected to the monitor
 function playTrailer(trailerType) {
-	writeLog("I want to see: " + trailerType + " " + $("#movieName").attr("name"));
-	socket.emit("inCharge", cubeLocation, function(message) {
-		if (message) {
-			socket.emit("playSpecifTrailer", cubeLocation, $("#movieName").attr("name"), trailerType, function(message) {
-				writeLog("Feedback: " + message);
-			});
-		} else {
-			$("html, body").animate({
-				scrollTop: $('#feedback').offset().top
-			}, "slow");
-		}
-	});
+
+	writeLog("INIT STATE: " + initState);
+
+	if (initState == "noRemoteConnection") {
+		socket.emit("isTrailerRunningAtTheMoment", cubeLocation, function(answer) {
+			writeLog("FEEDBACK: " + answer);
+			if(answer == "false"){
+				$("#feedback").html("Tippe hier um dich mit dem Fernseher zu verbinden.");
+				$("#initElements").show(0);
+				$("#abortConnection").html("Abbrechen");
+			}else if(answer == "true"){
+				$("#feedback").html("Zurzeit läuft gerade ein Trailer auf dem Fernseher.");
+				$("#initElements").hide(0);
+				$("#abortConnection").html("OK");
+			}else if(answer == "noVideoClientHere"){
+				$("#feedback").html("Kein Video Client im Moment.");
+				$("#initElements").hide(0);
+				$("#abortConnection").html("OK");
+			}
+			$("#feedbackPopup").popup("open");
+		});
+	} else {
+		writeLog("I want to see: " + trailerType + " " + $("#movieName").attr("name"));
+		socket.emit("inCharge", cubeLocation, function(message) {
+			if (message) {
+				socket.emit("playSpecifTrailer", cubeLocation, $("#movieName").attr("name"), trailerType, function(message) {
+					writeLog("Feedback: " + message);
+					socket.emit("writeTracking", cubeLocation, "randomClientEvent", "playTrailer", $("#movieName").attr("name"), function() {});
+				});
+			} else {}
+		});
+	}
 }
 
 //notify the server that you don't want to be remote client anymore
@@ -408,9 +425,6 @@ function giveMeControl() {
 			$("#initElements").hide(0);
 			$("#codeElements").show(0);
 			initState = "waitingForCode";
-			$("html, body").animate({
-				scrollTop: $('#codeElements').offset().top
-			}, "slow");
 			//after 20 seconds reset the state
 			myCodeTimer = setTimeout(function() {
 				$("#feedback").html("Tippe hier um dich mit dem Fernseher zu verbinden.");
@@ -419,6 +433,14 @@ function giveMeControl() {
 			}, 20000);
 		}
 	});
+}
+
+//abbort the connection attempt and hide the popup
+function abortConnect() {
+	initState = "noRemoteConnection";
+	$("#initElements").show(0);
+	$("#codeElements").hide(0);
+	$("#feedbackPopup").popup("close");
 }
 
 //check with the server if the code is correct. if yes grant access to monitor
@@ -431,9 +453,7 @@ function submitCode() {
 			initState = "established";
 			$("#secret").val("");
 			clearTimeout(myCodeTimer);
-			$("html, body").animate({
-				scrollTop: $('#movieControls').offset().top
-			}, 0);
+			$("#feedbackPopup").popup("close");
 			//remote rights should not be forever..
 			myDisconnectTimer = setTimeout(function() {
 				revokeRemote();
@@ -466,6 +486,12 @@ function showContent() {
 	$("#infoBtn").hide(0);
 	$("#connectionControls").show(0);
 	$("#feedback").show(0);
+
+	$("#genreDiv").hide(0);
+	$("#countryDiv").hide(0);
+	$("#ovDiv").hide(0);
+	$("#yearDiv").hide(0);
+	$("#moodDiv").hide(0);
 }
 
 //show info page and hide the rest
@@ -515,24 +541,10 @@ function hideLoader() {
 	$.mobile.loading("hide");
 }
 
-//try to stop the video
-function stopVideo() {
-	writeLog("Stop pressed");
-	socket.emit("remoteStop");
-}
-
-
 function disconnect() {
 	writeLog("disconnect");
 	socket.disconnect();
 }
-
-//try to start pause the video
-function start() {
-	writeLog("Play/Pause pressed");
-	socket.emit("remote_playPause");
-}
-
 
 //show movie detail page and fill the grid with data
 function showMovieDetails(movieInternalName) {
@@ -593,7 +605,7 @@ function showMovieDetails(movieInternalName) {
 					moods = moods + trailers[i].mood[u];
 				}
 			}
-			$("#mood").html(moods);			
+			$("#mood").html(moods);
 
 			$("#available").html(trailers[i].available);
 

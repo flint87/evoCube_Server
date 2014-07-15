@@ -6,31 +6,74 @@ html
     script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
     script(src='//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.js')
     script(src='/socket.io/socket.io.js')
-    script(src='/javascripts/remote.js')
-    link(rel='stylesheet', href='/stylesheets/mobile.css')
+    script(src='/javascripts/random.js')
+    link(rel='stylesheet', href='/stylesheets/evoCube.css')
     link(rel='stylesheet', href='/stylesheets/jquery.mobile.icons.min.css')
-    link(rel='stylesheet', href='//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.css')
+    link(rel='stylesheet', href='http://code.jquery.com/mobile/1.4.3/jquery.mobile.structure-1.4.3.min.css')
   body(onload='connect()')
+    button(class="show-page-loading-msg" data-textonly="false" data-textvisible="true" data-msgtext="asdfasdf" data-inline="true") Laden
     div(data-role="page")
       div(data-role="header")
-        h1 #{title}
+        h1(id="title") #{title}
       div(data-role="content")
-        div: p(id='status' style="display:none;") Waiting for input
-        div(id='movieContainer')
-          ul(data-role="listview" id="movieList" data-inset="true")
-        p(id='feedback') Du bist momentan nicht mit dem Fernseher verbunden. Tippe hier um eine Verbindung herzustellen.
-        div(id="movieControls" style="display:none;")
-          button(id='play' onClick='start()' class='myButton') Play/Pause Video
-          button(id='stop' onClick='stopVideo()' class='myButton') Stop Trailer
-          label(for="slider-fill") Lautstärke
-          input(type="range" name="volume" id="volume" value="100" min="0" max="100" data-highlight="true")
-        div(id="connectionControls")        
-          div(id="initElements")
-            button(id='requestControl' onClick='giveMeControl()' class='myButton') Verbinden
-          div(id="codeElements" style="display:none;")
-            input(type="text" name="secret" id="secret" value="" placeholder="Fernseher Code")
-            button(id='submitCode' onClick='submitCode()' class='myButton') Bestätigen
-        br        
-      div(data-role="footer")
-        h4 #{title}
-
+        div(id="movieContainer" style="display:none;" data-transition="slidefade")
+            table(id="movie-table" border="0" data-mode="reflow" class="ui-responsive table stroke")
+              thead
+                tr
+                  th(id="movieName" colspan="2" name="")
+              tbody
+                tr
+                  td(style="width:50%"): a(href="#imagePopup" data-rel="popup" data-position-to="window" data-transition="slidefade"): img(id="movieImg1" style="width:60%; height:auto;")
+                  div(data-role="popup" id="imagePopup" data-overlay-theme="b" data-theme="b" data-corners="false")
+                    a(href="#" data-rel="back" class="ui-btn ui-corner-all ui-shadow ui-btn-a ui-icon-delete ui-btn-icon-notext ui-btn-right"): Close
+                    img(id="movieImg2" class="popphoto" style="max-height:512px;")
+                  td
+                    button(id='dtTrailerBtn' name="asdf" data-mini="true" class='myButton') Dt. Trailer 
+                    button(id='ovTrailerBtn' name="asdf" data-mini="true" class='myButton') OV Trailer 
+            table(id="movieTable" border="0" data-mode="reflow" class="ui-responsive table stroke")
+              thead
+                tr
+                  th
+              tbody
+                tr
+                  th(style="text-align:left; vertical-align:top") Jahr:
+                  td(id="year")
+                tr
+                  th(style="text-align:left; vertical-align:top") Originanname:
+                  td(id="ovName")
+                tr
+                  th(style="text-align:left; vertical-align:top") Originalton:
+                  td(id="ov")
+                tr
+                  th(style="text-align:left; vertical-align:top") Land:
+                  td(id="country")
+                tr
+                  th(style="text-align:left; vertical-align:top") Genre:
+                  td(id="genre")
+                tr
+                  th(style="text-align:left; vertical-align:top") Stimmung:
+                  td(id="mood")
+                tr
+                  th(style="text-align:left; vertical-align:top") Verfügbarkeit:
+                  td(id="available")
+                tr
+                  th(style="text-align:left; vertical-align:top") Regisseur:
+                  td(id="director")
+                tr
+                  th(style="text-align:left; vertical-align:top") Schauspieler:
+                  td(id="actors")
+                tr
+                  td(colspan="2"): div(data-role="collapsible" data-mini="true")
+                    h4 Handlung:
+                    p(id="plot")        
+          div(data-role="popup" id="feedbackPopup" data-dismissible="false" style="max-width:400px; text-align:center")
+            div(data-role="header")
+              h1 Verbindung
+            div(role="main" class="ui-content")
+              p(id='feedback' style="") Tippe hier um dich mit dem Fernseher zu verbinden.
+              div(id="initElements")
+                button(id='requestControl' onClick='giveMeControl()' class='myButton') Verbinden
+              div(id="codeElements" style="display:none;")
+                input(type="tel" name="secret" id="secret" value="" placeholder="Bestätigungscode")
+                button(id='submitCode' onClick='submitCode()' class='myButton') Bestätigen
+              button(id='abortConnection' onClick='abortConnect()' class='myButton') Abbruch

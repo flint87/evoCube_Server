@@ -23,7 +23,7 @@ html
         div(id="infoContent" style="display:none;")
           p Der evoCube Movie Matcher ist ein Forschungsprojekt im Rahmen einer Masterarbeit des Studiengangs Informationsmanagement mit Zusammenarbeit der Firma <a target="_blank" href="http://www.evolaris.net">evolaris next level GmbH </a> in einem beschränkten Zeitraum getestet. Es werden dabei keine kommerziellen Interessen verfolgt. Alle verlinkten Inhalte sind Eigentum der jeweiligen Rechteinhaber der Filme.  <br> <h4> Datenschutz </h4> Die Angaben der Studienteilnehmer, die am Forschungsprojekt teilnehmen, werden streng vertraulich behandelt und anonym ausgewertet, sodass ein Rückschluss auf die einzelne Person unmöglich ist. <br><br> evolaris next level GmbH verpflichtet sich zur Einhaltung der Branchenrichtlinie ESOMAR-Codex, in dem die vertrauliche Behandlung der Information von Studienteilnehmern geregelt ist. Die Erhebung, Verarbeitung und Nutzung der Daten erfolgt nach den strengen Vorgaben des österreichischen Datenschutzrechts. Die erhobenen Daten werden von evolaris next level GmbH nur insoweit verarbeitet und genutzt, wie dies für die Durchführung der Studien erforderlich und gesetzlich zulässig ist. <br><br>Die Teilnahme ist aus datenschutzrechtlichen Gründen nur möglich, wenn der Teilnehmer in die Nutzung der erforderlichen Daten einwilligt. Mit Klick auf Start gilt diese Einwilligung als erfolgt. <br> evolaris next level GmbH verpflichtet sich, keine personenbezogenen Daten an Dritte weiterzuleiten. <br> <h4> Gültigkeit und Vertragsgrundlagen </h4> Jeder Studienteilnehmer erkennt mit seiner Anmeldung die vorliegenden AGB als gültig an. Ausschließlich diese AGB und die Internetseiten, auf die darin verwiesen wird, sind Inhalt des Vertragsverhältnisses zwischen dem Studienteilnehmer und evolaris next level GmbH. Bei der Benutzung gelten die jeweils aktuellen, auf dieser Seite veröffentlichten AGB von evolaris next level GmbH. <br> <h4>Teilnahmevoraussetzungen</h4>Um an dem Forschungsprojekt teilnehmen zu dürfen, müssen folgende Kriterien erfüllt sein: <ul><li>Die Teilnahme setzt die Anerkennung dieser AGB zwingend voraus.</li><li>Pro Studienteilnehmer darf nur ein Fragebogen ausgefüllt werden sowie nur ein Gutschein in Anspruch genommen werden.</li><li>Der Teilnehmer ist verpflichtet, bei der Registrierung wahrheitsgetreue Angaben zu machen.</li><li>evolaris next level GmbH behält sich die Annahme von Studienteilnehmern auch nach der abgeschlossenen Registrierung vor.</li></ul><h4>Haftung</h4>evolaris next level GmbH haftet nicht für technische Störungen, deren Ursache nicht im Verantwortungsbereich von evolaris next level GmbH liegen und für Schäden durch höhere Gewalt. evolaris next level GmbH haftet nicht für Schäden, die auf Handlungen Dritter zurückzuführen sind. evolaris next level GmbH haftet nur im Rahmen der gesetzlichen Vorschriften, sofern Vorsatz oder grobe Fahrlässigkeit vorliegt. Die Haftung für leichte Fahrlässigkeit wird ausgeschlossen. Haftet evolaris next level GmbH, ist die Haftung stets auf den für den von evolaris next level GmbH vorhersehbaren Schaden begrenzt<h4>Abmeldung</h4>Dem Grundsatz der Fairness entsprechend, kann auch evolaris next level GmbH die Teilnahme an den Services bei begründetem Verdacht gegen einen Verstoß gegen diese AGB und mit sofortiger Wirkung ohne Angabe von Gründen kündigen.<h4>Allgemeines Bürgerliches Gesetzbuch, Gerichtsstand</h4>Es gelten die Regelungen des Allgemeinen Bürgerlichen Gesetzbuchs. Gerichtsstand ist Graz. Sofern der Wohnsitz des Studienteilnehmers im Inland liegt, gilt § 14 KSchG. Es wird ausdrücklich vereinbart, dass materielles österreichisches Recht zur Anwendung kommt.
         div(id="landingContent")
-          p(id="welcomeText") Willkommen beim <b>evoCube Movie Matcher</b>.<br><br>Mach mit und bekomme einen <b>Gutschein für 1€ Ermäßigung</b> auf dein Kinoticket. <br> <br> Mit Klick auf Start akzeptierst du die <a id="infoBtn" href="#" onclick="showInfo();return false;">AGB</a>.
+          p(id="welcomeText" style="text-align:center;") Willkommen beim <b>evoCube Movie Matcher</b>.<br><br>Mach mit und bekomme einen <b>Gutschein für 1€ Ermäßigung</b> auf dein Kinoticket. <br> <br> Mit Klick auf Start akzeptierst du die <a id="infoBtn" href="#" onclick="showInfo();return false;">AGB</a>.
           button(id='start' onClick='showContent()' class='myButton') Start
           div: p(id='status' style="display:none;") Waiting for input
         div(id='movieListContainer' style="display:none")
@@ -48,13 +48,13 @@ html
                   th
               tbody
                 tr
-                  th(style="text-align:left") Jahr:
+                  th(style="text-align:left; vertical-align:top") Jahr:
                   td(id="year")
                 tr
-                  th(style="text-align:left") Originanname:
+                  th(style="text-align:left; vertical-align:top") Originanname:
                   td(id="ovName")
                 tr
-                  th(style="text-align:left") Originalton:
+                  th(style="text-align:left; vertical-align:top") Originalton:
                   td(id="ov")
                 tr
                   th(style="text-align:left; vertical-align:top") Land:
@@ -69,7 +69,7 @@ html
                   th(style="text-align:left; vertical-align:top") Verfügbarkeit:
                   td(id="available")
                 tr
-                  th(style="text-align:left") Regisseur:
+                  th(style="text-align:left; vertical-align:top") Regisseur:
                   td(id="director")
                 tr
                   th(style="text-align:left; vertical-align:top") Schauspieler:
@@ -79,8 +79,8 @@ html
                     h4 Handlung:
                     p(id="plot")
         div(id="perContent" style="display:none;")
-            button(id='resultsBtn' disabled="" onClick='showResults()' class='myButton' data-icon="carat-r" data-iconpos="right") 0 Treffer
-            p Suchbegriffe:
+            button(id='resultsBtn1' disabled="" onClick='showResults()' class='myButton' data-icon="carat-r" data-iconpos="right") 0 Treffer
+            p Filter:
             div(id="searchWords" data-role="controlgroup" data-type="horizontal" data-mini="true" data-inset="true" style="display: inline-flex; width: auto;")
             table(border="0" data-mode="reflow" class="ui-responsive table stroke")
               thead
@@ -91,21 +91,21 @@ html
                   td(style="vertical-align:top;")
                     fieldset(data-role="controlgroup" data-mini="true")
                       legend 
-                        input(type="radio" name="radio-choice-v-6" id="genreRadio" for="genreDiv" value="on" checked="checked" class="persGroupRadio")
+                        input(type="radio" name="radio-choice-v-6" id="genreRadio" for="genreDiv"  class="persGroupRadio")
                         label(for="genreRadio") Genre
-                        input(type="radio" name="radio-choice-v-6" id="countryRadio" for="countryDiv" value="off" class="persGroupRadio")
+                        input(type="radio" name="radio-choice-v-6" id="countryRadio" for="countryDiv"  class="persGroupRadio")
                         label(for="countryRadio") Land
-                        input(type="radio" name="radio-choice-v-6" id="ovRadio" for="ovDiv" value="other" class="persGroupRadio")
+                        input(type="radio" name="radio-choice-v-6" id="ovRadio" for="ovDiv"  class="persGroupRadio")
                         label(for="ovRadio") OV Sprache
-                        input(type="radio" name="radio-choice-v-6" id="yearRadio" for="yearDiv" value="other" class="persGroupRadio")
+                        input(type="radio" name="radio-choice-v-6" id="yearRadio" for="yearDiv" class="persGroupRadio")
                         label(for="yearRadio") Jahr
-                        input(type="radio" name="radio-choice-v-6" id="moodRadio" for="moodDiv" value="other" class="persGroupRadio")
+                        input(type="radio" name="radio-choice-v-6" id="moodRadio" for="moodDiv" class="persGroupRadio")
                         label(for="moodRadio") Stimmung
                   td(style="vertical-align:top;")
-                    div(id="genreDiv" style="width:100%; vertical-align:top; margin-left:5%; disyplay:none")                      
+                    div(id="genreDiv" style="width:100%; vertical-align:top; margin-left:5%; disyplay:none") 
                       fieldset(id="genreControlGroup" data-role="controlgroup" data-type="horizontal" data-mini="true")
                         legend(id="genreLegend")
-                    div(id="countryDiv" style="width:100%; vertical-align:top; margin-left:5%; display:none;" )                      
+                    div(id="countryDiv" style="width:100%; vertical-align:top; margin-left:5%; display:none;" )
                       fieldset(id="countryControlGroup" data-role="controlgroup" data-type="horizontal" data-mini="true")
                         legend(id="countryLegend")
                     div(id="ovDiv" style="width:100%; vertical-align:top; margin-left:5%; display:none;")
@@ -117,17 +117,15 @@ html
                     div(id="moodDiv" style="width:100%; vertical-align:top; margin-left:5%; display:none;")
                       fieldset(id="moodControlGroup" data-role="controlgroup" data-type="horizontal" data-mini="true")
                         legend(id="moodLegend") 
-          p(id='feedback' style="display:none;") Tippe hier um dich mit dem Fernseher zu verbinden.
-          div(id="movieControls" style="display:none;")
-            button(id='play' onClick='start()' class='myButton') Play/Pause Video
-            button(id='stop' onClick='stopVideo()' class='myButton') Stop Trailer
-            label(for="slider-fill") Lautstärke
-            input(type="range" name="volume" id="volume" value="50" min="0" max="100" data-highlight="true")
-          div(id="connectionControls" style="display:none;")        
-            div(id="initElements")
-              button(id='requestControl' onClick='giveMeControl()' class='myButton') Verbinden
-            div(id="codeElements" style="display:none;")
-              input(type="tel" name="secret" id="secret" value="" placeholder="Fernseher Code")
-              button(id='submitCode' onClick='submitCode()' class='myButton') Bestätigen
-
-
+            button(id='resultsBtn2' disabled="" onClick='showResults()' class='myButton' data-icon="carat-r" data-iconpos="right") 0 Treffer
+          div(data-role="popup" id="feedbackPopup" data-dismissible="false" style="max-width:400px; text-align:center")
+            div(data-role="header")
+              h1 Verbindung
+            div(role="main" class="ui-content")
+              p(id='feedback' style="display:none;") Tippe hier um dich mit dem Fernseher zu verbinden.
+              div(id="initElements")
+                button(id='requestControl' onClick='giveMeControl()' class='myButton') Verbinden
+              div(id="codeElements" style="display:none;")
+                input(type="tel" name="secret" id="secret" value="" placeholder="Bestätigungscode")
+                button(id='submitCode' onClick='submitCode()' class='myButton') Bestätigen
+              button(id='abortConnection' onClick='abortConnect()' class='myButton') Abbrechen

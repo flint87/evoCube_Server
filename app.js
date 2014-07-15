@@ -161,18 +161,39 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 					} else {
 						videoSocket.emit("isTrailerRunning", function(message) {
 							writeLog("Trailer is running: " + message, "standard");
-							saveTrackingMessage(getCookie(socket,"userID"), cubeLocation, "normalClient", "playTrailer", "trailerRunning");
+							saveTrackingMessage(getCookie(socket, "userID"), cubeLocation, "normalClient", "playTrailer", "trailerRunning");
 							if (message) {
 								fn(true);
 							} else {
 								fn(false);
 								videoSocket.emit("setSecret", mySecretCode);
-								saveTrackingMessage(getCookie(socket,"userID"), cubeLocation, "normalClient", "playTrailer", "noTrailerRunning");
+								saveTrackingMessage(getCookie(socket, "userID"), cubeLocation, "normalClient", "playTrailer", "noTrailerRunning");
 								writeLog("Secret Code for " + cubeLocation + " is now: " + mySecretCode, "standard");
 							}
 						});
 					}
 
+				});
+
+				//client wants to know if there is a running trailer at the moment
+				socket.on("isTrailerRunningAtTheMoment", function(cubeLocation, fn) {
+					var videoSocket;
+					for (v = 0; v < locationsData.locations.length; v++) {
+						if (locationsData.locations[v].locationName == cubeLocation) {
+							videoSocket = locationsData.locations[v].videoClient;
+						}
+					}
+					if (undefined === videoSocket) {
+						fn("noVideoClientHere");
+					} else {
+						videoSocket.emit("isTrailerRunning", function(message) {
+							if (message) {
+								fn("true");
+							} else {
+								fn("false");
+							}
+						});
+					}
 				});
 
 				//remote client wants to check if the submited secret code is correct
@@ -186,7 +207,7 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 								fn(true);
 								locationsData.locations[v].videoClient.emit("hideCode", "standard");
 								writeLog("HIDE CODE SENT");
-								saveTrackingMessage(getCookie(socket,"userID"), cubeLocation, "normalClient", "checkMyCode", "corret");								
+								saveTrackingMessage(getCookie(socket, "userID"), cubeLocation, "normalClient", "checkMyCode", "corret");
 								if (locationsData.locations[v].remoteClient) {
 									locationsData.locations[v].remoteClient.emit("byebyeRemote", "standard");
 								}
@@ -194,7 +215,7 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 								writeLog("New remote client at " + locationsData.locations[v].locationName + " is client with ID: " + locationsData.locations[v].remoteClient.id, "standard");
 							} else {
 								fn(false);
-								saveTrackingMessage(getCookie(socket,"userID"), cubeLocation, "normalClient", "checkMyCode", "inCorrect");
+								saveTrackingMessage(getCookie(socket, "userID"), cubeLocation, "normalClient", "checkMyCode", "inCorrect");
 							}
 						}
 					}
@@ -220,8 +241,8 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 				});
 
 				//accept a tracking message from the client and save it
-				socket.on("writeTracking", function(cubeLocation, eventType, message, parameter){
-					saveTrackingMessage(getCookie(socket,"userID"), cubeLocation, eventType, message, parameter);
+				socket.on("writeTracking", function(cubeLocation, eventType, message, parameter) {
+					saveTrackingMessage(getCookie(socket, "userID"), cubeLocation, eventType, message, parameter);
 				});
 
 				//remote Play or Pause commando received from the remote client
@@ -250,7 +271,7 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 						if (locationsData.locations[v].locationName == cubeLocation) {
 							if (socket.id == locationsData.locations[v].remoteClient.id) {
 								locationsData.locations[v].videoClient.emit("playSpecifTrailer", trailerInternalName, trailerType);
-								saveTrackingMessage(getCookie(socket,"userID"), cubeLocation, "remoteClient", "playSpecificTrailer", trailerInternalName);
+								//saveTrackingMessage(getCookie(socket, "userID"), cubeLocation, "remoteClient", "playSpecificTrailer", trailerInternalName);
 								fn("success");
 							} else {
 								fn("fail");
@@ -268,7 +289,7 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 
 				//get command from remote client for a filtering query
 				socket.on("queryDB", function(myCubeLocation, filteringQuery, fn) {
-					saveTrackingMessage(getCookie(socket,"userID"), myCubeLocation, "normalClient", "queryDB", "");
+					saveTrackingMessage(getCookie(socket, "userID"), myCubeLocation, "normalClient", "queryDB", "");
 
 					mydbConnection.movies.find({
 						$and: [{
@@ -322,13 +343,13 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 					var questionnaireAllowed = false;
 
 					if (getCookie(socket, "remoteVisited") == "true") {
-						if (getCookie(socket,"randomVisited") == "true") {
+						if (getCookie(socket, "randomVisited") == "true") {
 							questionnaireAllowed = true;
 
 						}
 					}
 					writeLog("Question Client from " + cubeLocation + " registered to Server with ID: " + socket.id + "Allowed to fill out the questionnaire: " + questionnaireAllowed, "standard");
-					saveTrackingMessage(getCookie(socket,"userID"), cubeLocation, "normalClient", "registerAtQuestionnaire", questionnaireAllowed);
+					saveTrackingMessage(getCookie(socket, "userID"), cubeLocation, "normalClient", "registerAtQuestionnaire", questionnaireAllowed);
 					fn(questionnaireAllowed);
 				});
 
@@ -567,7 +588,7 @@ function saveTrackingMessage(userID, locationName, eventType, message, parameter
 }
 
 //extracts the cookie content from the given cookie name
-function getCookie(mySocket,cname) {
+function getCookie(mySocket, cname) {
 	var name = cname + "=";
 	var ca = mySocket.handshake.headers.cookie.split(';');
 	for (var i = 0; i < ca.length; i++) {
