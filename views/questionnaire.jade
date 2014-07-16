@@ -5,28 +5,142 @@ html
     meta(name="viewport" content="width=device-width, initial-scale=1")
     script(src='//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js')
     script(src='//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.js')
+    script(src='/socket.io/socket.io.js')
     script(src='/javascripts/questionnaire.js')
-    link(rel='stylesheet', href='/stylesheets/mobile.css')
+    link(rel='stylesheet', href='/stylesheets/evoCube.css')
     link(rel='stylesheet', href='/stylesheets/jquery.mobile.icons.min.css')
     link(rel='stylesheet', href='//ajax.googleapis.com/ajax/libs/jquerymobile/1.4.2/jquery.mobile.min.css')
-  body
+  body(onload='connect()')
     div(data-role="page")
       div(data-role="header")
         h1 #{title}
       div(data-role="content")
-        div: h1(id='welcome') Welcome to the Fragebogen
+        div: h1(id='welcome') Gib uns Feedback und hole dir eine Ermäßigung von 1€ für dein Kinoticket
         div: p(id='progress') Frage 1 von 1
-        div(id = "questionnaire" class="ui-corner-all custom-corners")
-          div(id = "question" class="ui-bar ui-bar-a")
-            p(id='Frage') 1 + 1 = ?
+        div(id = "questionnaireDiv" class="ui-corner-all custom-corners")
+          div(id="q1" name="1" class="ui-bar ui-bar-a")
+            p(id='question') Bitte gib dein Alter und dein Geschlecht an.
+          div(id="answers" class="ui-body ui-body-a")
+            label(for="controlgroup") Alter:
+            div(data-role="controlgroup" data-type="horizontal")
+              select(id="ageSelect")
+                option
+            label(for="controlgroup") Geschlecht:
+            div(data-role="controlgroup" data-type="horizontal")
+              select
+                option
+                option Weiblich
+                option Männlich
+          br          
+          div(id="q2" name="2" class="ui-bar ui-bar-a")
+            p(id='question') Beschäftigung
           div(id="answers" class="ui-body ui-body-a")
             fieldset(data-role="controlgroup")
               input(type="radio" name="radio" id="option1" value="on")
-              label(for="option1") 1
+              label(for="option1") SchülerIn
+              input(type="radio" name="radio" id="option2" value="on")
+              label(for="option2") StudentIn
+              input(type="radio" name="radio" id="option3" value="on")
+              label(for="option3") ArbeiterIn
+              input(type="radio" name="radio" id="option4" value="on")
+              label(for="option4") Angestelle/r
+              input(type="radio" name="radio" id="option5" value="on")
+              label(for="option5") Leitende/r Angestellte/r
+              input(type="radio" name="radio" id="option6" value="on")
+              label(for="option6") Selbstständig
+              input(type="radio" name="radio" id="option7" value="on")
+              label(for="option7") Hausfrau/-mann
+              input(type="radio" name="radio" id="option8" value="on")
+              label(for="option8") Arbeitssuchende/r
+              input(type="radio" name="radio" id="option9" value="on")
+              label(for="option9") PensionistIn
+          br
+          div(id="q2" name="2" class="ui-bar ui-bar-a")
+            p(id='question') Höchste abgeschlossene Schulbildung:
+          div(id="answers" class="ui-body ui-body-a")
+            fieldset(data-role="controlgroup")
+              input(type="radio" name="radio" id="option1" value="on")
+              label(for="option1") Kein Pflichtschulabschluss
+              input(type="radio" name="radio" id="option2" value="on")
+              label(for="option2") Pflichtschule
+              input(type="radio" name="radio" id="option3" value="on")
+              label(for="option3") Lehre
+              input(type="radio" name="radio" id="option4" value="on")
+              label(for="option4") Matura
+              input(type="radio" name="radio" id="option5" value="on")
+              label(for="option5") Universität/Fachhochschule
+          br
+          div(id="q2" name="2" class="ui-bar ui-bar-a")
+            p(id='question') Sagt dir der Begriff NFC (Near Field Communication) etwas?
+          div(id="answers" class="ui-body ui-body-a")
+            fieldset(data-role="controlgroup")
+              input(type="radio" name="radio" id="option1" value="on")
+              label(for="option1") Ja
+              input(type="radio" name="radio" id="option2" value="on")
+              label(for="option2") Nein
+          br
+          div(id="q3" name="3" class="ui-bar ui-bar-a")
+            p(id='question') Weißt du ob dein Smartphone NFC unterstützt?
+          div(id="answers" class="ui-body ui-body-a")
+            fieldset(data-role="controlgroup")
+              input(type="radio" name="radio" id="option1" value="on")
+              label(for="option1") Ja
+              input(type="radio" name="radio" id="option2" value="on")
+              label(for="option2") Nein
+              input(type="radio" name="radio" id="option3" value="on")
+              label(for="option3") Weiß nicht
+          br
+          div(id="q4" name="4" class="ui-bar ui-bar-a")
+            p(id='question') Wie würdest du deine Kenntnisse zu mobilen Technologien generell einstufen?
+          div(id="answers" class="ui-body ui-body-a")
+            fieldset(data-role="controlgroup")
+              input(type="radio" name="radio" id="option1" value="on")
+              label(for="option1") 1 = sehr gut
               input(type="radio" name="radio" id="option2" value="on")
               label(for="option2") 2
               input(type="radio" name="radio" id="option3" value="on")
               label(for="option3") 3
-            button(id='nextQuestion' onClick='' class='myButton') Weiter
-      div(data-role="footer")
-        h4 #{title}
+              input(type="radio" name="radio" id="option4" value="on")
+              label(for="option4") 4
+              input(type="radio" name="radio" id="option5" value="on")
+              label(for="option5") 5 = überhaupt nicht gut
+          br
+          div(id="q5" name="5" class="ui-bar ui-bar-a")
+            p(id='question')  Wenn du an Ihren Umgang mit neuen Medien und Kommunikationstechnologien denken, bist du jemand, der ...
+          div(id="answers" class="ui-body ui-body-a")
+            fieldset(data-role="controlgroup")
+              input(type="radio" name="radio" id="option1" value="on")
+              label(for="option1") … diese neuen Technologien sofort ausprobiert?
+              input(type="radio" name="radio" id="option2" value="on")
+              label(for="option2") … noch etwas wartet, was andere zu den neuen Technologien sagen?
+              input(type="radio" name="radio" id="option3" value="on")
+              label(for="option3") … eher länger abwartet, bis sich diese neuen Technologien bewährt haben?
+              input(type="radio" name="radio" id="option4" value="on")
+              label(for="option4") … neuen Technologien skeptisch bis ablehnend gegenübersteht?
+          br
+          div(id="q5" name="5" class="ui-bar ui-bar-a")
+            p(id='question')  Von welchen der folgenden mobilen Technologien bzw. Begriffen hast du schon gehört?
+          div(id="answers" class="ui-body ui-body-a")
+            fieldset(data-role="controlgroup")
+              input(type="checkbox" name="radio" id="option1" value="on")
+              label(for="option1") Datenbrillen
+              input(type="checkbox" name="radio" id="option2" value="on")
+              label(for="option2") iBeacons
+              input(type="checkbox" name="radio" id="option3" value="on")
+              label(for="option3") BLE (Bluetooth Low Energy)
+              input(type="checkbox" name="radio" id="option4" value="on")
+              label(for="option4") Bluetooth
+              input(type="checkbox" name="radio" id="option5" value="on")
+              label(for="option5") Smartwatch
+              input(type="checkbox" name="radio" id="option6" value="on")
+              label(for="option6") Internet of Things
+              input(type="checkbox" name="radio" id="option7" value="on")
+              label(for="option7") Smart Home
+              input(type="checkbox" name="radio" id="option8" value="on")
+              label(for="option8") QR Codes
+              input(type="checkbox" name="radio" id="option9" value="on")
+              label(for="option9") Augmented Reality
+          br
+        button(id='sendQuestionnaireBtn' onClick='sendToServer()' class='myButton') Fragebogen absenden
+
+

@@ -36,9 +36,9 @@ router.get('/remote', function(req, res) {
 				res.cookie('userID', newID, {
 					maxAge: 999999999999
 				});
-				saveTrackingMessage(newID, req.param("location"), "PageCall", "remote", req.param("type"));
+				saveTrackingMessage(newID, req.param("location"), "PageCall", "remote", req.param("type"), JSON.stringify(req.headers['user-agent']));
 			} else {
-				saveTrackingMessage(req.cookies.userID, req.param("location"), "PageCall", "remote", req.param("type"));
+				saveTrackingMessage(req.cookies.userID, req.param("location"), "PageCall", "remote", req.param("type"), JSON.stringify(req.headers['user-agent']));
 			}
 			res.cookie('remoteVisited', "true", {
 					maxAge: 999999999999
@@ -82,12 +82,12 @@ router.get('/questionnaire', function(req, res) {
 				res.cookie('userID', newID, {
 					maxAge: 999999999999
 				});
-				saveTrackingMessage(newID, req.param("location"), "PageCall", "questionnaire", req.param("type"));
+				saveTrackingMessage(newID, req.param("location"), "PageCall", "questionnaire", req.param("type"), JSON.stringify(req.headers['user-agent']));
 			} else {
-				saveTrackingMessage(req.cookies.userID, req.param("location"), "PageCall", "questionnaire", req.param("type"));
+				saveTrackingMessage(req.cookies.userID, req.param("location"), "PageCall", "questionnaire", req.param("type"), JSON.stringify(req.headers['user-agent']));
 			}
 			res.render('questionnaire', {
-				title: 'Fragebogen'
+				title: 'Feedback'
 			});
 		} else {
 			res.render('falseURLError', {
@@ -119,9 +119,9 @@ router.get('/random', function(req, res) {
 				res.cookie('userID', newID, {
 					maxAge: 999999999999
 				});
-				saveTrackingMessage(newID, req.param("location"), "PageCall", "random", req.param("type"));
+				saveTrackingMessage(newID, req.param("location"), "PageCall", "random", req.param("type"), JSON.stringify(req.headers['user-agent']));
 			} else {
-				saveTrackingMessage(req.cookies.userID, req.param("location"), "PageCall", "random", req.param("type"));
+				saveTrackingMessage(req.cookies.userID, req.param("location"), "PageCall", "random", req.param("type"), JSON.stringify(req.headers['user-agent']));
 			}
 			res.cookie('randomVisited', "true", {
 					maxAge: 999999999999
@@ -144,7 +144,7 @@ router.get('/random', function(req, res) {
 });
 
 //save new tracking message to file
-function saveTrackingMessage(userID, locationName, eventType, message, parameter) {
+function saveTrackingMessage(userID, locationName, eventType, message, parameter, clientUserAgent) {
 	var myTimeStamp = getTimeStamp();
 	fs.readFile("C:/evoCubeLog.csv", "utf8", function(err, data) {
 		
@@ -152,7 +152,7 @@ function saveTrackingMessage(userID, locationName, eventType, message, parameter
 			console.log("Reading error");
 			console.log(err);
 		} else {
-			data = data + myTimeStamp + ";" + userID + ";" + locationName + ";" + eventType + ";" + message + ";" + parameter + "\n";
+			data = data + myTimeStamp + ";" + userID + ";" + locationName + ";" + eventType + ";" + message + ";" + parameter + ";" + clientUserAgent + "\n";
 			fs.writeFile("C:/evoCubeLog.csv", data, "utf8", function(err) {
 				if (err) {
 					writeLog("File writting error at saving Log Entry to file","error");
@@ -170,6 +170,7 @@ function saveTrackingMessage(userID, locationName, eventType, message, parameter
 	newEntry.eventType = eventType;
 	newEntry.message = message;
 	newEntry.parameter = parameter;
+	newEntry.clientUserAgent = clientUserAgent;
 
 	mydbConnection.log.save(newEntry, function(error, savedEntry) {
 		if(error){

@@ -16,7 +16,7 @@ var colors = require('colors');
 
 //mongo db initialization
 var dburl = "localhost/evoCube";
-var collections = ["movies", "log"];
+var collections = ["movies", "log", "questionResults"];
 mydbConnection = require("mongojs").connect(dburl, collections);
 
 
@@ -351,6 +351,26 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 					writeLog("Question Client from " + cubeLocation + " registered to Server with ID: " + socket.id + "Allowed to fill out the questionnaire: " + questionnaireAllowed, "standard");
 					saveTrackingMessage(getCookie(socket, "userID"), cubeLocation, "normalClient", "registerAtQuestionnaire", questionnaireAllowed);
 					fn(questionnaireAllowed);
+				});
+
+				//receive the filled out questionnaire and send voucher code
+				socket.on("questionnaireFilledOut", function(cubeLocation, currentQuestionnaireResult, fn) {
+					//writeLog("DFÖLIJHF: " + currentQuestionnaireResult.personName, "error");
+					currentQuestionnaireResult.cubeLocation = cubeLocation;
+					mydbConnection.questionResults.find({cubeLocation: cubeLocation},function(err, results) {
+						//writeLog(JSON.stringify(results), "error");
+						var voucherNumber = 0;
+						for (v = 0; v < results.length; v++) {
+							//writeLog(results[v].personName, "error");
+							voucherNumber = results[v].voucherNumber;
+						}
+						currentQuestionnaireResult.voucherNumber = voucherNumber + 1;
+						mydbConnection.questionResults.save(currentQuestionnaireResult);
+						voucherNumber = voucherNumber + 100;
+
+						fn(voucherNumber);
+
+					});
 				});
 
 				//##############################
