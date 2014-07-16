@@ -355,13 +355,11 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 
 				//receive the filled out questionnaire and send voucher code
 				socket.on("questionnaireFilledOut", function(cubeLocation, currentQuestionnaireResult, fn) {
-					//writeLog("DFÖLIJHF: " + currentQuestionnaireResult.personName, "error");
+				
 					currentQuestionnaireResult.cubeLocation = cubeLocation;
 					mydbConnection.questionResults.find({cubeLocation: cubeLocation},function(err, results) {
-						//writeLog(JSON.stringify(results), "error");
 						var voucherNumber = 0;
 						for (v = 0; v < results.length; v++) {
-							//writeLog(results[v].personName, "error");
 							voucherNumber = results[v].voucherNumber;
 						}
 						currentQuestionnaireResult.voucherNumber = voucherNumber + 1;
@@ -466,15 +464,8 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 
 					fn(true);
 				});
-
-
-
 			});
-
-
 		});
-
-
 	}, 5000);
 });
 

@@ -15,9 +15,9 @@ html
       div(data-role="header")
         h1 #{title}
       div(data-role="content")
-        div: h1(id='welcome') Gib uns Feedback und hole dir eine Ermäßigung von 1€ für dein Kinoticket
-        div: p(id='progress') Frage 1 von 1
-        div(id = "questionnaireDiv" class="ui-corner-all custom-corners")
+        div: h1(id='welcome' style="display:none;") Gib uns Feedback und hole dir eine Ermäßigung von 1€ für dein Kinoticket
+        div: p(id='progress' style="display:none;") Frage 1 von 1
+        div(id = "questionnaireDiv" class="ui-corner-all custom-corners" style="display:none;")
           div(id="q1" name="1" class="ui-bar ui-bar-a")
             p(id='question') Bitte gib dein Alter und dein Geschlecht an.
           div(id="answers" class="ui-body ui-body-a")
@@ -141,6 +141,6 @@ html
               input(type="checkbox" name="radio" id="option9" value="on")
               label(for="option9") Augmented Reality
           br
-        button(id='sendQuestionnaireBtn' onClick='sendToServer()' class='myButton') Fragebogen absenden
+          button(id='sendQuestionnaireBtn' onClick='sendToServer()' class='myButton') Fragebogen absenden
 
 
