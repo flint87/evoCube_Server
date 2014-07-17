@@ -355,9 +355,11 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 
 				//receive the filled out questionnaire and send voucher code
 				socket.on("questionnaireFilledOut", function(cubeLocation, currentQuestionnaireResult, fn) {
-				
+
 					currentQuestionnaireResult.cubeLocation = cubeLocation;
-					mydbConnection.questionResults.find({cubeLocation: cubeLocation},function(err, results) {
+					mydbConnection.questionResults.find({
+						cubeLocation: cubeLocation
+					}, function(err, results) {
 						var voucherNumber = 0;
 						for (v = 0; v < results.length; v++) {
 							voucherNumber = results[v].voucherNumber;
@@ -366,7 +368,26 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 						mydbConnection.questionResults.save(currentQuestionnaireResult);
 						voucherNumber = voucherNumber + 100;
 
-						fn(voucherNumber);
+						
+
+						//and write the questionnaire to a file as well
+						fs.readFile(__dirname + "/questionnaireResults.json", "utf8", function(err, data) {
+							if (err) {
+								writeLog("Error reading cube data file", "error");
+							} else {
+								data = JSON.parse(data);
+								data.push(currentQuestionnaireResult);
+								fs.writeFile(__dirname + "/questionnaireResults.json", JSON.stringify(data), "utf8", function(err) {
+									if (err) {
+										writeLog("Error reading cube data file", "error");
+									} else {
+										fn(voucherNumber);
+									}
+
+
+								});
+							}
+						});
 
 					});
 				});
@@ -566,14 +587,14 @@ function getTimeStamp() {
 //save new tracking message to file
 function saveTrackingMessage(userID, locationName, eventType, message, parameter) {
 	var myTimeStamp = getTimeStamp();
-	fs.readFile("C:/evoCubeLog.csv", "utf8", function(err, data) {
+	fs.readFile(__dirname + "/evoCubeLog.csv", "utf8", function(err, data) {
 
 		if (err) {
 			console.log("Reading error");
 			console.log(err);
 		} else {
 			data = data + myTimeStamp + ";" + userID + ";" + locationName + ";" + eventType + ";" + message + ";" + parameter + "\n";
-			fs.writeFile("C:/evoCubeLog.csv", data, "utf8", function(err) {
+			fs.writeFile(__dirname + "/evoCubeLog.csv", data, "utf8", function(err) {
 				if (err) {
 					writeLog("File writting error at saving Log Entry to file", "error");
 				} else {}

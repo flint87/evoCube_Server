@@ -440,6 +440,7 @@ function abortConnect() {
 	initState = "noRemoteConnection";
 	$("#initElements").show(0);
 	$("#codeElements").hide(0);
+	$("#abortConnection").html("Abbrechen");
 	$("#feedbackPopup").popup("close");
 }
 
@@ -448,12 +449,13 @@ function submitCode() {
 	writeLog("Secret Value: " + $("#secret").val());
 	socket.emit("checkMyCode", cubeLocation, $("#secret").val(), function(answer) {
 		if (answer) {
-			$("#feedback").html("Du bist jetzt mit dem Fernseher verbunden und kannst dir beliebige Trailer anschauen.");
+			$("#feedback").html("Du bist jetzt mit dem Fernseher verbunden und kannst dir nun die Trailer anschauen.");
 			$("#codeElements").hide(0);
 			initState = "established";
 			$("#secret").val("");
-			clearTimeout(myCodeTimer);
-			$("#feedbackPopup").popup("close");
+			clearTimeout(myCodeTimer);			
+			$("#abortConnection").html("OK");
+			//$("#feedbackPopup").popup("close");
 			//remote rights should not be forever..
 			myDisconnectTimer = setTimeout(function() {
 				revokeRemote();
