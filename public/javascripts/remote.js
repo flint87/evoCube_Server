@@ -374,15 +374,15 @@ function playTrailer(trailerType) {
 	if (initState == "noRemoteConnection") {
 		socket.emit("isTrailerRunningAtTheMoment", cubeLocation, function(answer) {
 			writeLog("FEEDBACK: " + answer);
-			if(answer == "false"){
+			if (answer == "false") {
 				$("#feedback").html("Tippe hier um dich mit dem Fernseher zu verbinden.");
 				$("#initElements").show(0);
 				$("#abortConnection").html("Abbrechen");
-			}else if(answer == "true"){
+			} else if (answer == "true") {
 				$("#feedback").html("Zurzeit läuft gerade ein Trailer auf dem Fernseher.");
 				$("#initElements").hide(0);
 				$("#abortConnection").html("OK");
-			}else if(answer == "noVideoClientHere"){
+			} else if (answer == "noVideoClientHere") {
 				$("#feedback").html("Kein Video Client im Moment.");
 				$("#initElements").hide(0);
 				$("#abortConnection").html("OK");
@@ -435,13 +435,18 @@ function giveMeControl() {
 	});
 }
 
-//abbort the connection attempt and hide the popup
+//hide the popup or cancel the connection attempt
 function abortConnect() {
-	initState = "noRemoteConnection";
-	$("#initElements").show(0);
-	$("#codeElements").hide(0);
-	$("#abortConnection").html("Abbrechen");
-	$("#feedbackPopup").popup("close");
+	if (initState == "established") {
+		$("#feedbackPopup").popup("close");
+		$("#abortConnection").html("Abbrechen");
+	} else {
+		initState = "noRemoteConnection";
+		$("#initElements").show(0);
+		$("#codeElements").hide(0);
+		$("#feedbackPopup").popup("close");
+	}
+
 }
 
 //check with the server if the code is correct. if yes grant access to monitor
@@ -453,9 +458,9 @@ function submitCode() {
 			$("#codeElements").hide(0);
 			initState = "established";
 			$("#secret").val("");
-			clearTimeout(myCodeTimer);			
+			clearTimeout(myCodeTimer);
 			$("#abortConnection").html("OK");
-			//$("#feedbackPopup").popup("close");
+			
 			//remote rights should not be forever..
 			myDisconnectTimer = setTimeout(function() {
 				revokeRemote();
