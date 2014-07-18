@@ -40,35 +40,46 @@ function connect() {
 //request voucher code 
 function sendToServer() {
 
+	var infoMessage = "Unvollständige Angaben bei Frage(n): ";
+
 	var currentQuestionnaireResult = {};
+
+	if ($("#sexSelect option:selected").text() === "" || $("#ageSelect option:selected").text() === "") infoMessage = infoMessage + "1, ";
 
 	currentQuestionnaireResult.sex = $("#sexSelect option:selected").text();
 	currentQuestionnaireResult.age = $("#ageSelect option:selected").text();
 
+	if ($("#question2 input[type='radio']:checked").val() === undefined) infoMessage = infoMessage + "2, ";
 	currentQuestionnaireResult.q2 = {};
 	currentQuestionnaireResult.q2.question = $("#question2 #question").attr("name");
 	currentQuestionnaireResult.q2.answer = $("#question2 input[type='radio']:checked").val();
 
+	if ($("#question3 input[type='radio']:checked").val() === undefined) infoMessage = infoMessage + "3, ";
 	currentQuestionnaireResult.q3 = {};
 	currentQuestionnaireResult.q3.question = $("#question3 #question").attr("name");
 	currentQuestionnaireResult.q3.answer = $("#question3 input[type='radio']:checked").val();
 
+	if ($("#question4 input[type='radio']:checked").val() === undefined) infoMessage = infoMessage + "4, ";
 	currentQuestionnaireResult.q4 = {};
 	currentQuestionnaireResult.q4.question = $("#question4 #question").attr("name");
 	currentQuestionnaireResult.q4.answer = $("#question4 input[type='radio']:checked").val();
 
+	if ($("#question5 input[type='radio']:checked").val() === undefined) infoMessage = infoMessage + "5, ";
 	currentQuestionnaireResult.q5 = {};
 	currentQuestionnaireResult.q5.question = $("#question5 #question").attr("name");
 	currentQuestionnaireResult.q5.answer = $("#question5 input[type='radio']:checked").val();
 
+	if ($("#question6 input[type='radio']:checked").val() === undefined) infoMessage = infoMessage + "6, ";
 	currentQuestionnaireResult.q6 = {};
 	currentQuestionnaireResult.q6.question = $("#question6 #question").attr("name");
 	currentQuestionnaireResult.q6.answer = $("#question6 input[type='radio']:checked").val();
 
+	if ($("#question7 input[type='radio']:checked").val() === undefined) infoMessage = infoMessage + "7, ";
 	currentQuestionnaireResult.q7 = {};
 	currentQuestionnaireResult.q7.question = $("#question7 #question").attr("name");
 	currentQuestionnaireResult.q7.answer = $("#question7 input[type='radio']:checked").val();
 
+	if ($("#question8 input[type='radio']:checked").val() === undefined) infoMessage = infoMessage + "8, ";
 	currentQuestionnaireResult.q8 = {};
 	currentQuestionnaireResult.q8.question = $("#question8 #question").attr("name");
 	currentQuestionnaireResult.q8.answer = $("#question8 input[type='radio']:checked").val();
@@ -87,18 +98,22 @@ function sendToServer() {
 		if ($(this).is(':checked')) currentQuestionnaireResult.q10.answer.push($(this).val());
 	});
 
+	if ($("#question11 input[type='radio']:checked").val() === undefined) infoMessage = infoMessage + "11, ";
 	currentQuestionnaireResult.q11 = {};
 	currentQuestionnaireResult.q11.question = $("#question11 #question").attr("name");
 	currentQuestionnaireResult.q11.answer = $("#question11 input[type='radio']:checked").val();
 
+	if ($("#question12 input[type='radio']:checked").val() === undefined) infoMessage = infoMessage + "12, ";
 	currentQuestionnaireResult.q12 = {};
 	currentQuestionnaireResult.q12.question = $("#question12 #question").attr("name");
 	currentQuestionnaireResult.q12.answer = $("#question12 input[type='radio']:checked").val();
 
+	if ($("#question13 input[type='radio']:checked").val() === undefined) infoMessage = infoMessage + "13, ";
 	currentQuestionnaireResult.q13 = {};
 	currentQuestionnaireResult.q13.question = $("#question13 #question").attr("name");
 	currentQuestionnaireResult.q13.answer = $("#question13 input[type='radio']:checked").val();
 
+	if ($("#question14 input[type='radio']:checked").val() === undefined) infoMessage = infoMessage + "14, ";
 	currentQuestionnaireResult.q14 = {};
 	currentQuestionnaireResult.q14.question = $("#question14 #question").attr("name");
 	currentQuestionnaireResult.q14.answer = $("#question14 input[type='radio']:checked").val();
@@ -110,6 +125,7 @@ function sendToServer() {
 		if ($(this).is(':checked')) currentQuestionnaireResult.q15.answer.push($(this).val());
 	});
 
+	if ($("#question16 input[type='radio']:checked").val() === undefined) infoMessage = infoMessage + "16, ";
 	currentQuestionnaireResult.q16 = {};
 	currentQuestionnaireResult.q16.question = $("#question16 #question").attr("name");
 	currentQuestionnaireResult.q16.answer = $("#question16 input[type='radio']:checked").val();
@@ -118,53 +134,69 @@ function sendToServer() {
 	currentQuestionnaireResult.q17.question = $("#question17 #question").attr("name");
 	currentQuestionnaireResult.q17.answer = $("#question17 input[type='text']").val();
 
-	//writeLog(JSON.stringify(currentQuestionnaireResult));
+	if (infoMessage !== "Unvollständige Angaben bei Frage(n): ") {
+		writeLog(infoMessage);
+		$("#missingAnswers").html(infoMessage);
 
-	document.cookie = "questionnaire=yes; expires=Thu, 18 Dec 2030 12:00:00 GMT; path=/";
-	document.cookie = "questionnaireDate=" + getTimeStamp() + "; expires=Thu, 18 Dec 2030 12:00:00 GMT; path=/";
+	} else {
+		$("#missingAnswers").html("");
+		document.cookie = "questionnaire=yes; expires=Thu, 18 Dec 2030 12:00:00 GMT; path=/";
+		document.cookie = "questionnaireDate=" + getTimeStamp() + "; expires=Thu, 18 Dec 2030 12:00:00 GMT; path=/";
 
-	socket.emit("questionnaireFilledOut", cubeLocation, currentQuestionnaireResult, function(answer) {
+		socket.emit("questionnaireFilledOut", cubeLocation, currentQuestionnaireResult, function(answer) {
 
-		writeLog(answer);
-		$("#sendQuestionnaireBtn").hide(0);
-		$("#questionnaireDiv").hide(0);
-		$("#welcome").html("Danke für das Abschließen des Fragebogens! Deine Gutscheinnummer = " + answer + ". Dein Gutschein ist nur heute am " + getTimeStamp() + " gültig.");
+			writeLog(answer);
+			$("#sendQuestionnaireBtn").hide(0);
+			$("#questionnaireDiv").hide(0);
+			$("#welcome").html("Danke für dein Feedback! <br>Gutscheinnummer: <br><br>" + answer + " <br>gültig am: <br>" + getTimeStamp() + " <br>");
+			document.cookie = "voucherNumber=" + answer + "; expires=Thu, 18 Dec 2030 12:00:00 GMT; path=/";
+
+			if (cubeLocation == "kiz") {
+				$("#cinemaImg").attr("src", "/images/kiz_logo.png");
+			} else if (cubeLocation == "rechbauer") {
+				$("#cinemaImg").attr("src", "/images/rechbauer_logo.jpg");
+			}
 
 
-		document.cookie = "voucherNumber=" + answer + "; expires=Thu, 18 Dec 2030 12:00:00 GMT; path=/";
+		});
+	}
 
 
-	});
+
 }
 
 //fill the questionnaire items with values
 function prepareQuestionnaire() {
 
-	//check if that client has already filled out a questionnaire before
-	if (getCookie("questionnaire") == "yesKRAWUZIKAPUZI") {
-
-		$("#welcome").html("Du hast den Fragebogen bereits einmal am " + getCookie("questionnaireDate") + " ausgefüllt. Danke! Deine Gutscheinnummer war " + getCookie("voucherNumber"));
-	} else {
-
-		//get the query parameters to determine to which cubeLocation this page call belongs to
-		var query_string = {};
-		var query = window.location.search.substring(1);
-		var vars = query.split("&");
-		for (var i = 0; i < vars.length; i++) {
-			var pair = vars[i].split("=");
-			// If first entry with this name
-			if (typeof query_string[pair[0]] === "undefined") {
-				query_string[pair[0]] = pair[1];
-				// If second entry with this name
-			} else if (typeof query_string[pair[0]] === "string") {
-				var arr = [query_string[pair[0]], pair[1]];
-				query_string[pair[0]] = arr;
-				// If third or later entry with this name
-			} else {
-				query_string[pair[0]].push(pair[1]);
-			}
+	//get the query parameters to determine to which cubeLocation this page call belongs to
+	var query_string = {};
+	var query = window.location.search.substring(1);
+	var vars = query.split("&");
+	for (var i = 0; i < vars.length; i++) {
+		var pair = vars[i].split("=");
+		// If first entry with this name
+		if (typeof query_string[pair[0]] === "undefined") {
+			query_string[pair[0]] = pair[1];
+			// If second entry with this name
+		} else if (typeof query_string[pair[0]] === "string") {
+			var arr = [query_string[pair[0]], pair[1]];
+			query_string[pair[0]] = arr;
+			// If third or later entry with this name
+		} else {
+			query_string[pair[0]].push(pair[1]);
 		}
-		cubeLocation = query_string.location;
+	}
+	cubeLocation = query_string.location;
+
+	//check if that client has already filled out a questionnaire before
+	if (getCookie("questionnaire") == "yes") {
+		$("#welcome").html("Danke für dein Feedback! <br><br>Gutscheinnummer: <br>" + getCookie("voucherNumber") + " <br>gültig am: <br>" + getCookie("questionnaireDate") + " <br>");
+		if (cubeLocation == "kiz") {
+			$("#cinemaImg").attr("src", "/images/kiz_logo.png");
+		} else if (cubeLocation == "rechbauer") {
+			$("#cinemaImg").attr("src", "/images/rechbauer_logo.jpg");
+		}
+	} else {
 
 		for (var u = 13; u < 100; u++) {
 			$("#ageSelect").append("<option>" + u + "</option>");

@@ -15,7 +15,9 @@ html
       div(data-role="header")
         h1 #{title}
       div(data-role="content")
-        div: h2(id='welcome' style="display:none;") Für das Ausfüllen vom Fragebogen bekommst du einen Gutschein über 1€ für dein Kinoticket den du heute einlösen kannst.
+        img(id="cinemaImg" style="width:60%; height:auto; display:block; margin-left: auto; margin-right: auto")
+        div
+          h2(id='welcome' style="display:none; text-align:center;" ) Für das Ausfüllen vom Fragebogen bekommst du einen Gutschein über 1€ für dein Kinoticket den du heute einlösen kannst.
         div(id = "questionnaireDiv" class="ui-corner-all custom-corners" style="display:none;")
           div(id="question1")
             div(id="q1" name="1" class="ui-bar ui-bar-a")
@@ -252,6 +254,7 @@ html
             div(id="answers" class="ui-body ui-body-a")
               input(type="text" name="radio" id="" value="")
           br
+          p(id="missingAnswers" style="color:red; font-weight:bold;")
           p(id='asdf') Wenn du den Fragebogen absendest, bekommst du deinen Gutschein direkt auf dem Handy angezeigt.
           button(id='sendQuestionnaireBtn' onClick='sendToServer()' class='myButton') Fragebogen absenden
 
