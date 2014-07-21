@@ -17,7 +17,7 @@ html
       div(data-role="content")
         img(id="cinemaImg" style="width:60%; height:auto; display:block; margin-left: auto; margin-right: auto")
         div
-          h2(id='welcome' style="display:none; text-align:center;" ) Für das Ausfüllen des Fragebogens bekommst du einen Gutschein über 1€ für dein Kinoticket den du heute einlösen kannst.
+          h3(id='welcome' style="display:none; text-align:center;" ) Danke dass du dir Zeit nimmst uns Feedback zu geben. Das Ausfüllen dauert etwa 2 bis 3 Minuten. <br>Bei dem Fragebogen wird deine Einstellung und Meinung bezüglich mobiler Technologien, interaktiver Werbung, Personalisierung von Filmen und die Funktionalität des Movie Cubes selbst erfragt. <br> Für das Ausfüllen des Fragebogens bekommst du einen Gutschein über 1€ für dein Kinoticket den du heute einlösen kannst.
         div(id = "questionnaireDiv" class="ui-corner-all custom-corners" style="display:none;")
           div(id="question1")
             div(id="q1" name="1" class="ui-bar ui-bar-a")
@@ -227,16 +227,20 @@ html
               p(id='question' name="Wie wirst du normalerweise auf Filme aufmerksam, die du dir im Kino anschaust?") 13. Wie wirst du normalerweise auf Filme aufmerksam, die du dir im Kino anschaust??
             div(id="answers" class="ui-body ui-body-a")
               fieldset(data-role="controlgroup")
-                input(type="checkbox" name="q15Radio" id="option1" value="Das System ist mir aufgefallen und ich war neugierig.")
-                label(for="option1") Durch Plakate im Kino
-                input(type="checkbox" name="q15Radio" id="option2" value="Ein/e Angestellter/e des Kinos hat mich darauf hingewiesen.")
-                label(for="option2") Durch die Trailer vor Vorstellungsbeginn im Kino
-                input(type="checkbox" name="q15Radio" id="option4" value="Ich habe von Freunden oder Bekannten davon gehört.")
-                label(for="option4") Durch Werbung im Fernsehen
-                input(type="checkbox" name="q15Radio" id="option5" value="Ich habe auf Facebook davon gelesen.")
-                label(for="option5") Durch Werbung im Internet
-                input(type="checkbox" name="q15Radio" id="option6" value="Ich kenne ihn aus einem anderen Kino.")
-                label(for="option6") Ich kenne ihn aus einem anderen Kino.
+                input(type="checkbox" name="q15Radio" id="option1" value="Durch Plakate / Werbung im Kino.")
+                label(for="option1") Durch Plakate / Werbung im Kino.
+                input(type="checkbox" name="q15Radio" id="option2" value="Durch die Trailer vor Vorstellungsbeginn im Kino.")
+                label(for="option2") Durch die Trailer vor Vorstellungsbeginn im Kino.
+                input(type="checkbox" name="q15Radio" id="option4" value="Durch Werbung im Fernsehen.")
+                label(for="option4") Durch Werbung im Fernsehen.
+                input(type="checkbox" name="q15Radio" id="option5" value="Durch Werbung im Internet.")
+                label(for="option5") Durch Werbung im Internet.
+                input(type="checkbox" name="q15Radio" id="option6" value="Durch Freunde / Bekannte.")
+                label(for="option6") Durch Freunde / Bekannte.
+                input(type="checkbox" name="q15Radio" id="option7" value="Über Social Media.")
+                label(for="option7") Über Social Media.
+                input(type="checkbox" name="q15Radio" id="option8" value="Über andere Kanäle.")
+                label(for="option8") Über andere Kanäle.
           br
           div(id="question15")
             div(id="q5" name="5" class="ui-bar ui-bar-a")
@@ -268,7 +272,7 @@ html
             div(id="q5" name="5" class="ui-bar ui-bar-a")
               p(id='question' name="Hast du vielleicht sonst noch Ideen, Anregungen, Kritik oder Feedback für den Movie Cube oder die Filmpersonalisierung?") 16. Hast du vielleicht sonst noch Ideen, Anregungen, Kritik oder Feedback für den Movie Cube oder die Filmpersonalisierung?
             div(id="answers" class="ui-body ui-body-a")
-              input(type="text" name="radio" id="" value="")
+              textarea(name="radio" id="" value="")
           br
           p(id="missingAnswers" style="color:red; font-weight:bold;")
           p(id='asdf') Wenn du den Fragebogen absendest, bekommst du deinen Gutschein direkt auf dem Handy angezeigt.

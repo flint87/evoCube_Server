@@ -138,7 +138,7 @@ function playTrailer(trailerType) {
 		writeLog("I want to see: " + trailerType + " " + $("#movieName").attr("name"));
 		socket.emit("inCharge", cubeLocation, function(message) {
 			if (message) {
-				socket.emit("playSpecifTrailer", cubeLocation, $("#movieName").attr("name"), trailerType, function(message) {
+				socket.emit("playRandomTrailer", cubeLocation, $("#movieName").attr("name"), trailerType, function(message) {
 					writeLog("Feedback: " + message);
 					socket.emit("writeTracking", cubeLocation, "randomClientEvent", "playTrailer", $("#movieName").attr("name"), function() {});
 				});

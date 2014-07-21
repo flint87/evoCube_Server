@@ -319,10 +319,10 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 						if (err || !users) {
 							writeLog("DB ERROR at database query: ", "error");
 						} else {
-							writeLog(queryResult.length + " Movies found in DB", "standard");
+							//writeLog(queryResult.length + " Movies found in DB", "standard");
 							var shortResult = [];
 							for (i = 0; i < queryResult.length; i++) {
-								writeLog(queryResult[i].movieName);
+								//writeLog(queryResult[i].movieName);
 								shortResult.push(queryResult[i].interalName);
 								console.dir(shortResult);
 							}
@@ -356,6 +356,7 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 				//receive the filled out questionnaire and send voucher code
 				socket.on("questionnaireFilledOut", function(cubeLocation, currentQuestionnaireResult, fn) {
 
+					saveTrackingMessage(getCookie(socket, "userID"), cubeLocation, "normalClient", "submitQuestionnaire", "true");
 					currentQuestionnaireResult.cubeLocation = cubeLocation;
 					mydbConnection.questionResults.find({
 						cubeLocation: cubeLocation
@@ -368,13 +369,16 @@ fs.readFile(__dirname + "/public/data/config.json", "utf8", function(err, data) 
 						mydbConnection.questionResults.save(currentQuestionnaireResult);
 						voucherNumber = voucherNumber + 100;
 
-						
+
 
 						//and write the questionnaire to a file as well
 						fs.readFile(__dirname + "/questionnaireResults.json", "utf8", function(err, data) {
 							if (err) {
 								writeLog("Error reading cube data file", "error");
 							} else {
+								if (data === "") {
+									data = "[]";
+								}
 								data = JSON.parse(data);
 								data.push(currentQuestionnaireResult);
 								fs.writeFile(__dirname + "/questionnaireResults.json", JSON.stringify(data), "utf8", function(err) {

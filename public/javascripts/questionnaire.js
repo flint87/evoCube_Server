@@ -132,7 +132,17 @@ function sendToServer() {
 
 	currentQuestionnaireResult.q17 = {};
 	currentQuestionnaireResult.q17.question = $("#question17 #question").attr("name");
-	currentQuestionnaireResult.q17.answer = $("#question17 input[type='text']").val();
+	currentQuestionnaireResult.q17.answer = $("#question17 textarea").val();
+
+	currentQuestionnaireResult.q18 = {};
+	currentQuestionnaireResult.q18.question = $("#question18 #question").attr("name");
+	currentQuestionnaireResult.q18.answer = [];
+	$('#question18 input[type="checkbox"]').each(function() {
+		if ($(this).is(':checked')) currentQuestionnaireResult.q18.answer.push($(this).val());
+	});
+
+	writeLog(JSON.stringify(currentQuestionnaireResult));
+
 
 	if (infoMessage !== "Unvollständige Angaben bei Frage(n): ") {
 		writeLog(infoMessage);
