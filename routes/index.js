@@ -41,10 +41,10 @@ router.get('/remote', function(req, res) {
 				saveTrackingMessage(req.cookies.userID, req.param("location"), "PageCall", "remote", req.param("type"), JSON.stringify(req.headers['user-agent']));
 			}
 			res.cookie('remoteVisited', "true", {
-					maxAge: 999999999999
-				});
+				maxAge: 999999999999
+			});
 			res.render('remote', {
-				title: 'Movie Matcher'
+				title: 'Movie Cube'
 			});
 		} else {
 			res.render('falseURLError', {
@@ -124,10 +124,10 @@ router.get('/random', function(req, res) {
 				saveTrackingMessage(req.cookies.userID, req.param("location"), "PageCall", "random", req.param("type"), JSON.stringify(req.headers['user-agent']));
 			}
 			res.cookie('randomVisited', "true", {
-					maxAge: 999999999999
-				});
+				maxAge: 999999999999
+			});
 			res.render('random', {
-				title: 'Zufall'
+				title: 'Movie Cube'
 			});
 		} else {
 			res.render('falseURLError', {
@@ -143,19 +143,57 @@ router.get('/random', function(req, res) {
 	}
 });
 
+router.get('/fb', function(req, res) {
+
+	var newID = intformat(flakeIdGen.next(), 'dec');
+	var connectionAllowed = false;
+	for (var v = 0; v < allowedLocations.length; v++) {
+		if (req.param("location") == allowedLocations[v])
+			connectionAllowed = true;
+	}
+	if (connectionAllowed) {
+		//check if there is an allowed request parameter for type
+		if (req.param("type") == "nfc" || req.param("type") == "qr") {
+			if (undefined === req.cookies.userID) {
+				res.cookie('userID', newID, {
+					maxAge: 999999999999
+				});
+				saveTrackingMessage(newID, req.param("location"), "PageCall", "facebook", req.param("type"), JSON.stringify(req.headers['user-agent']));
+			} else {
+				saveTrackingMessage(req.cookies.userID, req.param("location"), "PageCall", "facebook", req.param("type"), JSON.stringify(req.headers['user-agent']));
+			}
+
+			res.render('fb', {
+				title: 'Facebook'
+			});
+		} else {
+			res.render('falseURLError', {
+				title: "Fehler",
+				message: "Du musst die Seite über den evoCube aufrufen"
+			});
+		}
+	} else {
+		res.render('falseURLError', {
+			title: "Fehler",
+			message: "Du musst die Seite über den evoCube aufrufen"
+		});
+	}
+
+});
+
 //save new tracking message to file
 function saveTrackingMessage(userID, locationName, eventType, message, parameter, clientUserAgent) {
 	var myTimeStamp = getTimeStamp();
-	fs.readFile("C:/evoCubeLog.csv", "utf8", function(err, data) {
-		
+	fs.readFile(path.dirname(require.main.filename) + "/evoCubeLog.csv", "utf8", function(err, data) {
+
 		if (err) {
 			console.log("Reading error");
 			console.log(err);
 		} else {
 			data = data + myTimeStamp + ";" + userID + ";" + locationName + ";" + eventType + ";" + message + ";" + parameter + ";" + clientUserAgent + "\n";
-			fs.writeFile("C:/evoCubeLog.csv", data, "utf8", function(err) {
+			fs.writeFile(path.dirname(require.main.filename) + "/evoCubeLog.csv", data, "utf8", function(err) {
 				if (err) {
-					writeLog("File writting error at saving Log Entry to file","error");
+					writeLog("File writting error at saving Log Entry to file", "error");
 				} else {
 					//console.log("Tracking messages written");
 				}
@@ -173,8 +211,8 @@ function saveTrackingMessage(userID, locationName, eventType, message, parameter
 	newEntry.clientUserAgent = clientUserAgent;
 
 	mydbConnection.log.save(newEntry, function(error, savedEntry) {
-		if(error){
-			writeLog("DB Error at saving Log Entry","error");
+		if (error) {
+			writeLog("DB Error at saving Log Entry", "error");
 		}
 
 	});

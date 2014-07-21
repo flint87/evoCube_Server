@@ -48,7 +48,7 @@ function sendToServer() {
 
 	currentQuestionnaireResult.sex = $("#sexSelect option:selected").text();
 	currentQuestionnaireResult.age = $("#ageSelect option:selected").text();
-
+/*
 	if ($("#question2 input[type='radio']:checked").val() === undefined) infoMessage = infoMessage + "2, ";
 	currentQuestionnaireResult.q2 = {};
 	currentQuestionnaireResult.q2.question = $("#question2 #question").attr("name");
@@ -58,7 +58,7 @@ function sendToServer() {
 	currentQuestionnaireResult.q3 = {};
 	currentQuestionnaireResult.q3.question = $("#question3 #question").attr("name");
 	currentQuestionnaireResult.q3.answer = $("#question3 input[type='radio']:checked").val();
-
+*/
 	if ($("#question4 input[type='radio']:checked").val() === undefined) infoMessage = infoMessage + "4, ";
 	currentQuestionnaireResult.q4 = {};
 	currentQuestionnaireResult.q4.question = $("#question4 #question").attr("name");
@@ -190,7 +190,7 @@ function prepareQuestionnaire() {
 
 	//check if that client has already filled out a questionnaire before
 	if (getCookie("questionnaire") == "yes") {
-		$("#welcome").html("Danke für dein Feedback! <br><br>Gutscheinnummer: <br>" + getCookie("voucherNumber") + " <br>gültig am: <br>" + getCookie("questionnaireDate") + " <br>");
+		$("#welcome").html("Danke für dein Feedback! <br><br>Gutscheinnummer: <br>" + getCookie("voucherNumber") + " <br>gültig am: <br>" + getCookie("questionnaireDate") + " <br><br> Zum Einlösen zeigst du bei der Kinokasse einfach deine Gutscheinnummer.");
 		if (cubeLocation == "kiz") {
 			$("#cinemaImg").attr("src", "/images/kiz_logo.png");
 		} else if (cubeLocation == "rechbauer") {

@@ -442,11 +442,12 @@ function abortConnect() {
 		$("#abortConnection").html("Abbrechen");
 	} else {
 		initState = "noRemoteConnection";
-		$("#initElements").show(0);
-		$("#codeElements").hide(0);
 		$("#feedbackPopup").popup("close");
+		setTimeout(function() {
+			$("#initElements").show(0);
+			$("#codeElements").hide(0);
+		}, 200);
 	}
-
 }
 
 //check with the server if the code is correct. if yes grant access to monitor
@@ -460,7 +461,7 @@ function submitCode() {
 			$("#secret").val("");
 			clearTimeout(myCodeTimer);
 			$("#abortConnection").html("OK");
-			
+
 			//remote rights should not be forever..
 			myDisconnectTimer = setTimeout(function() {
 				revokeRemote();
@@ -519,7 +520,7 @@ function goBackFromInfo() {
 	$("#infoContent").hide(0);
 	$("#infoBackBtn").hide(0);
 	$("#infoBtn").show(0);
-	$("#title").html("MovieMatcher");
+	$("#title").html("Movie Cube");
 }
 
 //go back from detail view to movie list
@@ -528,7 +529,7 @@ function goBackToList() {
 	$("#movieContainerBackBtn").show(0);
 	$("#movieListContainer").show(0);
 	$("#movieContainer").hide(0);
-	$("#title").html("MovieMatcher");
+	$("#title").html("Movie Cube");
 }
 
 //show the loading spinner

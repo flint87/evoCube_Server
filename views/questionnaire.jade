@@ -17,7 +17,7 @@ html
       div(data-role="content")
         img(id="cinemaImg" style="width:60%; height:auto; display:block; margin-left: auto; margin-right: auto")
         div
-          h2(id='welcome' style="display:none; text-align:center;" ) Für das Ausfüllen vom Fragebogen bekommst du einen Gutschein über 1€ für dein Kinoticket den du heute einlösen kannst.
+          h2(id='welcome' style="display:none; text-align:center;" ) Für das Ausfüllen des Fragebogens bekommst du einen Gutschein über 1€ für dein Kinoticket den du heute einlösen kannst.
         div(id = "questionnaireDiv" class="ui-corner-all custom-corners" style="display:none;")
           div(id="question1")
             div(id="q1" name="1" class="ui-bar ui-bar-a")
@@ -34,7 +34,7 @@ html
                   option Weiblich
                   option Männlich
           br
-          div(id="question2")          
+          div(id="question2" style="display:none")          
             div(id="" name="2" class="ui-bar ui-bar-a")
               p(id='question' name="Beschäftigung") 2. Beschäftigung
             div(id="answers" class="ui-body ui-body-a")
@@ -57,8 +57,8 @@ html
                 label(for="option8") Arbeitssuchende/r
                 input(type="radio" name="q2Radio" id="option9" value="PensionistIn")
                 label(for="option9") PensionistIn
-          br
-          div(id="question3")
+          
+          div(id="question3" style="display:none")
             div(id="q2" name="2" class="ui-bar ui-bar-a")
               p(id='question' name="Schulbildung") 3. Höchste abgeschlossene Schulbildung:
             div(id="answers" class="ui-body ui-body-a")
@@ -73,10 +73,10 @@ html
                 label(for="option4") Matura
                 input(type="radio" name="q3Radio" id="option5" value="Universität/Fachhochschule")
                 label(for="option5") Universität/Fachhochschule
-          br
+          
           div(id="question4")
             div(id="q2" name="2" class="ui-bar ui-bar-a")
-              p(id='question' name="Sagt dir der Begriff NFC (Near Field Communication) etwas?") 4. Sagt dir der Begriff NFC (Near Field Communication) etwas?
+              p(id='question' name="Weißt du was der Begriff NFC (Near Field Communication) bedeutet?") 2. Weißt du was der Begriff NFC (Near Field Communication) bedeutet?
             div(id="answers" class="ui-body ui-body-a")
               fieldset(data-role="controlgroup")
                 input(type="radio" name="q4Radio" id="option1" value="Ja")
@@ -86,7 +86,7 @@ html
           br
           div(id="question5")
             div(id="q3" name="3" class="ui-bar ui-bar-a")
-              p(id='question' name="Unterstützt dein Smartphone NFC?") 5. Unterstützt dein Smartphone NFC?
+              p(id='question' name="Unterstützt dein Smartphone NFC?") 3. Unterstützt dein Smartphone NFC?
             div(id="answers" class="ui-body ui-body-a")
               fieldset(data-role="controlgroup")
                 input(type="radio" name="q5Radio" id="option1" value="Ja")
@@ -98,7 +98,7 @@ html
           br
           div(id="question6")
             div(id="q3" name="3" class="ui-bar ui-bar-a")
-              p(id='question' name="Welche Interaktionsmethode bevorzugst du, NFC oder QR?") 6. Welche Interaktionsmethode bevorzugst du, NFC oder QR?
+              p(id='question' name="Welche Interaktionsmethode bevorzugst du, NFC oder QR?") 4. Welche Interaktionsmethode bevorzugst du, NFC oder QR?
             div(id="answers" class="ui-body ui-body-a")
               fieldset(data-role="controlgroup")
                 input(type="radio" name="q6Radio" id="option1" value="NFC")
@@ -110,7 +110,7 @@ html
           br
           div(id="question7")
             div(id="q4" name="4" class="ui-bar ui-bar-a")
-              p(id='question' name="Wie würdest du deine Kenntnisse zu mobilen Technologien generell einstufen?") 7. Wie würdest du deine Kenntnisse zu mobilen Technologien generell einstufen?
+              p(id='question' name="Wie würdest du deine Kenntnisse zu mobilen Technologien generell einstufen?") 5. Wie würdest du deine Kenntnisse zu mobilen Technologien generell einstufen?
             div(id="answers" class="ui-body ui-body-a")
               fieldset(data-role="controlgroup")
                 input(type="radio" name="q7Radio" id="option1" value="1")
@@ -126,7 +126,7 @@ html
           br
           div(id="question8")
             div(id="q5" name="5" class="ui-bar ui-bar-a")
-              p(id='question' name="Wenn du an Ihren Umgang mit neuen Medien und Kommunikationstechnologien denken, bist du jemand, der ...") 8. Wenn du an Ihren Umgang mit neuen Medien und Kommunikationstechnologien denken, bist du jemand, der ...
+              p(id='question' name="Wenn du an Ihren Umgang mit neuen Medien und Kommunikationstechnologien denken, bist du jemand, der ...") 6. Wenn du an Ihren Umgang mit neuen Medien und Kommunikationstechnologien denken, bist du jemand, der ...
             div(id="answers" class="ui-body ui-body-a")
               fieldset(data-role="controlgroup")
                 input(type="radio" name="q8Radio" id="option1" value="diese neuen Technologien sofort ausprobiert?")
@@ -140,7 +140,7 @@ html
           br
           div(id="question9")
             div(id="q5" name="5" class="ui-bar ui-bar-a")
-              p(id='question' name="Von welchen der folgenden mobilen Technologien bzw. Begriffen hast du schon gehört?") 9. Von welchen der folgenden mobilen Technologien bzw. Begriffen hast du schon gehört?
+              p(id='question' name="Von welchen der folgenden mobilen Technologien bzw. Begriffen hast du schon gehört?") 7. Von welchen der folgenden mobilen Technologien bzw. Begriffen hast du schon gehört?
             div(id="answers" class="ui-body ui-body-a")
               fieldset(data-role="controlgroup")
                 input(type="checkbox" name="q9Radio" id="option1" value="Datenbrillen")
@@ -160,7 +160,7 @@ html
           br
           div(id="question10")
             div(id="q5" name="5" class="ui-bar ui-bar-a")
-              p(id='question' name="Was trifft auf ich zu wenn du über personalisierte Werbeangebote (z.B. auf Facebook, Google oder bei Kundenkarten) nachdenkst?") 10. Was trifft auf ich zu wenn du über personalisierte Werbeangebote (z.B. auf Facebook, Google oder bei Kundenkarten) nachdenkst?
+              p(id='question' name="Was trifft auf ich zu, wenn du über personalisierte Werbeangebote (z.B. auf Facebook, Google oder bei Kundenkarten) nachdenkst?") 8. Was trifft auf ich zu, wenn du über personalisierte Werbeangebote (z.B. auf Facebook, Google oder bei Kundenkarten) nachdenkst?
             div(id="answers" class="ui-body ui-body-a")
               fieldset(data-role="controlgroup")
                 input(type="checkbox" name="q10Radio" id="option1" value="Ich weiß nicht was mit meinen Daten passiert.")
@@ -171,14 +171,14 @@ html
                 label(for="option4") Ich finde es in Ordnung im Internet im Austausch für meiner persönlichen Daten Services gratis zu benutzen.
                 input(type="checkbox" name="q10Radio" id="option5" value="Solange die Daten nicht missbräuchlich verwendet werden, ist es in Ordnung für mich einer Firma meine persönlichen Daten zu geben.")
                 label(for="option5") Solange die Daten nicht missbräuchlich verwendet werden, ist es in Ordnung für mich einer Firma meine persönlichen Daten zu geben.
-                input(type="checkbox" name="q10Radio" id="option6" value="Ich denke nicht viel darüber nach wenn ich meine Daten irgendwo im Internet angebe.")
-                label(for="option6") Ich denke nicht viel darüber nach wenn ich meine Daten irgendwo im Internet angebe.
-                input(type="checkbox" name="radio" id="option7" value="Ich lese zumindest manchmal kurz in der AGB bevor ich der Nutzung meiner Daten zustimme. ")
-                label(for="option7") Ich lese zumindest manchmal kurz in der AGB bevor ich der Nutzung meiner Daten zustimme. 
+                input(type="checkbox" name="q10Radio" id="option6" value="Ich denke nicht viel darüber nach, wenn ich meine Daten irgendwo im Internet angebe.")
+                label(for="option6") Ich denke nicht viel darüber nach, wenn ich meine Daten irgendwo im Internet angebe.
+                input(type="checkbox" name="radio" id="option7" value="Ich lese zumindest manchmal kurz in der AGB, bevor ich der Nutzung meiner Daten zustimme. ")
+                label(for="option7") Ich lese zumindest manchmal kurz in der AGB, bevor ich der Nutzung meiner Daten zustimme. 
           br
           div(id="question11")
             div(id="q5" name="5" class="ui-bar ui-bar-a")
-              p(id='question' name="Findest du Werbung mit der du interagieren kannst spannender als traditionelle Werbung?") 11. Findest du Werbung mit der du interagieren kannst spannender als traditionelle Werbung?
+              p(id='question' name="Findest du Werbung mit der du interagieren kannst spannender als traditionelle Werbung?") 9. Findest du Werbung mit der du interagieren kannst spannender als traditionelle Werbung?
             div(id="answers" class="ui-body ui-body-a")
               fieldset(data-role="controlgroup")
                 input(type="radio" name="q11Radio" id="option1" value="Ja")
@@ -190,7 +190,7 @@ html
           br
           div(id="question12")
             div(id="q5" name="5" class="ui-bar ui-bar-a")
-              p(id='question' name="Reagierst du manchmal auf Werbung, nur weil du bemerkst dass damit interagiert werden kann.") 12. Reagierst du manchmal auf Werbung, nur weil du bemerkst dass damit interagiert werden kann.
+              p(id='question' name="Reagierst du manchmal auf Werbung, nur weil du bemerkst dass damit interagiert werden kann.") 10. Reagierst du manchmal auf Werbung, nur weil du bemerkst dass damit interagiert werden kann.
             div(id="answers" class="ui-body ui-body-a")
               fieldset(data-role="controlgroup")
                 input(type="radio" name="q12Radio" id="option1" value="Ja")
@@ -202,19 +202,19 @@ html
           br
           div(id="question13")            
             div(id="q5" name="5" class="ui-bar ui-bar-a")
-              p(id='question' name="Bist du eher bereit einen Filmtrailer anzuschauen der genau auf deinen Geschmack abgestimmt ist oder bevorzugst du die Trailer im Kino, die vor der Vorstellung gezeigt werden?") 13. Bist du eher bereit einen Filmtrailer anzuschauen der genau auf deinen Geschmack abgestimmt ist oder bevorzugst du die Trailer im Kino, die vor der Vorstellung gezeigt werden?
+              p(id='question' name="Über die linke Seite des Movie Cubes kannst du dir einen Film suchen, der deinen Vorstellungen entspricht. Über die rechte Seite bekommst du einen zufällig ausgwählten Film. Welche Funktion gefällt dir besser bzw. sinnvoller?") 11. Über die linke Seite des Movie Cubes kannst du dir einen Film suchen, der deinen Vorstellungen entspricht. Über die rechte Seite bekommst du einen zufällig ausgwählten Film. Welche Funktion gefällt dir besser bzw. sinnvoller??
             div(id="answers" class="ui-body ui-body-a")
               fieldset(data-role="controlgroup")
                 input(type="radio" name="q13Radio" id="option1" value="Nach meinem Geschmack")
-                label(for="option1") Nach meinem Geschmack
+                label(for="option1") Film nach meinen Vorstellungen
                 input(type="radio" name="q13Radio" id="option2" value="Ist mir gleichgültig")
-                label(for="option2") Ist mir gleichgültig
-                input(type="radio" name="q13Radio" id="option3" value="Trailer vor der Vorstellung")
-                label(for="option3") Trailer vor der Vorstellung
+                label(for="option2") Ein zufälliger Film
+                input(type="radio" name="q13Radio" id="option3" value="Weder noch")
+                label(for="option3") Weder noch
           br
           div(id="question14")
             div(id="q5" name="5" class="ui-bar ui-bar-a")
-              p(id='question' name="Schaust du dir meistens bevor du ins Kino gehst den Trailer zum Film im Internet an?") 14. Schaust du dir meistens bevor du ins Kino gehst den Trailer zum Film im Internet an?
+              p(id='question' name="Schaust du dir meistens bevor du ins Kino gehst den Trailer zum Film im Internet an?") 12. Schaust du dir meistens bevor du ins Kino gehst den Trailer zum Film im Internet an?
             div(id="answers" class="ui-body ui-body-a")
               fieldset(data-role="controlgroup")
                 input(type="radio" name="q14Radio" id="option1" value="Ja")
@@ -222,15 +222,31 @@ html
                 input(type="radio" name="q14Rradio" id="option2" value="Nein")
                 label(for="option2") Nein
           br
+          div(id="question18")
+            div(id="q5" name="5" class="ui-bar ui-bar-a")
+              p(id='question' name="Wie wirst du normalerweise auf Filme aufmerksam, die du dir im Kino anschaust?") 13. Wie wirst du normalerweise auf Filme aufmerksam, die du dir im Kino anschaust??
+            div(id="answers" class="ui-body ui-body-a")
+              fieldset(data-role="controlgroup")
+                input(type="checkbox" name="q15Radio" id="option1" value="Das System ist mir aufgefallen und ich war neugierig.")
+                label(for="option1") Durch Plakate im Kino
+                input(type="checkbox" name="q15Radio" id="option2" value="Ein/e Angestellter/e des Kinos hat mich darauf hingewiesen.")
+                label(for="option2") Durch die Trailer vor Vorstellungsbeginn im Kino
+                input(type="checkbox" name="q15Radio" id="option4" value="Ich habe von Freunden oder Bekannten davon gehört.")
+                label(for="option4") Durch Werbung im Fernsehen
+                input(type="checkbox" name="q15Radio" id="option5" value="Ich habe auf Facebook davon gelesen.")
+                label(for="option5") Durch Werbung im Internet
+                input(type="checkbox" name="q15Radio" id="option6" value="Ich kenne ihn aus einem anderen Kino.")
+                label(for="option6") Ich kenne ihn aus einem anderen Kino.
+          br
           div(id="question15")
             div(id="q5" name="5" class="ui-bar ui-bar-a")
-              p(id='question' name="Wie bist du auf den evoCube hier im Kino aufmerksam geworden?") 15. Wie bist du auf den evoCube hier im Kino aufmerksam geworden?
+              p(id='question' name="Wie bist du auf den Movie Cube hier im Kino aufmerksam geworden?") 14. Wie bist du auf den Movie Cube hier im Kino aufmerksam geworden?
             div(id="answers" class="ui-body ui-body-a")
               fieldset(data-role="controlgroup")
                 input(type="checkbox" name="q15Radio" id="option1" value="Das System ist mir aufgefallen und ich war neugierig.")
                 label(for="option1") Das System ist mir aufgefallen und ich war neugierig.
-                input(type="checkbox" name="q15Radio" id="option2" value="Ein/e Angestellter/e vom Kino hat mich darauf hingewiesen.")
-                label(for="option2") Ein/e Angestellter/e vom Kino hat mich darauf hingewiesen.
+                input(type="checkbox" name="q15Radio" id="option2" value="Ein/e Angestellter/e des Kinos hat mich darauf hingewiesen.")
+                label(for="option2") Ein/e Angestellter/e des Kinos hat mich darauf hingewiesen.
                 input(type="checkbox" name="q15Radio" id="option4" value="Ich habe von Freunden oder Bekannten davon gehört.")
                 label(for="option4") Ich habe von Freunden oder Bekannten davon gehört.
                 input(type="checkbox" name="q15Radio" id="option5" value="Ich habe auf Facebook davon gelesen.")
@@ -240,7 +256,7 @@ html
           br
           div(id="question16")
             div(id="q5" name="5" class="ui-bar ui-bar-a")
-              p(id='question' name="Hast du keine Funktionen vom evoCube probiert und füllst diesen Fragebogen nur aus weil du dadurch eine Ermäßigung bekommst?") 16. Hast du keine Funktionen vom evoCube probiert und füllst diesen Fragebogen nur aus weil du dadurch eine Ermäßigung bekommst?
+              p(id='question' name="Füllst du den Fragebogen nur aus, weil du eine Ermäßigung haben möchtest und hast du daher keine anderen Funktionen des Movie Cubes ausprobiert?") 15. Füllst du den Fragebogen nur aus, weil du eine Ermäßigung haben möchtest und hast du daher keine anderen Funktionen des Movie Cubes ausprobiert?
             div(id="answers" class="ui-body ui-body-a")
               fieldset(data-role="controlgroup")
                 input(type="radio" name="q16Radio" id="option1" value="Ja")
@@ -250,7 +266,7 @@ html
           br
           div(id="question17")
             div(id="q5" name="5" class="ui-bar ui-bar-a")
-              p(id='question' name="Hast du vielleicht sonst noch Ideen, Anregungen, Kritik oder Feedback für den evoCube oder die Filmpersonalisierung?") 17. Hast du vielleicht sonst noch Ideen, Anregungen, Kritik oder Feedback für den evoCube oder die Filmpersonalisierung?
+              p(id='question' name="Hast du vielleicht sonst noch Ideen, Anregungen, Kritik oder Feedback für den Movie Cube oder die Filmpersonalisierung?") 16. Hast du vielleicht sonst noch Ideen, Anregungen, Kritik oder Feedback für den Movie Cube oder die Filmpersonalisierung?
             div(id="answers" class="ui-body ui-body-a")
               input(type="text" name="radio" id="" value="")
           br

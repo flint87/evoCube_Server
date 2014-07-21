@@ -122,13 +122,13 @@ function playTrailer(trailerType) {
 			if (answer == "false") {
 				$("#feedback").html("Tippe hier um dich mit dem Fernseher zu verbinden.");
 				$("#initElements").show(0);
-				$("#abortConnection").html("Abbruch");
+				$("#abortConnection").html("Abbrechen");
 			} else if (answer == "true") {
 				$("#feedback").html("Zurzeit läuft gerade ein Trailer auf dem Fernseher.");
 				$("#initElements").hide(0);
 				$("#abortConnection").html("OK");
 			} else if (answer == "noVideoClientHere") {
-				$("#feedback").html("Zurzeit läuft gerade ein Trailer auf dem Fernseher.");
+				$("#feedback").html("Kein Video Client im Moment.");
 				$("#initElements").hide(0);
 				$("#abortConnection").html("OK");
 			}
@@ -140,6 +140,7 @@ function playTrailer(trailerType) {
 			if (message) {
 				socket.emit("playSpecifTrailer", cubeLocation, $("#movieName").attr("name"), trailerType, function(message) {
 					writeLog("Feedback: " + message);
+					socket.emit("writeTracking", cubeLocation, "randomClientEvent", "playTrailer", $("#movieName").attr("name"), function() {});
 				});
 			} else {}
 		});
@@ -179,12 +180,19 @@ function giveMeControl() {
 	});
 }
 
-//abbort the connection attempt and hide the popup
+//hide the popup or cancel the connection attempt
 function abortConnect() {
-	initState = "noRemoteConnection";
-	$("#initElements").show(0);
-	$("#codeElements").hide(0);
-	$("#feedbackPopup").popup("close");
+	if (initState == "established") {
+		$("#feedbackPopup").popup("close");
+		$("#abortConnection").html("Abbrechen");
+	} else {
+		initState = "noRemoteConnection";
+		$("#feedbackPopup").popup("close");
+		setTimeout(function() {
+			$("#initElements").show(0);
+			$("#codeElements").hide(0);
+		}, 200);
+	}
 }
 
 //check with the server if the code is correct. if yes grant access to monitor
@@ -192,12 +200,13 @@ function submitCode() {
 	writeLog("Secret Value: " + $("#secret").val());
 	socket.emit("checkMyCode", cubeLocation, $("#secret").val(), function(answer) {
 		if (answer) {
-			$("#feedback").html("Du bist jetzt mit dem Fernseher verbunden und kannst dir beliebige Trailer anschauen.");
+			$("#feedback").html("Du bist jetzt mit dem Fernseher verbunden und kannst dir nun die Trailer anschauen.");
 			$("#codeElements").hide(0);
 			initState = "established";
 			$("#secret").val("");
 			clearTimeout(myCodeTimer);
-			$("#feedbackPopup").popup("close");
+			$("#abortConnection").html("OK");
+
 			//remote rights should not be forever..
 			myDisconnectTimer = setTimeout(function() {
 				revokeRemote();
@@ -239,7 +248,7 @@ function showMovieDetails(movieInternalName) {
 	$("#movieContainerBackBtn").hide(0);
 	writeLog("I want to see details of: " + movieInternalName);
 	$("#backBtn").show(0);
-	$("#title").html("Filmdetails");
+	$("#title").html("Movie Cube");
 	$("#dtTrailerBtn").attr("onClick", "playTrailer(\"dt\")");
 	$("#ovTrailerBtn").attr("onClick", "playTrailer(\"ov\")");
 	for (var i = 0; i < trailers.length; i++) {

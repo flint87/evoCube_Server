@@ -66,11 +66,11 @@ html
                   td(colspan="2"): div(data-role="collapsible" data-mini="true")
                     h4 Handlung:
                     p(id="plot")        
-          div(data-role="popup" id="feedbackPopup" data-dismissible="false" style="max-width:400px; text-align:center")
+          div(data-role="popup" id="feedbackPopup" data-dismissible="false" style="width:90vw; text-align:center")
             div(data-role="header")
               h1 Verbindung
             div(role="main" class="ui-content")
-              p(id='feedback' style="") Tippe hier um dich mit dem Fernseher zu verbinden.
+              p(id='feedback') Tippe hier um dich mit dem Fernseher zu verbinden.
               div(id="initElements")
                 button(id='requestControl' onClick='giveMeControl()' class='myButton') Verbinden
               div(id="codeElements" style="display:none;")

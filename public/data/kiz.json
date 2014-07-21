@@ -116,7 +116,7 @@
 	"movieName": "Edge of Tomorrow",
 	"ovName": "Edge of Tomorrow",
 	"interalName": "edgeOfTomorrowX",
-	"urlDE": "https://www.youtube.com/watch?v=SalUKTW6OXE",
+	"urlDE": "https://www.youtube.com/watch?v=oZcBls4IugA",
 	"urlOV": "https://www.youtube.com/watch?v=yUmSVcttXnI",
 	"imageURL": "http://www.filmfutter.com/wp-content/uploads/2014/05/EdgePoster1.jpg",
 	"ov": "Englisch",
@@ -143,7 +143,7 @@
 	"mood": ["humorvoll", "aufregend", "bittersüß", ""],
 	"audience": [""],
 	"available": "aktuell im Kino",
-	"country": ["Deutschland", " USA"],
+	"country": ["Deutschland", "USA"],
 	"actors": ["Ralph Fiennes", "F. Murray Abraham", "Mathieu Amalric", "Adrien Brody", "Willem Dafoe", "Jeff Goldblum", "Harvey Keitel", "Jude Law", "Bill Murray", "Edward Norton", "Jason Schwartzman"],
 	"plot": "Zur Zeit zwischen den beiden Weltkriegen, als Europa sich im Umbruch befindet, schweißen die Turbulenzen und Abenteuer rund um den Diebstahl eines wertvollen Renaissance-Gemäldes und der Streit um ein großes Familienvermögen Gustave H., den legendären Concierge eines berühmten europäischen Hotels, und seinen Hotelpagen und Protegé Zero Moustafa, unweigerlich zusammen."
 }, {
@@ -221,7 +221,7 @@
 	"urlOV": "https://www.youtube.com/watch?v=pK2zYHWDZKo",
 	"imageURL": "http://www.critic.de/images/x-men-zukunft-ist-vergangenheit-plakat-X-Men.jpg",
 	"ov": "Englisch",
-	"genre": ["Action", "Adventure", "Science-Fiction", " Fantasy"],
+	"genre": ["Action", "Adventure", "Science-Fiction", "Fantasy"],
 	"year": "2014",
 	"director": "Bryan Singer",
 	"mood": ["spannend", "düster", "aufregend"],
