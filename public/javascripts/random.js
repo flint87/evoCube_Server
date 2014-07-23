@@ -59,7 +59,7 @@ function connect() {
 
 	//server revokes remote client rights
 	socket.on("byebyeRemote", function() {
-		$("#feedback").html("Tippe hier um dich mit dem Fernseher zu verbinden.");
+		$("#feedback").html("Bevor du den Trailer am Fernseher ansehen kannst, tippe hier, um eine Verbindung herzustellen.");
 		$("#initElements").show(0);
 		$("#movieControls").hide(0);
 	});
@@ -120,7 +120,7 @@ function playTrailer(trailerType) {
 		socket.emit("isTrailerRunningAtTheMoment", cubeLocation, function(answer) {
 			writeLog("FEEDBACK: " + answer);
 			if (answer == "false") {
-				$("#feedback").html("Tippe hier um dich mit dem Fernseher zu verbinden.");
+				$("#feedback").html("Bevor du den Trailer am Fernseher ansehen kannst, tippe hier, um eine Verbindung herzustellen.");
 				$("#initElements").show(0);
 				$("#abortConnection").html("Abbrechen");
 			} else if (answer == "true") {
@@ -138,7 +138,8 @@ function playTrailer(trailerType) {
 		writeLog("I want to see: " + trailerType + " " + $("#movieName").attr("name"));
 		socket.emit("inCharge", cubeLocation, function(message) {
 			if (message) {
-				socket.emit("playRandomTrailer", cubeLocation, $("#movieName").attr("name"), trailerType, function(message) {
+				writeLog("JHÖDSKFLKSDHFLJHWSDF");			
+				socket.emit("playSpecifTrailer", cubeLocation, $("#movieName").attr("name"), trailerType, function(message) {
 					writeLog("Feedback: " + message);
 					socket.emit("writeTracking", cubeLocation, "randomClientEvent", "playTrailer", $("#movieName").attr("name"), function() {});
 				});
@@ -155,7 +156,7 @@ function revokeRemote() {
 		clearTimeout(myDisconnectTimer);
 		$("#initElements").show(0);
 		$("#movieControls").hide(0);
-		$("#feedback").html("Tippe hier um dich mit dem Fernseher zu verbinden.");
+		$("#feedback").html("Bevor du den Trailer am Fernseher ansehen kannst, tippe hier, um eine Verbindung herzustellen.");
 	});
 }
 
@@ -166,13 +167,13 @@ function giveMeControl() {
 		if (answer) {
 			$("#feedback").html("Zurzeit läuft gerade ein Trailer auf dem Fernseher.");
 		} else {
-			$("#feedback").html("Bestätigungsnummer eingeben");
+			$("#feedback").html("Gib die Bestätigungsnummer ein, die am Fernseher angezeigt wird, um dich zu verbinden.");
 			$("#initElements").hide(0);
 			$("#codeElements").show(0);
 			initState = "waitingForCode";
 			//after 20 seconds reset the state
 			myCodeTimer = setTimeout(function() {
-				$("#feedback").html("Tippe hier um dich mit dem Fernseher zu verbinden.");
+				$("#feedback").html("Bevor du den Trailer am Fernseher ansehen kannst, tippe hier, um eine Verbindung herzustellen.");
 				$("#initElements").show(0);
 				$("#codeElements").hide(0);
 			}, 20000);
@@ -200,7 +201,7 @@ function submitCode() {
 	writeLog("Secret Value: " + $("#secret").val());
 	socket.emit("checkMyCode", cubeLocation, $("#secret").val(), function(answer) {
 		if (answer) {
-			$("#feedback").html("Du bist jetzt mit dem Fernseher verbunden und kannst dir nun die Trailer anschauen.");
+			$("#feedback").html("Du bist jetzt mit dem Fernseher verbunden und kannst dir nun alle Trailer anschauen wenn du auf einen \"Trailer spielen\" Button tippst.");
 			$("#codeElements").hide(0);
 			initState = "established";
 			$("#secret").val("");
