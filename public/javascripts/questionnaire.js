@@ -158,7 +158,7 @@ function sendToServer() {
 			writeLog(answer);
 			$("#sendQuestionnaireBtn").hide(0);
 			$("#questionnaireDiv").hide(0);
-			$("#welcome").html("Danke für dein Feedback! <br>Gutscheinnummer: <br><br>" + answer + " <br>gültig am: <br>" + getTimeStamp() + " <br>");
+			$("#welcome").html("Danke für dein Feedback! <br><br>Gutscheinnummer: <br>" + answer + " <br>gültig am: <br>" + getTimeStamp() + " <br>");
 			document.cookie = "voucherNumber=" + answer + "; expires=Thu, 18 Dec 2030 12:00:00 GMT; path=/";
 
 			if (cubeLocation == "kiz") {
