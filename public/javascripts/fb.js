@@ -22,5 +22,7 @@ function connect() {
 
 	if (cubeLocation == "rechbauer") {
 		window.location.replace("https://www.facebook.com/pages/Filmzentrum-im-Rechbauerkino/117408941013");
+	}else if(cubeLocation == "kiz"){
+		window.location.replace("https://www.facebook.com/kizroyal");		
 	}
 }
