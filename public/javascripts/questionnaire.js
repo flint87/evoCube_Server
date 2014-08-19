@@ -206,6 +206,8 @@ function prepareQuestionnaire() {
 		} else if (cubeLocation == "rechbauer") {
 			$("#cinemaImg").attr("src", "/images/rechbauer_logo.jpg");
 		}
+		$("#evoImg").attr("src", "/images/evolaris_logo.gif");
+		
 	} else {
 
 		for (var u = 13; u < 100; u++) {

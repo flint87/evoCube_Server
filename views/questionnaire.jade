@@ -15,7 +15,8 @@ html
       div(data-role="header")
         h1 #{title}
       div(data-role="content")
-        img(id="cinemaImg" style="width:60%; height:auto; display:block; margin-left: auto; margin-right: auto")
+        img(id="cinemaImg" style="text-align: left; width:60%; height:auto; display:block; margin-left: auto; margin-right: auto")
+        img(id="evoImg" style="text-align: right; width:60%; height:auto; display:block; margin-left: auto; margin-right: auto")
         div
           h3(id='welcome' style="display:none; text-align:center;" ) Danke dass du dir Zeit nimmst uns Feedback zu geben. Das Ausfüllen dauert etwa 2 bis 3 Minuten. <br>Bei dem Fragebogen wird deine Einstellung und Meinung bezüglich mobiler Technologien, interaktiver Werbung, Personalisierung von Filmen und die Funktionalität des Movie Cubes selbst erfragt. <br> Für das Ausfüllen des Fragebogens bekommst du einen Gutschein über 1€ für dein Kinoticket den du heute einlösen kannst.
         div(id = "questionnaireDiv" class="ui-corner-all custom-corners" style="display:none;")
@@ -202,7 +203,7 @@ html
           br
           div(id="question13")            
             div(id="q5" name="5" class="ui-bar ui-bar-a")
-              p(id='question' name="Über die linke Seite des Movie Cubes kannst du dir einen Film suchen, der deinen Vorstellungen entspricht. Über die rechte Seite bekommst du einen zufällig ausgwählten Film. Welche Funktion gefällt dir besser bzw. sinnvoller?") 11. Über die linke Seite des Movie Cubes kannst du dir einen Film suchen, der deinen Vorstellungen entspricht. Über die rechte Seite bekommst du einen zufällig ausgwählten Film. Welche Funktion gefällt dir besser bzw. sinnvoller??
+              p(id='question' name="Über die linke Seite des Movie Cubes kannst du dir einen Film suchen, der deinen Vorstellungen entspricht. Über die rechte Seite bekommst du einen zufällig ausgwählten Film. Welche Funktion gefällt dir besser bzw. sinnvoller?") 11. Über die linke Seite des Movie Cubes kannst du dir einen Film suchen, der deinen Vorstellungen entspricht. Über die rechte Seite bekommst du einen zufällig ausgwählten Film. Welche Funktion gefällt dir besser bzw. sinnvoller?
             div(id="answers" class="ui-body ui-body-a")
               fieldset(data-role="controlgroup")
                 input(type="radio" name="q13Radio" id="option1" value="Nach meinem Geschmack")

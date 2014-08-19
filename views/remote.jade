@@ -63,7 +63,7 @@ html
                   th(style="text-align:left; vertical-align:top") Genre:
                   td(id="genre")
                 tr
-                  th(style="text-align:left; vertical-align:top") Stimmung:
+                  th(style="text-align:left; vertical-align:top; display:none") Stimmung:
                   td(id="mood")
                 tr
                   th(style="text-align:left; vertical-align:top") Verfügbarkeit:
@@ -99,8 +99,8 @@ html
                         label(for="ovRadio") OV Sprache
                         input(type="radio" name="radio-choice-v-6" id="yearRadio" for="yearDiv" class="persGroupRadio")
                         label(for="yearRadio") Jahr
-                        input(type="radio" name="radio-choice-v-6" id="moodRadio" for="moodDiv" class="persGroupRadio")
-                        label(for="moodRadio") Stimmung
+                        input(type="radio" name="radio-choice-v-6" id="moodRadio" for="moodDiv" class="persGroupRadio" style="display:none")
+                        label(for="moodRadio" style="display:none") Stimmung
                   td(style="vertical-align:top;")
                     div(id="genreDiv" style="width:100%; vertical-align:top; margin-left:5%; disyplay:none") 
                       fieldset(id="genreControlGroup" data-role="controlgroup" data-type="horizontal" data-mini="true")

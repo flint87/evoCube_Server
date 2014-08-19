@@ -31,7 +31,7 @@ router.get('/remote', function(req, res) {
 	//mydbConnection.movies.drop();
 	if (connectionAllowed) {
 		//check if there is an allowed request parameter for type
-		if (req.param("type") == "nfc" || req.param("type") == "qr") {
+		if (req.param("type") == "nfc" || req.param("type") == "qr" || req.param("type") == "url") {
 			if (undefined === req.cookies.userID) {
 				res.cookie('userID', newID, {
 					maxAge: 999999999999
@@ -77,7 +77,7 @@ router.get('/questionnaire', function(req, res) {
 	//mydbConnection.movies.drop();
 	if (connectionAllowed) {
 		//check if there is an allowed request parameter for type
-		if (req.param("type") == "nfc" || req.param("type") == "qr") {
+		if (req.param("type") == "nfc" || req.param("type") == "qr" || req.param("type") == "url") {
 			if (undefined === req.cookies.userID) {
 				res.cookie('userID', newID, {
 					maxAge: 999999999999
@@ -114,7 +114,7 @@ router.get('/random', function(req, res) {
 	//mydbConnection.movies.drop();
 	if (connectionAllowed) {
 		//check if there is an allowed request parameter for type
-		if (req.param("type") == "nfc" || req.param("type") == "qr") {
+		if (req.param("type") == "nfc" || req.param("type") == "qr" || req.param("type") == "url") {
 			if (undefined === req.cookies.userID) {
 				res.cookie('userID', newID, {
 					maxAge: 999999999999
@@ -153,7 +153,7 @@ router.get('/fb', function(req, res) {
 	}
 	if (connectionAllowed) {
 		//check if there is an allowed request parameter for type
-		if (req.param("type") == "nfc" || req.param("type") == "qr") {
+		if (req.param("type") == "nfc" || req.param("type") == "qr" || req.param("type") == "url") {
 			if (undefined === req.cookies.userID) {
 				res.cookie('userID', newID, {
 					maxAge: 999999999999
